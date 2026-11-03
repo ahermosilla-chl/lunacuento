@@ -44,7 +44,6 @@ export default function ReaderScene({ story }: { story: Story }) {
           <i key={i} className="ff" style={{ left: `${x}%`, top: `${y}%`, "--dx": `${dx}px`, "--dy": `${dy}px`, "--dur": `${dur}s`, animationDelay: `${delay}s` } as React.CSSProperties} />
         ))}
       </div>
-      <div className="r-table" />
     </div>
   );
 }

@@ -638,7 +638,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
     <>
       <label htmlFor={id} className="sr-only">{R.timer}</label>
       <select id={id} className={`r-timer${compact ? " chip-timer" : ""}`} value={timer} onChange={(e) => setTimer(Number(e.target.value))}>
-        <option value={0}>{compact ? "—" : R.timerOff}</option>
+        <option value={0}>{R.timerOff}</option>
         <option value={10}>{compact ? "10 min" : fmt(R.timerMin, { m: 10 })}</option>
         <option value={20}>{compact ? "20 min" : fmt(R.timerMin, { m: 20 })}</option>
       </select>

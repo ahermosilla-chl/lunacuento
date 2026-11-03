@@ -612,9 +612,9 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
 .stage-empty { position: absolute; left: 24px; bottom: 40px; color: #FFFFFF; text-shadow: var(--stage-shadow); font-weight: 700; }
 
 /* Entrada orquestada: el cielo aparece, la luna brilla, luego el título y los libros suben al estante uno por uno */
-@keyframes stage-sky { from { opacity: 0; } to { opacity: 1; } }
-@keyframes stage-rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
-@keyframes book-rise { from { opacity: 0; transform: translateY(46px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes stage-sky { from { filter: brightness(.82) saturate(.9); } to { filter: none; } }
+@keyframes stage-rise { from { transform: translateY(10px); } to { transform: none; } }
+@keyframes book-rise { from { transform: translateY(18px) scale(.98); } to { transform: none; } }
 .stage-art { animation: stage-sky 1s ease-out both; }
 .stage-head h1 { animation: stage-rise .7s .45s var(--ease) both; }
 .stage-for { animation: stage-rise .7s .6s var(--ease) both; }

@@ -544,6 +544,24 @@ for (const [locale, want] of [["en-US", "/en/"], ["es-CL", "/es/"]]) {
   await p.context().close();
 }
 
+// Hero "completo en reposo": título, filtros y primer libro visibles desde el primer frame (sin depender de la animación)
+for (const w of [1280, 768]) {
+  for (const scheme of ["light", "dark"]) {
+    const p = await newPage(w, { colorScheme: scheme });
+    await p.goto(`${BASE}/es/`, { waitUntil: "commit" });
+    await p.locator(".hstage h1").waitFor({ state: "attached" });
+    await p.waitForTimeout(60);
+    const vis = await p.evaluate(() => {
+      const op = (el) => { let o = 1; for (let e = el; e; e = e.parentElement) o *= Number(getComputedStyle(e).opacity); return o; };
+      const q = (sel) => { const el = document.querySelector(sel); if (!el) return { ok: false, why: "no existe" }; const r = el.getBoundingClientRect(); return { ok: r.width > 20 && r.height > 20 && r.bottom > 0 && r.top < innerHeight && op(el) > 0.9, op: op(el), top: Math.round(r.top) }; };
+      return { h1: q(".hstage h1"), chips: q(".stage-chips"), book: q(".stage-books > li:first-child") };
+    });
+    for (const [k, v] of Object.entries(vis)) if (!v.ok) problems.push(`[${w}] ${scheme} hero en reposo: "${k}" no es visible al cargar (${JSON.stringify(v)})`);
+    if (scheme === "dark" && w === 1280) await p.screenshot({ path: `${OUT}/home-1280-oscuro-alcargar.png` });
+    await p.context().close();
+  }
+}
+
 // Sonido: nada suena antes de la primera interacción; el botón apaga y se recuerda; el final del cuento muestra la celebración
 {
   const p = await newPage(1280);

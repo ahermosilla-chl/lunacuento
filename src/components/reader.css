@@ -54,7 +54,7 @@
  * Sin preserve-3d aquí: así la hoja que gira se apila sobre las páginas por z-index y no se mezcla
  * en profundidad con ellas cerca del lomo (eso cortaba el texto de la hoja).
  */
-.spread { position: relative; display: flex; aspect-ratio: 1120 / 660; perspective: 2400px; border-radius: 14px 22px 22px 14px; box-shadow: 0 40px 0 -14px var(--board-shadow), 0 58px 46px -20px rgba(0, 0, 0, .85), 0 24px 30px -10px rgba(0, 0, 0, .45); transition: box-shadow .3s; }
+.spread { position: relative; display: flex; aspect-ratio: 1120 / 660; perspective: 2400px; border-radius: 14px 22px 22px 14px; box-shadow: 0 26px 70px -14px rgba(255, 196, 108, .38), 0 34px 50px -22px rgba(6, 4, 30, .6); transition: box-shadow .3s; }
 .single { display: none; position: relative; perspective: 1600px; }
 
 /* Tapa dura: cada mitad lleva su parte del cartón; juntas forman una sola tapa. */
@@ -116,7 +116,7 @@
 .cover-front {
   flex: 1; display: flex; flex-direction: column; background: var(--cover); color: var(--cover-ink, #FFF8E7);
   border-radius: 6px 22px 22px 6px; padding: 2.4cqw 2.4cqw 2.8cqw 3.6cqw;
-  box-shadow: inset 12px 0 16px -8px rgba(0, 0, 0, .45), inset 0 0 0 3px rgba(255, 255, 255, .12), 0 40px 0 -14px var(--board-shadow);
+  box-shadow: inset 12px 0 16px -8px rgba(0, 0, 0, .45), inset 0 0 0 3px rgba(255, 255, 255, .12), 0 26px 70px -14px rgba(255, 196, 108, .38), 0 34px 50px -22px rgba(6, 4, 30, .6);
 }
 .cover-front::before { content: ""; position: absolute; left: 1.2cqw; top: 0; bottom: 0; width: 4px; background: rgba(255, 255, 255, .25); }
 .cover-front .art { flex: 1; height: auto; min-height: 0; }
@@ -182,7 +182,7 @@
   .book { width: 100%; transform: none !important; }
   .spread { display: none; }
   .single { display: block; }
-  .half.s { position: relative; perspective: 1600px; padding: 10px; border-radius: 8px 18px 18px 8px; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .12), 0 22px 0 -8px var(--board-shadow); }
+  .half.s { position: relative; perspective: 1600px; padding: 10px; border-radius: 8px 18px 18px 8px; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .12), 0 18px 46px -12px rgba(255, 196, 108, .38), 0 22px 34px -16px rgba(6, 4, 30, .6); }
   .paper.ps {
     border-radius: 3px 8px 8px 3px; padding: 12px 14px 40px 20px; display: flex; flex-direction: column; gap: 18px;
     min-height: max(400px, calc(100dvh - 300px));
@@ -231,9 +231,6 @@
 .ff { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #FFF3B0; box-shadow: 0 0 10px 4px rgba(255, 230, 120, .65); animation: ff-float var(--dur, 16s) ease-in-out infinite alternate, ff-glow 3.4s ease-in-out infinite; }
 @keyframes ff-float { from { transform: translate(0, 0); } to { transform: translate(var(--dx), var(--dy)); } }
 @keyframes ff-glow { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
-/* La mesa de madera donde descansa el libro (veta, borde claro y luz cálida de lámpara) */
-.r-table { position: absolute; left: 0; right: 0; bottom: 0; height: 34%; border-top: 3px solid #B07A44; background: repeating-linear-gradient(90deg, rgba(0, 0, 0, .11) 0 2px, transparent 2px 13px), repeating-linear-gradient(0deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 8px), linear-gradient(to bottom, #8B5732 0%, #6A3F22 45%, #47281A 100%); box-shadow: inset 0 16px 24px -12px rgba(255, 214, 150, .35), 0 -14px 34px rgba(0, 0, 0, .4); transition: filter .8s; }
-.r-table::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0, rgba(255, 206, 130, .3), transparent 62%); }
 
 /* Modo dormir: la escena se oscurece; quedan la luna y las luciérnagas lentas */
 .reader.sleep { background: #0B0A2E; }
@@ -242,8 +239,7 @@
 .reader.sleep .bg-stars { opacity: 0; }
 .reader.sleep .r-moon { opacity: 1; }
 .reader.sleep .ff { animation-duration: calc(var(--dur, 16s) * 2.4), 7s; }
-.reader.sleep .r-table { filter: brightness(.38); }
-
+.reader.sleep 
 /* Libro más físico: grosor de hojas abajo, curvatura leve junto al lomo y textura de papel */
 .paper { background-color: var(--paper-bg); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35  0 0 0 0 .27  0 0 0 0 .18  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
 .paper.pl { box-shadow: -2px 0 0 #EADFC6, -4px 0 0 #FFFDF6, -6px 0 0 #EADFC6, -8px 0 0 #FFFDF6, -10px 0 0 #D9C9A6, 0 2px 0 #EADFC6, 0 4px 0 #FFFDF6, 0 6px 0 #D9C9A6; transform: perspective(1600px) rotateY(1.3deg); transform-origin: right center; }
@@ -297,3 +293,20 @@
 .cover-photo img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center 35%; }
 
 @media (max-width: 699px) { .book[data-cover="closed"]::after { left: 0; } }
+
+/* Tablet: encabezado ordenado (título en una línea, acciones compactas) y sin la pista que tapa la navegación */
+@media (min-width: 700px) and (max-width: 1000px) {
+  .r-top { gap: 10px; padding-left: 20px; padding-right: 20px; }
+  .r-title { flex: 1 1 0; min-width: 0; margin-left: 0; }
+  .r-title h1 { font-size: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .r-actions { gap: 8px; flex: none; }
+  .r-actions .pill { padding: 0 14px; font-size: 15px; white-space: nowrap; }
+  .r-actions select { max-width: 130px; font-size: 14px; padding: 0 10px; }
+  .hint { display: none; }
+}
+/* Móvil en modo dormir: el título cede su lugar al temporizador */
+@media (max-width: 699px) {
+  .reader.sleep .r-title { display: none; }
+  .reader.sleep .r-timer-m { margin-left: auto; }
+  .r-timer-m select { max-width: 124px; }
+}
