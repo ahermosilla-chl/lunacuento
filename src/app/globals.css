@@ -562,14 +562,33 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
 
 /* =====================================================================
    Hero de escritorio y tablet: título, filtros y estante sobre la ilustración
-   (niño y zorro a la izquierda hasta ~40 %, luna arriba a la derecha: todo el texto va desde --stage-left)
+   La ilustración (3:2) va en una caja centrada de alto fijo: nunca se estira; a los lados el cielo continúa con el color
+   de sus bordes. Niño y zorro a la izquierda (~12–40 %), luna arriba a la derecha: el texto y el estante empiezan en --stage-left.
    ===================================================================== */
-.stage { --stage-left: 48%; --stage-shadow: 0 2px 14px rgba(45, 40, 119, .6); position: relative; overflow: hidden; background: var(--violet); color: #FFFFFF; min-height: clamp(660px, 58vw, 800px); display: flex; }
+.stage { --stage-left: 48%; --stage-h: clamp(640px, min(calc(100dvh - 92px), 62vw), 860px); --stage-shadow: 0 2px 14px rgba(45, 40, 119, .6); position: relative; overflow: hidden; background: #5F64B3; color: #FFFFFF; height: var(--stage-h); display: flex; }
 .stage-art { position: absolute; inset: 0; }
-.stage-img, .stage-fallback { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; display: block; }
+/* Cielo de los lados: degradado vertical con los colores muestreados de cada borde de la ilustración */
+.stage-side { position: absolute; top: 0; bottom: 0; width: 51%; }
+.stage-side.l { left: 0; background: linear-gradient(to bottom, #2f2e84 5%, #393893 15%, #4244a2 25%, #5055ad 35%, #5f64b3 45%, #7b7aba 55%, #8176ba 65%, #484e5a 75%, #20333c 85%, #1b2d20 95%); }
+.stage-side.r { right: 0; background: linear-gradient(to bottom, #5e50a7 5%, #7462b3 15%, #8472bf 25%, #9781c7 35%, #b796c8 45%, #e1b3c4 55%, #f0c3c1 65%, #937d80 75%, #304029 85%, #192a1f 95%); }
+.stage-pic { position: absolute; top: 0; left: 50%; height: 100%; aspect-ratio: 3 / 2; transform: translateX(-50%); }
+.pic-img { position: absolute; inset: 0; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%); }
+.stage-img, .stage-fallback { width: 100%; height: 100%; object-fit: cover; display: block; transform: translate3d(calc(var(--mx, 0) * -4px), calc(var(--my, 0) * -3px), 0) scale(1.03); }
+/* Capas de parallax: cada una con su profundidad (--d) */
+.px { position: absolute; pointer-events: none; will-change: transform; transform: translate3d(calc(var(--mx, 0) * var(--d) * 14px), calc(var(--my, 0) * var(--d) * 8px + var(--sy, 0) * var(--d) * 26px), 0); }
+.px-moon { --d: .5; left: 78%; top: 3%; width: 17%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255, 224, 138, .5) 0, rgba(255, 224, 138, .18) 45%, transparent 70%); animation: moon-glow 5.5s ease-in-out infinite; }
+.px-cloud { --d: 1.1; height: 9%; background: radial-gradient(ellipse at center, rgba(255, 240, 255, .2) 0, rgba(255, 240, 255, .08) 50%, transparent 72%); animation: cloud-drift 60s linear infinite; }
+.px-cloud.c1 { left: -12%; top: 12%; width: 22%; animation-duration: 90s; }
+.px-cloud.c2 { left: 30%; top: 5%; width: 18%; --d: .8; animation-duration: 120s; animation-delay: -40s; }
+.px-cloud.c3 { left: 62%; top: 24%; width: 20%; --d: 1.4; animation-duration: 75s; animation-delay: -20s; }
+.px-stars { --d: 1.6; inset: 0; }
+.px-stars i { position: absolute; background: #FFF8E7; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); opacity: 0; animation: twinkle 4.2s ease-in-out infinite; }
+@keyframes moon-glow { 50% { transform: translate3d(calc(var(--mx, 0) * var(--d) * 14px), calc(var(--my, 0) * var(--d) * 8px + var(--sy, 0) * var(--d) * 26px), 0) scale(1.12); opacity: .85; } }
+@keyframes cloud-drift { from { margin-left: 0; } to { margin-left: 18%; } }
+@keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(.6); } 50% { opacity: .9; transform: scale(1); } }
 .stage-body { position: relative; z-index: 1; width: 100%; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; padding-top: 34px; padding-bottom: 76px; }
 .stage-head { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-left: var(--stage-left); }
-.stage-head h1 { font-size: clamp(36px, 4.2vw, 56px); line-height: 1; color: #FFFFFF; text-shadow: var(--stage-shadow); }
+.stage-head h1 { font-size: clamp(34px, 3.6vw, 50px); line-height: 1; color: #FFFFFF; text-shadow: var(--stage-shadow); }
 .stage-for { display: inline-flex; align-items: baseline; gap: 10px; font: 700 clamp(20px, 2vw, 26px) var(--font-display); color: #FFFFFF; text-shadow: var(--stage-shadow); }
 .stage-for input { min-width: 4ch; max-width: 14ch; padding: 2px 6px 0; border: 0; border-bottom: 3px solid var(--sun); background: transparent; font: inherit; color: inherit; text-shadow: inherit; border-radius: 0; }
 .stage-for input:focus-visible { outline-offset: 4px; }
@@ -581,15 +600,27 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
 @media (max-width: 1100px) { .stage-chips .long { display: none; } .stage-chips .short { display: inline; } }
 @media (max-width: 900px) { .stage-chips { gap: 6px; } .stage-chips .chip { padding: 0 12px; font-size: 14px; } }
 .stage-shelf { position: relative; margin-left: var(--stage-left); }
-.stage-books { list-style: none; margin: 0; padding: 0 20px 6px; display: flex; align-items: flex-end; gap: 26px; overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-left: 20px; scrollbar-width: none; }
+/* El estante se desliza; el borde derecho se difumina bajo la flecha y deja un hueco (84 px) para que la última portada nunca quede debajo de ella */
+.stage-books { list-style: none; margin: 0; padding: 0 84px 6px 20px; display: flex; align-items: flex-end; gap: 26px; overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-left: 20px; scrollbar-width: none; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 96px), transparent 100%); mask-image: linear-gradient(to right, #000 calc(100% - 96px), transparent 100%); }
 .stage-books > li { flex: none; scroll-snap-align: start; }
 .stage-books .bk { width: 142px; height: 200px; }
-.stage-plank { position: relative; height: 24px; margin-top: -4px; margin-right: 0; border-radius: 6px; background: var(--wood); border-top: 6px solid var(--wood-edge); box-shadow: 0 14px 18px -10px rgba(120, 70, 20, .55); }
-.stage-nav { position: absolute; top: 80px; z-index: 2; width: 48px; height: 48px; border: 0; border-radius: 50%; display: grid; place-items: center; background: #FFFFFF; color: var(--ink); box-shadow: 0 6px 16px -6px rgba(15, 27, 61, .55); }
+.stage-plank { position: relative; height: 24px; margin-top: -4px; border-radius: 6px; background: var(--wood); border-top: 6px solid var(--wood-edge); box-shadow: 0 14px 18px -10px rgba(120, 70, 20, .55); }
+.stage-nav { position: absolute; top: 76px; z-index: 2; width: 48px; height: 48px; border: 0; border-radius: 50%; display: grid; place-items: center; background: #FFFFFF; color: var(--ink); box-shadow: 0 6px 16px -6px rgba(15, 27, 61, .55); }
 .stage-nav.prev { left: -26px; }
-.stage-nav.next { right: -6px; }
+.stage-nav.next { right: 14px; }
 .stage-nav:active { transform: scale(.94); }
 .stage-empty { position: absolute; left: 24px; bottom: 40px; color: #FFFFFF; text-shadow: var(--stage-shadow); font-weight: 700; }
+
+/* Entrada orquestada: el cielo aparece, la luna brilla, luego el título y los libros suben al estante uno por uno */
+@keyframes stage-sky { from { opacity: 0; } to { opacity: 1; } }
+@keyframes stage-rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+@keyframes book-rise { from { opacity: 0; transform: translateY(46px) scale(.96); } to { opacity: 1; transform: none; } }
+.stage-art { animation: stage-sky 1s ease-out both; }
+.stage-head h1 { animation: stage-rise .7s .45s var(--ease) both; }
+.stage-for { animation: stage-rise .7s .6s var(--ease) both; }
+.stage-chips { animation: stage-rise .7s .72s var(--ease) both; }
+.stage-plank { animation: stage-rise .6s .8s var(--ease) both; }
+.stage-books > li { animation: book-rise .7s calc(.95s + var(--i, 0) * .09s) var(--ease) both; }
 
 /* Portadas generadas: la imagen cubre el libro y el título va en una banda sólida abajo */
 .bk.has-cover { background: var(--c); }

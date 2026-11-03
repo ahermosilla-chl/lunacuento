@@ -19,7 +19,7 @@
 //   hero:     768, 1152, 1536, 2304, 3072 px
 //   portadas: 336, 672, 1008, 1344 px
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import { promisify } from "node:util";
