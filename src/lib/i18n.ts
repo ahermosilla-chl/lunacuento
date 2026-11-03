@@ -38,6 +38,7 @@ const es = {
     read: { title: "Leer cuentos", text: "Elige un libro" },
     paint: { title: "Pintar dibujos", text: "Toca y colorea" },
   },
+  mobile: { hi: "¡Hola!", change: "Cambiar nombre", done: "Listo", all: "Ver todos" },
   continue: { title: "Sigue leyendo", page: "Página {a} de {b}", resume: "Seguir leyendo" },
   news: { title: "Novedades", badge: "Nuevo" },
   library: {
@@ -59,7 +60,7 @@ const es = {
     go: "Ir al taller", locked: "Dibujo bloqueado", tools: "Herramientas", fill: "Relleno", brush: "Pincel", eraser: "Goma", size: "Grosor",
     sizes: { s: "Fino", m: "Medio", l: "Grueso" } as Record<string, string>, undo: "Deshacer", redo: "Rehacer", restart: "Empezar de nuevo",
     confirmTitle: "¿Empezar de nuevo?", confirmText: "Se borrará lo que pintaste en este dibujo.", yes: "Sí, borrar", no: "No", save: "Guardar imagen",
-    autosave: "Tu dibujo se guarda solo en este dispositivo.", exportFail: "No se pudo guardar la imagen.", cats: "Categorías",
+    autosave: "Tu dibujo se guarda solo en este dispositivo.", more: "Más dibujos", loading: "Preparando el dibujo…", loadFail: "No se pudo cargar el dibujo.", exportFail: "No se pudo guardar la imagen.", cats: "Categorías",
     catNames: { night: "Noche", forest: "Bosque" } as Record<string, string>, canvas: "Lienzo para pintar",
     names: { "#FFC94D": "Amarillo", "#FF6B9E": "Rosa", "#6D5BFF": "Violeta", "#4FA9F0": "Cielo", "#00C2AB": "Turquesa", "#FF8A4C": "Naranja", "#9C6A43": "Café", "#FFFFFF": "Blanco" } as Record<string, string>,
   },
@@ -145,6 +146,7 @@ const en: typeof es = {
     read: { title: "Read stories", text: "Pick a book" },
     paint: { title: "Paint pictures", text: "Tap and color" },
   },
+  mobile: { hi: "Hi!", change: "Change name", done: "Done", all: "See all" },
   continue: { title: "Keep reading", page: "Page {a} of {b}", resume: "Keep reading" },
   news: { title: "What's new", badge: "New" },
   library: {
@@ -166,7 +168,7 @@ const en: typeof es = {
     go: "Go to the studio", locked: "Locked drawing", tools: "Tools", fill: "Fill", brush: "Brush", eraser: "Eraser", size: "Thickness",
     sizes: { s: "Thin", m: "Medium", l: "Thick" } as Record<string, string>, undo: "Undo", redo: "Redo", restart: "Start over",
     confirmTitle: "Start over?", confirmText: "What you painted on this drawing will be erased.", yes: "Yes, erase", no: "No", save: "Save image",
-    autosave: "Your drawing is saved only on this device.", exportFail: "The image couldn't be saved.", cats: "Categories",
+    autosave: "Your drawing is saved only on this device.", more: "More drawings", loading: "Getting the drawing ready…", loadFail: "The drawing couldn't be loaded.", exportFail: "The image couldn't be saved.", cats: "Categories",
     catNames: { night: "Night", forest: "Forest" } as Record<string, string>, canvas: "Painting canvas",
     names: { "#FFC94D": "Yellow", "#FF6B9E": "Pink", "#6D5BFF": "Violet", "#4FA9F0": "Sky", "#00C2AB": "Turquoise", "#FF8A4C": "Orange", "#9C6A43": "Brown", "#FFFFFF": "White" } as Record<string, string>,
   },

@@ -7,6 +7,7 @@ import { mkdir } from "node:fs/promises";
 const BASE = process.env.BASE_URL || "http://localhost:4173";
 const OUT = "docs/capturas";
 const WIDTHS = [375, 768, 1280];
+const NAME_INPUT = (w) => (w <= 760 ? "#kid-name-m" : "#kid-name"); // en móvil el saludo reemplaza al hero
 const executablePath = process.env.CHROME_PATH || "/usr/bin/google-chrome";
 
 await mkdir(OUT, { recursive: true });
@@ -71,24 +72,28 @@ for (const w of WIDTHS) {
   // Home
   const page = await newPage(w);
   await page.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
-  await page.fill("#kid-name", "Tomás");
+  await page.fill(NAME_INPUT(w), "Tomás");
   await page.waitForTimeout(300);
   await noHScroll(page, `[${w}] home`);
   await page.screenshot({ path: `${OUT}/home-${w}.png`, fullPage: true });
-  const shelfName = await page.locator(".shelf-head .for").textContent();
-  if (!shelfName?.includes("Tomás")) problems.push(`[${w}] el nombre no llega al estante`);
+  const shelfName = await page.locator(w <= 760 ? ".greet-hi" : ".shelf-head .for").first().textContent();
+  if (!shelfName?.includes("Tomás")) problems.push(`[${w}] el nombre no llega al ${w <= 760 ? "saludo" : "estante"}`);
 
   // Navegación: horizontal en tablet/escritorio, inferior en móvil
   const navVisible = await page.locator(w <= 760 ? ".bottom-nav" : ".site-header .navlinks").isVisible();
   if (!navVisible) problems.push(`[${w}] no se ve la navegación principal`);
   if (w > 760 && (await page.locator(".bottom-nav").isVisible())) problems.push(`[${w}] la barra inferior se ve en pantalla ancha`);
-  if ((await page.locator(".quick-card").count()) !== 2) problems.push(`[${w}] faltan los dos accesos protagonistas`);
-  if (await page.locator("#continue-title, #news-title").count()) problems.push(`[${w}] aparece "Sigue leyendo"/"Novedades" sin datos reales`);
+  if ((await page.locator(w <= 760 ? ".m-card:visible" : ".quick-card:visible").count()) !== 2) problems.push(`[${w}] faltan los dos accesos protagonistas`);
+  if (await page.locator("#continue-title, #continue-row-title, #news-title").count()) problems.push(`[${w}] aparece "Sigue leyendo"/"Novedades" sin datos reales`);
+  if (w <= 760) {
+    const row = await page.locator(".h-row.covers").evaluate((el) => ({ sw: el.scrollWidth, cw: el.clientWidth, ox: getComputedStyle(el).overflowX }));
+    if (!(row.sw > row.cw && row.ox === "auto")) problems.push(`[${w}] la fila de portadas no se desliza horizontalmente`);
+  }
 
   // Lector: tapa cerrada -> abierta
   const rp = await newPage(w);
   await rp.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
-  await rp.fill("#kid-name", "Tomás");
+  await rp.fill(NAME_INPUT(w), "Tomás");
   await rp.goto(`${BASE}/es/cuento/la-lampara-de-la-luna/`, { waitUntil: "domcontentloaded" });
   await rp.waitForTimeout(w < 700 ? 900 : 700);
   await rp.screenshot({ path: `${OUT}/lector-${w}-tapa-abriendose.png` });
@@ -172,8 +177,9 @@ for (const w of WIDTHS) {
   const page = await newPage(w);
   await page.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
   if (w <= 900 && (await page.locator(".shelf-aside.in-grid").isVisible())) problems.push(`[${w}] el aviso del estante deja un tablón vacío`);
-  if ((await page.locator(".shelf-grid .bk .lock-on").count()) !== 1) problems.push(`[${w}] el estante debe mostrar 1 libro con candado`);
-  await page.locator(".shelf-grid a.bk", { has: page.locator(".lock-on") }).click();
+  const books = w <= 760 ? ".h-row.covers" : ".shelf-grid";
+  if ((await page.locator(`${books} .bk .lock-on`).count()) !== 1) problems.push(`[${w}] el estante debe mostrar 1 libro con candado`);
+  await page.locator(`${books} a.bk`, { has: page.locator(".lock-on") }).click();
   await page.waitForURL(`**/cuento/${PREMIUM}/`);
   await page.locator(".paywall").waitFor();
   if (await page.locator(".book").count()) problems.push(`[${w}] el cuento premium abre el lector sin compra`);
@@ -357,10 +363,11 @@ for (const w of WIDTHS) {
 
   // Sigue leyendo en el home y retoma la página
   await p.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
-  if (!(await p.locator("#continue-title").isVisible())) problems.push(`[${w}] home: falta "Sigue leyendo" con progreso guardado`);
+  const cont = p.locator("#continue-title:visible, #continue-row-title:visible");
+  if (!(await cont.count())) problems.push(`[${w}] home: falta "Sigue leyendo" con progreso guardado`);
   await noHScroll(p, `[${w}] home con progreso`);
-  if (w === 1280 || w === 375) await p.locator("#continue-title").scrollIntoViewIfNeeded();
-  await p.locator(".resume").first().click();
+  if (w <= 760 || w === 1280) await p.screenshot({ path: `${OUT}/home-${w}-sigue-leyendo.png`, fullPage: false });
+  await p.locator(".resume:visible, .m-resume:visible").first().click();
   await p.locator(".book").waitFor();
   await p.waitForTimeout(w < 700 ? 1800 : 1800);
   if (!/Página 3 de/.test((await p.locator(".book").getAttribute("aria-label")) || "")) problems.push(`[${w}] lector: "Seguir leyendo" no retomó en la página 3`);

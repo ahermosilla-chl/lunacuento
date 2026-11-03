@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import type { Dict, Lang } from "@/lib/i18n";
-import { DRAWING_LIST } from "@/lib/drawings";
+import { availableDrawings, drawingTitle, isPremiumDrawing, paintKey } from "@/lib/drawings";
 import { usePaintings } from "@/lib/paint-store";
-import { composeSVG } from "@/lib/paint";
 import { useLibrary } from "@/lib/purchases";
-import { getStory } from "@/lib/stories";
+import DrawingThumb from "./DrawingThumb";
 import { IconLock } from "./icons";
 
 /** Home: miniaturas de los dibujos (con lo que ya pintaste) y acceso al taller. */
@@ -24,15 +23,14 @@ export default function PaintTeaser({ lang, t }: { lang: Lang; t: Dict }) {
           <Link href={`/${lang}/pintar`} className="btn btn-violet">{t.coloring.go}</Link>
         </div>
         <ul className="thumbs">
-          {DRAWING_LIST.map((d) => {
-            const story = getStory(d.storyId);
-            const locked = Boolean(story?.premium) && !owned;
+          {availableDrawings().map((d) => {
+            const locked = isPremiumDrawing(d) && !owned;
+            const title = drawingTitle(d, lang);
             return (
               <li key={d.id}>
-                <Link href={locked ? `/${lang}/comprar` : `/${lang}/pintar?dibujo=${d.id}`} className="thumb" aria-label={`${story?.title[lang]}${locked ? ` · ${t.coloring.locked}` : ""}`}>
-                  {/* ILUSTRACION-PENDIENTE: dibujos definitivos para colorear (línea limpia, fase 3). Hoy: SVG provisorio. */}
-                  <span className="thumb-art" aria-hidden="true" dangerouslySetInnerHTML={{ __html: composeSVG(d.id, saved[d.id]) }} />
-                  <span className="thumb-name">{locked ? <IconLock size={16} /> : null}{story?.title[lang]}</span>
+                <Link href={locked ? `/${lang}/comprar` : `/${lang}/pintar?dibujo=${d.id}`} className="thumb" aria-label={`${title}${locked ? ` · ${t.coloring.locked}` : ""}`}>
+                  <span className="thumb-art" aria-hidden="true"><DrawingThumb d={d} state={saved[paintKey(d)]} /></span>
+                  <span className="thumb-name">{locked ? <IconLock size={16} /> : null}{title}</span>
                 </Link>
               </li>
             );

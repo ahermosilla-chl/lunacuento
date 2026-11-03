@@ -12,7 +12,8 @@
     "cap:ios": "cap open ios",
     "cap:android": "cap open android",
     "assets": "capacitor-assets generate --iconBackgroundColor '#2D2877' --splashBackgroundColor '#2D2877'",
-    "probar:modo-prueba": "node scripts/probar-modo-prueba.mjs"
+    "probar:modo-prueba": "node scripts/probar-modo-prueba.mjs",
+    "probar:raster": "node scripts/fixture-raster.mjs poner && next build && node scripts/probar-raster.mjs; node scripts/fixture-raster.mjs quitar"
   },
   "dependencies": {
     "@capacitor/browser": "^8.0.5",

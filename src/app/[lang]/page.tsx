@@ -2,6 +2,7 @@ import Link from "next/link";
 import ContinueReading from "@/components/ContinueReading";
 import Features from "@/components/Features";
 import Hero from "@/components/Hero";
+import MobileHome from "@/components/MobileHome";
 import Novelties from "@/components/Novelties";
 import PaintTeaser from "@/components/PaintTeaser";
 import Plans from "@/components/Plans";
@@ -18,10 +19,13 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   const first = STORIES.find((s) => !s.premium) ?? STORIES[0];
   return (
     <Shell lang={lang}>
-      <Hero lang={lang} t={t} firstStory={first.id} />
-      <QuickActions lang={lang} t={t} />
-      <ContinueReading lang={lang} t={t} />
-      <Shelf lang={lang} t={t} stories={STORIES} moreHref={`/${lang}/cuentos`} />
+      <MobileHome lang={lang} t={t} />
+      <div className="desk-only">
+        <Hero lang={lang} t={t} firstStory={first.id} />
+        <QuickActions lang={lang} t={t} />
+        <ContinueReading lang={lang} t={t} />
+        <Shelf lang={lang} t={t} stories={STORIES} moreHref={`/${lang}/cuentos`} />
+      </div>
       <Novelties lang={lang} t={t} stories={STORIES} />
       <Features t={t} />
       <PaintTeaser lang={lang} t={t} />

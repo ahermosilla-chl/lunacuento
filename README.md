@@ -103,6 +103,18 @@ No se usan créditos de OpenAI ni ElevenLabs sin autorización explícita del du
 
 Del niño solo se guarda el nombre, en el dispositivo (`localStorage`). Sin cuentas, sin anuncios, sin rastreadores. Las compras las valida la tienda con RevenueCat (identificador anónimo).
 
+## Ilustraciones (gpt-image-2)
+
+Se generan en tu máquina, no en el sitio. Guía de estilo: [`docs/guia-ilustracion.md`](docs/guia-ilustracion.md); presupuesto: [`docs/presupuesto-ilustraciones.md`](docs/presupuesto-ilustraciones.md).
+
+```bash
+node --env-file=.env.local scripts/generar-ilustraciones.mjs --solo hero      # imagen de prueba
+node scripts/generar-ilustraciones.mjs --dry-run                              # plan y costo sin llamar a la API
+```
+
+`OPENAI_API_KEY` solo se lee del entorno (`.env.local` está en `.gitignore`). Contador de gasto estimado con tope (8 US$).
+Pruebas del taller por píxeles sin generar imágenes: `npm run probar:raster` (usa un dibujo falso temporal).
+
 ## Diseño
 
 Paleta violeta/amarillo y tipografías Baloo 2 + Nunito (tokens en `CLAUDE.md` y `src/app/globals.css`). El lector sigue siendo un libro. Las ilustraciones definitivas pendientes están marcadas con `ILUSTRACION-PENDIENTE` (`grep -rn ILUSTRACION-PENDIENTE src`). Capturas del diseño anterior en `docs/capturas/antes/`.

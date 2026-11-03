@@ -3,12 +3,12 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Dict, Lang } from "@/lib/i18n";
-import { DRAWING_LIST } from "@/lib/drawings";
+import { availableDrawings, drawingTitle, paintKey } from "@/lib/drawings";
 import { useHydrated } from "@/lib/device-store";
 import { continueList, toggleFavorite, useLibraryData } from "@/lib/library";
-import { composeSVG } from "@/lib/paint";
 import { usePaintings } from "@/lib/paint-store";
 import { getStory, type Story } from "@/lib/stories";
+import DrawingThumb from "./DrawingThumb";
 import { fmt } from "@/lib/text";
 import CoverArt from "./CoverArt";
 import { IconBook, IconHeart } from "./icons";
@@ -46,7 +46,7 @@ export default function MyLibrary({ lang, t }: { lang: Lang; t: Dict }) {
   const cont = continueList(data).map((c) => ({ ...c, story: getStory(c.id) })).filter((c) => exists(c.story));
   const favs = data.favs.map(getStory).filter(exists);
   const read = data.read.map(getStory).filter(exists);
-  const drawings = DRAWING_LIST.filter((d) => paintings[d.id]);
+  const drawings = availableDrawings().filter((d) => paintings[paintKey(d)]);
   const nothing = !cont.length && !favs.length && !read.length && !drawings.length;
 
   return (
@@ -110,9 +110,9 @@ export default function MyLibrary({ lang, t }: { lang: Lang; t: Dict }) {
           <ul className="thumbs">
             {drawings.map((d) => (
               <li key={d.id}>
-                <Link href={`/${lang}/pintar?dibujo=${d.id}`} className="thumb" aria-label={`${L.open}: ${getStory(d.storyId)?.title[lang]}`}>
-                  <span className="thumb-art" aria-hidden="true" dangerouslySetInnerHTML={{ __html: composeSVG(d.id, paintings[d.id]) }} />
-                  <span className="thumb-name">{getStory(d.storyId)?.title[lang]}</span>
+                <Link href={`/${lang}/pintar?dibujo=${d.id}`} className="thumb" aria-label={`${L.open}: ${drawingTitle(d, lang)}`}>
+                  <span className="thumb-art" aria-hidden="true"><DrawingThumb d={d} state={paintings[paintKey(d)]} /></span>
+                  <span className="thumb-name">{drawingTitle(d, lang)}</span>
                 </Link>
               </li>
             ))}

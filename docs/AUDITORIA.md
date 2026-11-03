@@ -12,6 +12,8 @@ Claude (chat) revisa cada PR contra esta lista. Estado: ✅ cumple · ⚠️ par
 - [ ] Estados de contenido: disponible, bloqueado (candado) y próximamente; estado vacío y esqueleto de carga en Mi biblioteca.
 
 ## Taller de pintura
+- [ ] Dibujo grande al centro, paleta de círculos y barra de herramientas con íconos (pincel, relleno, goma, deshacer, rehacer); controles visibles sin scroll en escritorio.
+- [ ] Relleno por píxeles en dibujos raster (sin fugas por huecos pequeños ni halo blanco) y SVG de respaldo funcionando.
 - [ ] Relleno, pincel, goma, deshacer/rehacer, reiniciar con confirmación y guardado automático funcionan con mouse y táctil.
 - [ ] Exportar PNG funciona en la web; en la app no aparece el botón (sin plugin).
 - [ ] Ningún botón decorativo que aparente funcionar.
@@ -48,6 +50,11 @@ Claude (chat) revisa cada PR contra esta lista. Estado: ✅ cumple · ⚠️ par
 - [ ] `user_id` viaja en `custom_data` del checkout; estados `active/on_trial/past_due/cancelled` manejados.
 - [ ] Cuentos `premium` bloqueados sin suscripción, con llamada a ver planes.
 - [ ] Claves secretas nunca llegan al navegador.
+
+## Ilustraciones
+- [ ] Script `generar-ilustraciones.mjs`: solo `gpt-image-2`, clave solo del entorno, contador y tope de gasto, `--solo hero`. Nada generado sin autorización.
+- [ ] La web usa el manifiesto y cae al placeholder si falta una imagen; imágenes con `srcset` y WebP.
+- [ ] Móvil: saludo, accesos ilustrados, fila "Sigue leyendo" (solo con progreso) y barra inferior fija.
 
 ## Compras, portón y pruebas
 - [ ] Pantalla de compra, portón para adultos, modo app nativa y `NEXT_PUBLIC_MODO_PRUEBA` intactos tras cualquier rediseño.

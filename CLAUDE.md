@@ -64,7 +64,7 @@ Cada fase en su propio PR, con commits pequeños. `npm run build` y `npm run lin
 - Escribir los cuentos sin adjetivos con género referidos a `{n}` (sirve para niñas y niños).
 
 ### Colorear
-- Dibujo SVG por cuento; tocar una zona la pinta con el color elegido. Paleta grande y táctil. Botón borrar. Más adelante: descarga PDF.
+- Un dibujo por cuento (más extras): tocar una zona la pinta con el color elegido (por píxeles en los dibujos generados, por zonas en el SVG de respaldo). Paleta grande y táctil, deshacer/rehacer, reiniciar con confirmación. Más adelante: descarga PDF.
 
 ## Diseño
 
@@ -96,11 +96,12 @@ Tokens (modo claro; el modo oscuro usa los mismos nombres en `globals.css`):
 ## Estructura de la experiencia
 
 - Navegación: **Inicio, Cuentos, Pintar, Mi biblioteca** (`/[lang]`, `/cuentos`, `/pintar`, `/biblioteca`). Header en escritorio/tablet, barra inferior en móvil, barra mínima en la app nativa. Páginas con `Shell`; el lector y la compra son pantallas completas sin navegación.
-- Inicio: hero con saludo ("¡Hola, {n}!" si hay nombre), dos accesos protagonistas (Leer cuentos / Pintar dibujos), "Sigue leyendo" (solo con progreso guardado), estante, "Novedades" (**solo si algún cuento tiene `isNew: true`**; hoy ninguno), tarjetas, miniaturas para pintar, planes y CTA final. No inventar novedades ni frases como "cuentos nuevos cada semana".
-- Taller de pintura (`/pintar`): relleno, pincel (3 grosores), goma, deshacer/rehacer, reiniciar con confirmación, exportar PNG (solo web; en la app falta el plugin de compartir/archivos). **No agregar botones que no funcionen.**
+- Inicio móvil (≤760 px): saludo "¡Hola, {n}!", dos accesos grandes ilustrados, fila horizontal "Sigue leyendo" (solo con progreso), fila de portadas y barra inferior fija. Escritorio/tablet: hero + accesos + estante (el hero integrado con el estante sigue la maqueta de `docs/guia-ilustracion.md` cuando exista la imagen).
+- Inicio (escritorio): hero con saludo ("¡Hola, {n}!" si hay nombre), dos accesos protagonistas (Leer cuentos / Pintar dibujos), "Sigue leyendo" (solo con progreso guardado), estante, "Novedades" (**solo si algún cuento tiene `isNew: true`**; hoy ninguno), tarjetas, miniaturas para pintar, planes y CTA final. No inventar novedades ni frases como "cuentos nuevos cada semana".
+- Taller de pintura (`/pintar`): dibujo grande al centro, paleta de círculos y barra de herramientas con íconos (pincel, relleno, goma, deshacer, rehacer; reiniciar y guardar arriba). Dos motores: **raster** (dibujos de línea generados, relleno **por píxeles** sobre zonas cerradas, `src/lib/raster-fill.ts`) y **SVG** (los 3 dibujos vectoriales de respaldo, por zonas). Un dibujo usa raster si su imagen está en el manifiesto. Exportar PNG solo en la web (en la app falta el plugin de compartir/archivos). Los dibujos raster no se pintan con teclado (los SVG sí). **No agregar botones que no funcionen.**
 - Mi biblioteca: sigue leyendo, favoritos, leídos y mis dibujos; estado vacío y esqueleto de carga.
 - Persistencia solo en `localStorage` del dispositivo: `lc_name` (nombre), `lc_library` (progreso, favoritos, leídos), `lc_paint` (dibujos pintados), `lc_lang`, `lc_biblioteca` (copia de la compra). Sin avatar, foto, campanita de notificaciones ni perfiles.
-- Ilustraciones definitivas: marcadas en el código con `ILUSTRACION-PENDIENTE` (`grep -rn ILUSTRACION-PENDIENTE src`). Hoy son vectoriales provisorias; **no generar imágenes ni audio sin autorización**.
+- Ilustraciones definitivas: `docs/guia-ilustracion.md` (estilo único) y `scripts/generar-ilustraciones.mjs` (se ejecuta en la Mac del dueño con `OPENAI_API_KEY` del entorno, siempre `gpt-image-2`, tope de gasto 8 US$ con contador). Salen a `public/ilustraciones/` + `manifest.json`; la web usa el manifiesto y, si falta una imagen, el placeholder vectorial marcado `ILUSTRACION-PENDIENTE` (`grep -rn ILUSTRACION-PENDIENTE src`). **No generar imágenes ni audio sin autorización**; nunca guardar la clave en el repo.
 - Compras, portón para adultos, modo app nativa y `NEXT_PUBLIC_MODO_PRUEBA` se mantienen: acciones sensibles solo detrás del portón; sin enlaces externos ni publicidad en las vistas infantiles.
 
 ## Datos y seguridad

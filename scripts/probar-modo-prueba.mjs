@@ -22,7 +22,7 @@ for (const [label, init] of [["web", () => {}], ["app", () => { window.Capacitor
   if (await page.locator(".shelf-aside.in-grid").isVisible()) problems.push(`[${label}] el aviso del estante sigue dentro de la grilla en 375 px`);
 
   // tocar el libro premium abre el lector, no la compra
-  await page.locator(`a.bk[href*="${PREMIUM}"]`).click();
+  await page.locator(`a.bk[href*="${PREMIUM}"]:visible`).first().click();
   await page.waitForURL(`**/cuento/${PREMIUM}/`);
   await page.locator(".book").waitFor({ timeout: 4000 }).catch(() => problems.push(`[${label}] el cuento premium no abre el lector`));
   if (await page.locator(".paywall").count()) problems.push(`[${label}] aparece la pantalla de compra`);

@@ -2,6 +2,7 @@
 
 import { createDeviceStore } from "./device-store";
 import { DRAWINGS } from "./art";
+import { DRAWING_LIST } from "./drawings";
 import { EMPTY_PAINT, isEmptyPaint, zoneCount, type PaintState, type Stroke } from "./paint";
 
 /** Dibujos pintados guardados en este dispositivo (un solo valor JSON; nada sale del teléfono). */
@@ -12,8 +13,11 @@ const PATH = /^[ML0-9.\- ]+$/;
 function sanitize(v: unknown): Saved {
   const out: Saved = {};
   for (const [id, s] of Object.entries((v ?? {}) as Saved)) {
-    if (!DRAWINGS[id] || !s) continue;
-    const zones = zoneCount(id);
+    const base = id.replace(/:r$/, "");
+    const meta = DRAWING_LIST.find((d) => d.id === base);
+    if (!meta || !s) continue;
+    // SVG: las zonas se numeran por orden; raster: son etiquetas de región (más numerosas, tope amplio)
+    const zones = !id.endsWith(":r") && DRAWINGS[base] ? zoneCount(base) : 200000;
     const fills: PaintState["fills"] = {};
     for (const [k, c] of Object.entries(s.fills ?? {})) if (Number(k) >= 0 && Number(k) < zones && HEX.test(c)) fills[Number(k)] = c;
     const strokes: Stroke[] = (Array.isArray(s.strokes) ? s.strokes : [])
