@@ -44,6 +44,7 @@ export default function BookCard({ lang, t, story, soon }: { lang: Lang; t: Dict
   return (
     <Link
       href={`/${lang}/cuento/${story.id}`}
+      data-sound="pop"
       className={`bk${cover ? " has-cover" : ""}`}
       style={{ "--c": story.color, "--bk-ink": coverInk(story.color) } as React.CSSProperties}
       aria-label={`${t.shelf.open}: ${story.title[lang]} · ${story.age} ${t.shelf.ages} · ${story.minutes} ${t.shelf.minutes}${locked ? ` · ${t.buy.lock}` : ""}`}

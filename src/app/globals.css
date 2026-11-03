@@ -629,3 +629,9 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
 .bk.has-cover .bk-ttl { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: 12px 12px 12px 18px; background: rgba(15, 27, 61, .78); color: #FFF8E7; }
 .bk.has-cover .bk-ttl small { background: transparent; padding: 0; color: #D5D2FA; }
 @media (max-width: 760px) { .stage { display: none; } }
+
+/* Botón de sonido */
+.site-header .snd, .native-bar .snd { width: 44px; height: 44px; }
+.round.snd[aria-pressed="false"] { opacity: .75; }
+.r-snd-m { display: none; }
+@media (max-width: 699px) { .r-snd-m { display: inline-flex; } .r-actions .snd { display: none; } }

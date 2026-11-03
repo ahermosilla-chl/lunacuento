@@ -16,7 +16,7 @@ const es = {
     title: "Lunacuento · Cuentos con su nombre",
     description: "Cuentos ilustrados para niños de 0 a 7 años, con su nombre, narración y modo dormir.",
   },
-  nav: { home: "Inicio", stories: "Cuentos", paint: "Pintar", library: "Mi biblioteca", libraryShort: "Biblioteca", app: "Descarga la app", menu: "Menú principal", lang: "Idioma", skip: "Saltar al contenido" },
+  nav: { home: "Inicio", stories: "Cuentos", paint: "Pintar", library: "Mi biblioteca", libraryShort: "Biblioteca", app: "Descarga la app", soundOn: "Sonido activado: apagar", soundOff: "Sonido apagado: activar", menu: "Menú principal", lang: "Idioma", skip: "Saltar al contenido" },
   hero: {
     eyebrow: "Para niños de 0 a 7 años",
     hello: "¡Hola, {n}!",
@@ -124,7 +124,7 @@ const en: typeof es = {
     title: "Lunacuento · Stories with their name",
     description: "Illustrated stories for kids ages 0 to 7, with their name, narration and a sleep mode.",
   },
-  nav: { home: "Home", stories: "Stories", paint: "Paint", library: "My library", libraryShort: "Library", app: "Get the app", menu: "Main menu", lang: "Language", skip: "Skip to content" },
+  nav: { home: "Home", stories: "Stories", paint: "Paint", library: "My library", libraryShort: "Library", app: "Get the app", soundOn: "Sound on: turn off", soundOff: "Sound off: turn on", menu: "Main menu", lang: "Language", skip: "Skip to content" },
   hero: {
     eyebrow: "For kids ages 0 to 7",
     hello: "Hi, {n}!",

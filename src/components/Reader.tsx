@@ -11,6 +11,8 @@ import type { Story } from "@/lib/stories";
 import { fmt, tokenize, wordStarts, type Word } from "@/lib/text";
 import { useMedia, useReducedMotion } from "@/lib/use-media";
 import { saveProgress, toggleFavorite, useLibraryData } from "@/lib/library";
+import { playSound } from "@/lib/sound";
+import SoundToggle from "./SoundToggle";
 import { IconClose, IconHeart, IconMoon, IconNext, IconPause, IconPlay, IconPrev } from "./icons";
 import "./reader.css";
 
@@ -132,7 +134,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
       setCover("open");
       return;
     }
-    const a = window.setTimeout(() => setCover("opening"), COVER_DELAY_MS);
+    const a = window.setTimeout(() => { setCover("opening"); playSound("open"); }, COVER_DELAY_MS);
     const b = window.setTimeout(() => setCover("open"), COVER_DELAY_MS + COVER_MS + 60);
     return () => {
       window.clearTimeout(a);
@@ -163,6 +165,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
     turnRef.current = null;
     setTurn(null);
     if (done) {
+      playSound("page");
       setActive(-1);
       setPage((p) => Math.min(last, Math.max(0, p + tr.dir)));
     }
@@ -196,6 +199,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
   const turnPage = useCallback((dir: Dir, auto = false) => {
     if (turnRef.current || !canTurn(dir)) return false;
     if (reduced) {
+      playSound("page");
       setActive(-1);
       setPage((p) => p + dir);
       return true;
@@ -569,6 +573,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
           <p>{forName}</p>
         </div>
         {sleep ? <span className="r-timer-m">{timerSelect("timer-m", true)}</span> : null}
+        <SoundToggle t={t} className="round snd r-snd-m" />
         <button type="button" className="round r-fav-m" aria-pressed={isFav} aria-label={isFav ? R.favRemove : R.favAdd} onClick={() => toggleFavorite(story.id)}>
           <IconHeart size={20} filled={isFav} />
         </button>
@@ -576,6 +581,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
           <IconMoon size={20} />
         </button>
         <div className="r-actions">
+          <SoundToggle t={t} />
           <button type="button" className="round r-fav" aria-pressed={isFav} aria-label={isFav ? R.favRemove : R.favAdd} onClick={() => toggleFavorite(story.id)}>
             <IconHeart size={22} filled={isFav} />
           </button>
@@ -661,7 +667,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
 
       <nav className="r-bottom" aria-label={fmt(R.pageOf, { a: page + 1, b: story.pages.length })}>
         {notice ? <p className="notice" role="status">{notice}</p> : null}
-        <button type="button" className="round round-lg" aria-label={R.prevPage} disabled={page === 0} onClick={() => turnPage(-1)}>
+        <button type="button" data-sound="none" className="round round-lg" aria-label={R.prevPage} disabled={page === 0} onClick={() => turnPage(-1)}>
           <IconPrev />
         </button>
         <button type="button" className="btn btn-sun play-m" onClick={() => setPlaying((v) => !v)} aria-pressed={playing}>
@@ -672,6 +678,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
         </div>
         <button
           type="button"
+          data-sound="none"
           className="round round-lg sun"
           aria-label={page === last ? R.end : R.nextPage}
           onClick={() => (page === last ? router.push(home) : turnPage(1))}

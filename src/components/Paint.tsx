@@ -8,6 +8,7 @@ import type { Dict, Lang } from "@/lib/i18n";
 import { BRUSH_SIZES, composeSVG, EMPTY_PAINT, type BrushSize, type PaintState, type Stroke } from "@/lib/paint";
 import { getPainting, savePainting, usePaintings } from "@/lib/paint-store";
 import { useNative } from "@/lib/platform";
+import { playSound } from "@/lib/sound";
 import { useLibrary } from "@/lib/purchases";
 import { analyze, colorLayer, regionAt, type Regions } from "@/lib/raster-fill";
 import DrawingThumb from "./DrawingThumb";
@@ -205,7 +206,10 @@ export default function Paint({ lang, t }: { lang: Lang; t: Dict }) {
   const applyZone = (z: number) => {
     if (!z) return;
     const k = mode === "raster" ? z : z - 1;
-    if (tool === "fill" && present.fills[k] !== color) commit({ ...present, fills: { ...present.fills, [k]: color } });
+    if (tool === "fill" && present.fills[k] !== color) {
+      playSound("paint");
+      commit({ ...present, fills: { ...present.fills, [k]: color } });
+    }
     if (tool === "eraser" && present.fills[k] !== undefined) {
       const fills = { ...present.fills };
       delete fills[k];
@@ -253,6 +257,7 @@ export default function Paint({ lang, t }: { lang: Lang; t: Dict }) {
     if (tool === "brush") {
       const pts = g.pts.length > 1 ? g.pts : [g.pts[0], [g.pts[0][0] + 0.1, g.pts[0][1]] as [number, number]];
       setLive("");
+      playSound("brush");
       const id = present.strokes.reduce((m, s) => Math.max(m, s.id), 0) + 1;
       commit({ ...present, strokes: [...present.strokes, { id, color, size: BRUSH_SIZES[size] * scale, d: pathOf(pts) }] });
     } else if (tool === "eraser") {
