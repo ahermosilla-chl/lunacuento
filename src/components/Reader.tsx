@@ -10,7 +10,8 @@ import { useKidName } from "@/lib/name-store";
 import type { Story } from "@/lib/stories";
 import { fmt, tokenize, wordStarts, type Word } from "@/lib/text";
 import { useMedia, useReducedMotion } from "@/lib/use-media";
-import { IconClose, IconMoon, IconNext, IconPause, IconPlay, IconPrev } from "./icons";
+import { saveProgress, toggleFavorite, useLibraryData } from "@/lib/library";
+import { IconClose, IconHeart, IconMoon, IconNext, IconPause, IconPlay, IconPrev } from "./icons";
 import "./reader.css";
 
 /* ------------------------------------------------------------------ */
@@ -33,7 +34,10 @@ const easeOut = (x: number) => 1 - Math.pow(1 - x, 3);
 /* Piezas de presentación                                              */
 /* ------------------------------------------------------------------ */
 
-/** Ilustración de una página: imagen definitiva (fase 3) o escena vectorial determinista. */
+/**
+ * Ilustración de una página: imagen definitiva (fase 3) o escena vectorial determinista.
+ * ILUSTRACION-PENDIENTE: aquí van las ilustraciones definitivas de cada página (`page.image`, gpt-image-2).
+ */
 function Art({ story, index, where, lang }: { story: Story; index: number; where: string; lang: Lang }) {
   const page = story.pages[index];
   const html = useMemo(
@@ -79,7 +83,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
   const showSingle = !hydrated || mobile;
   const reduced = useReducedMotion();
   const last = story.pages.length - 1;
-  const home = `/${lang}`;
+  const home = `/${lang}/cuentos`; // "volver": a la biblioteca de cuentos
   const R = t.reader;
 
   const [page, setPage] = useState(0);
@@ -108,6 +112,17 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
   turnRef.current = turn;
   playingRef.current = playing;
   mobileRef.current = mobile;
+
+  const isFav = useLibraryData().favs.includes(story.id);
+
+  // "Sigue leyendo": entrar con ?p=<página> retoma donde se quedó; cada cambio de página se guarda en el dispositivo.
+  useEffect(() => {
+    const p = Number(new URLSearchParams(window.location.search).get("p"));
+    if (Number.isInteger(p) && p > 0 && p <= last) setPage(p);
+  }, [last]);
+  useEffect(() => {
+    saveProgress(story.id, page, story.pages.length);
+  }, [story.id, story.pages.length, page]);
 
   const words = useMemo(() => story.pages.map((p) => tokenize(p.text[lang], name)), [story, lang, name]);
 
@@ -487,7 +502,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
       {i === last && live ? (
         <div className="end-actions">
           <button type="button" className="btn btn-sun" onClick={() => { setPlaying(false); setPage(0); }}>{R.again}</button>
-          <Link href={`/${lang}?dibujo=${story.coloring}#colorear`} className="btn btn-line">{R.color}</Link>
+          <Link href={`/${lang}/pintar?dibujo=${story.coloring}`} className="btn btn-line">{R.color}</Link>
         </div>
       ) : null}
       <span className="pnum">{i * 2 + 2}</span>
@@ -508,7 +523,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
       {i === last && live ? (
         <div className="end-actions">
           <button type="button" className="btn btn-sun" onClick={() => { setPlaying(false); setPage(0); }}>{R.again}</button>
-          <Link href={`/${lang}?dibujo=${story.coloring}#colorear`} className="btn btn-line">{R.color}</Link>
+          <Link href={`/${lang}/pintar?dibujo=${story.coloring}`} className="btn btn-line">{R.color}</Link>
         </div>
       ) : null}
       <span className="pnum">{i + 1}</span>
@@ -548,16 +563,22 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
       </svg>
 
       <header className="r-top">
-        <Link href={home} className="round" aria-label={R.closeBook}><IconClose /></Link>
+        <Link href={home} className="round" aria-label={`${R.closeBook} · ${R.toLibrary}`}><IconClose /></Link>
         <div className="r-title">
           <h1 className="disp">{story.title[lang]}</h1>
           <p>{forName}</p>
         </div>
         {sleep ? <span className="r-timer-m">{timerSelect("timer-m", true)}</span> : null}
+        <button type="button" className="round r-fav-m" aria-pressed={isFav} aria-label={isFav ? R.favRemove : R.favAdd} onClick={() => toggleFavorite(story.id)}>
+          <IconHeart size={20} filled={isFav} />
+        </button>
         <button type="button" className="round r-sleep-m" aria-pressed={sleep} aria-label={sleep ? R.sleepOn : R.sleep} onClick={() => setSleep((v) => !v)}>
           <IconMoon size={20} />
         </button>
         <div className="r-actions">
+          <button type="button" className="round r-fav" aria-pressed={isFav} aria-label={isFav ? R.favRemove : R.favAdd} onClick={() => toggleFavorite(story.id)}>
+            <IconHeart size={22} filled={isFav} />
+          </button>
           <button type="button" className="pill" aria-pressed={sleep} onClick={() => setSleep((v) => !v)}>
             <IconMoon /> {R.sleep}
           </button>

@@ -35,7 +35,8 @@
 }
 .r-timer-m { display: none; }
 .r-timer.chip-timer { min-height: 44px; padding: 0 12px; font-size: 15px; border-color: var(--sun); }
-.r-sleep-m { display: none; }
+.r-sleep-m, .r-fav-m { display: none; }
+.r-fav[aria-pressed="true"], .r-fav-m[aria-pressed="true"] { background: var(--moon-text); color: #C2255C; }
 
 /* ---------- Escenario y libro ---------- */
 .stage { position: relative; z-index: 1; flex: 1; display: flex; align-items: center; justify-content: center; padding: 8px 40px; }
@@ -168,7 +169,8 @@
   .r-title h1 { font-size: 19px; }
   .r-title p { font-size: 13px; }
   .r-actions { display: none; }
-  .r-sleep-m { display: inline-flex; }
+  .r-sleep-m, .r-fav-m { display: inline-flex; }
+  .r-fav { display: none; }
   .r-sleep-m[aria-pressed="true"] { background: var(--moon-text); color: var(--night); }
   .r-timer-m { display: inline-flex; flex: none; }
   .stage { padding: 6px 16px; align-items: flex-start; }
