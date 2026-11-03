@@ -53,3 +53,20 @@ Nota: de las portadas solo quedó guardada la variante de 672 px (el original de
    ```bash
    git add public/ilustraciones && git commit -m "Hero y portadas ampliados 2x (Real-ESRGAN)" && git push
    ```
+
+## Con Upscayl (si Real-ESRGAN da segmentation fault en tu Mac)
+Usa el motor de la app Upscayl (ya instalada): ejecutable `/Applications/Upscayl.app/Contents/Resources/bin/upscayl-bin`, carpeta de modelos `/Applications/Upscayl.app/Contents/Resources/models` y modelo `digital-art-4x` (probado con una portada).
+
+Opciones del script: `--bin <ruta>` (ejecutable), `--modelos <carpeta>` (se pasa como `-m`; alias `--models`) y `--modelo <nombre>` (se pasa como `-n`).
+
+Ver el plan sin ejecutar:
+
+```bash
+node scripts/ampliar-ilustraciones.mjs --bin /Applications/Upscayl.app/Contents/Resources/bin/upscayl-bin --modelos /Applications/Upscayl.app/Contents/Resources/models --modelo digital-art-4x --dry-run
+```
+
+Ampliar de verdad (hero hasta 3072 px + portadas):
+
+```bash
+node scripts/ampliar-ilustraciones.mjs --bin /Applications/Upscayl.app/Contents/Resources/bin/upscayl-bin --modelos /Applications/Upscayl.app/Contents/Resources/models --modelo digital-art-4x
+```

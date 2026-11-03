@@ -2,13 +2,14 @@
 // Amplía 2× el hero y las portadas con un upscaler LOCAL y GRATUITO (Real-ESRGAN ncnn-vulkan / upscayl-bin).
 // No llama a ninguna API de pago ni a internet. Pensado para correrlo en tu Mac.
 //
-//   node scripts/ampliar-ilustraciones.mjs --bin ./realesrgan-ncnn-vulkan            # hero + portadas
+//   node scripts/ampliar-ilustraciones.mjs --bin /Applications/Upscayl.app/Contents/Resources/bin/upscayl-bin \
+//     --modelos /Applications/Upscayl.app/Contents/Resources/models --modelo digital-art-4x   # hero + portadas
 //   node scripts/ampliar-ilustraciones.mjs --bin ./realesrgan-ncnn-vulkan --solo hero
 //
 // Opciones:
 //   --bin <ruta>      ejecutable del upscaler (por defecto: realesrgan-ncnn-vulkan en el PATH; también sirve upscayl-bin)
-//   --modelo <n>      modelo (por defecto realesrgan-x4plus; el binario lo busca en su carpeta "models")
-//   --models <ruta>   carpeta de modelos, si no está junto al binario (se pasa como -m)
+//   --modelo <n>      modelo (por defecto realesrgan-x4plus; con Upscayl digital-art-4x; se pasa como -n)
+//   --modelos <ruta>  carpeta de modelos, si no está junto al binario (se pasa como -m; alias --models). Con Upscayl: /Applications/Upscayl.app/Contents/Resources/models
 //   --solo <lista>    hero, portadas o nombres del manifiesto, separados por coma (por defecto hero y portadas)
 //   --salida <dir>    carpeta de ilustraciones (por defecto public/ilustraciones)
 //   --motor sharp     NO usa IA: amplía con Lanczos. Solo para probar el proceso; no mejora la nitidez real
@@ -36,7 +37,7 @@ const val = (n, d) => {
 const OUT = resolve(val("salida", "public/ilustraciones"));
 const bin = val("bin", "realesrgan-ncnn-vulkan");
 const modelo = val("modelo", "realesrgan-x4plus");
-const models = val("models", "");
+const models = val("modelos", val("models", "")); // --modelos (alias: --models)
 const motor = val("motor", "ia");
 const dry = flag("dry-run");
 
