@@ -2,29 +2,22 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { coverInk, sceneSVG, SOON_ART } from "@/lib/art";
+import { coverInk, SOON_ART } from "@/lib/art";
 import type { Dict, Lang } from "@/lib/i18n";
 import { DEFAULT_NAME } from "@/lib/i18n";
 import { useKidName } from "@/lib/name-store";
+import { useLibrary } from "@/lib/purchases";
 import { COMING_SOON, FILTERS, VALUES, VALUES_SHORT, type Story, type ValueKey } from "@/lib/stories";
 import { fmt } from "@/lib/text";
+import CoverArt from "./CoverArt";
 import { IconLock } from "./icons";
 
 type Filter = "all" | ValueKey;
 
-/** Tapa de un cuento: ilustración de su página de portada (o la imagen definitiva si ya existe). */
-function CoverArt({ story }: { story: Story }) {
-  const page = story.pages[story.coverPage] ?? story.pages[0];
-  if (page.image) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={page.image.src} alt="" width={page.image.width} height={page.image.height} loading="lazy" />;
-  }
-  return <span style={{ display: "contents" }} dangerouslySetInnerHTML={{ __html: sceneSVG(page.scene, `cover-${story.id}`) }} />;
-}
-
-export default function Shelf({ lang, t, stories, unlocked }: { lang: Lang; t: Dict; stories: Story[]; unlocked?: boolean }) {
+export default function Shelf({ lang, t, stories }: { lang: Lang; t: Dict; stories: Story[] }) {
   const [filter, setFilter] = useState<Filter>("all");
   const name = useKidName(DEFAULT_NAME[lang]);
+  const unlocked = useLibrary();
   const match = (values: ValueKey[]) => filter === "all" || values.includes(filter);
   const list = stories.filter((s) => match(s.values));
   const soon = COMING_SOON.filter((s) => match(s.values));
@@ -61,9 +54,9 @@ export default function Shelf({ lang, t, stories, unlocked }: { lang: Lang; t: D
                 href={`/${lang}/cuento/${s.id}`}
                 className="bk"
                 style={{ "--c": s.color, "--bk-ink": ink } as React.CSSProperties}
-                aria-label={`${t.shelf.open}: ${s.title[lang]} · ${s.age} ${t.shelf.ages} · ${s.minutes} ${t.shelf.minutes}${locked ? ` · ${t.reader.lockedTitle}` : ""}`}
+                aria-label={`${t.shelf.open}: ${s.title[lang]} · ${s.age} ${t.shelf.ages} · ${s.minutes} ${t.shelf.minutes}${locked ? ` · ${t.buy.lock}` : ""}`}
               >
-                {locked ? <span className="lock-on"><IconLock /> {t.plans.items.full.name}</span> : null}
+                {locked ? <span className="lock-on"><IconLock /> {t.buy.tag}</span> : null}
                 <span className="bk-art"><CoverArt story={s} /></span>
                 <span className="bk-ttl">
                   <b>{s.title[lang]}</b>

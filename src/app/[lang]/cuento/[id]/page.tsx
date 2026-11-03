@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Reader from "@/components/Reader";
+import StoryEntry from "@/components/StoryEntry";
 import { getDict, isLang, LANGS, type Lang } from "@/lib/i18n";
 import { getStory, personalize, STORIES } from "@/lib/stories";
 
@@ -24,5 +24,5 @@ export default async function StoryPage({ params }: Props) {
   const story = getStory(id);
   if (!story || !isLang(l)) notFound();
   const lang: Lang = l;
-  return <Reader lang={lang} t={getDict(lang)} story={story} />;
+  return <StoryEntry lang={lang} t={getDict(lang)} story={story} />;
 }

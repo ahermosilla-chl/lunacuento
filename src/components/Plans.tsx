@@ -31,7 +31,8 @@ export default function Plans({ lang, t, firstStory }: { lang: Lang; t: Dict; fi
             <p className="price">{P.full.price} <small>{P.full.per}</small></p>
             <Feats list={P.full.feat} />
             <div className="actions">
-              <StoreButtons t={t} />
+              <div className="web-only"><StoreButtons t={t} /></div>
+              <Link href={`/${lang}/comprar`} className="btn btn-sun btn-lg app-only">{t.buy.unlock}</Link>
             </div>
           </div>
         </div>
