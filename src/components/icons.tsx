@@ -54,3 +54,41 @@ export const IconPause = ({ size = 20 }: P) => (
 export const IconBrush = ({ size = 20 }: P) => (
   <svg {...base(size)} strokeWidth={2.4}><path d="M14.5 4.5l5 5L11 18H6v-5z" /><path d="M4 21h16" /></svg>
 );
+
+/* ---- Navegación y taller de pintura ---- */
+export const IconHome = ({ size = 24 }: P) => (
+  <svg {...base(size)} strokeWidth={2.4}><path d="M4 11l8-7 8 7v8.5a1.5 1.5 0 0 1-1.5 1.5H15v-6H9v6H5.5A1.5 1.5 0 0 1 4 19.5z" /></svg>
+);
+export const IconBook = ({ size = 24 }: P) => (
+  <svg {...base(size)} strokeWidth={2.4}><path d="M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5zM12 6.5v13" /></svg>
+);
+export const IconPalette = ({ size = 24 }: P) => (
+  <svg {...base(size)} strokeWidth={2.4}><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.4 0 2-.9 2-1.8 0-1.4-1.2-1.5-1.2-2.7 0-.9.7-1.5 1.6-1.5H17a3.5 3.5 0 0 0 3.5-3.6C20.5 6.5 16.8 3.5 12 3.5z" /><circle cx="7.5" cy="11" r="1" fill="currentColor" /><circle cx="10" cy="7.5" r="1" fill="currentColor" /><circle cx="14.5" cy="7.5" r="1" fill="currentColor" /></svg>
+);
+export const IconShelf = ({ size = 24 }: P) => (
+  <svg {...base(size)} strokeWidth={2.4}><path d="M4 20h16M6 20V9l3-1v12M10.5 20V6h3.5v14M16 20l1-12 3 .5-1 11.5" /></svg>
+);
+export const IconHeart = ({ size = 22, filled }: P & { filled?: boolean }) => (
+  <svg {...base(size)} strokeWidth={2.4} fill={filled ? "currentColor" : "none"}><path d="M12 20.5s-7.5-4.4-7.5-10A4.3 4.3 0 0 1 12 8a4.3 4.3 0 0 1 7.5 2.5c0 5.6-7.5 10-7.5 10z" /></svg>
+);
+export const IconUndo = ({ size = 22 }: P) => (
+  <svg {...base(size)} strokeWidth={2.6}><path d="M9 7L4.5 11.5 9 16M5 11.5h9a5 5 0 0 1 0 10h-2" /></svg>
+);
+export const IconRedo = ({ size = 22 }: P) => (
+  <svg {...base(size)} strokeWidth={2.6}><path d="M15 7l4.5 4.5L15 16M19 11.5h-9a5 5 0 0 0 0 10h2" /></svg>
+);
+export const IconEraser = ({ size = 22 }: P) => (
+  <svg {...base(size)} strokeWidth={2.4}><path d="M8 20h11M5.2 14.8l8.6-8.6a2 2 0 0 1 2.8 0l2.2 2.2a2 2 0 0 1 0 2.8L11 19.8H8L5.2 17a1.5 1.5 0 0 1 0-2.2z" /></svg>
+);
+export const IconBucket = ({ size = 22 }: P) => (
+  <svg {...base(size)} strokeWidth={2.4}><path d="M5 11l6.5-6.5 7 7-6.5 6.5a2 2 0 0 1-2.8 0L5 13.8a2 2 0 0 1 0-2.8zM4 11.5h14.5M19.5 15c1.2 1.6 1.7 2.5 1.7 3.3a1.7 1.7 0 0 1-3.4 0c0-.8.5-1.7 1.7-3.3z" /></svg>
+);
+export const IconDownload = ({ size = 22 }: P) => (
+  <svg {...base(size)} strokeWidth={2.6}><path d="M12 4v11M7 11l5 5 5-5M5 20h14" /></svg>
+);
+export const IconRestart = ({ size = 22 }: P) => (
+  <svg {...base(size)} strokeWidth={2.6}><path d="M20 12a8 8 0 1 1-2.4-5.7M20 4v5h-5" /></svg>
+);
+export const IconPaintbrush = ({ size = 22 }: P) => (
+  <svg {...base(size)} strokeWidth={2.4}><path d="M19.5 3.5l1 1a1.4 1.4 0 0 1 0 2L12 15l-3-3 8.5-8.5a1.4 1.4 0 0 1 2 0zM9 12c-2.8 0-4.5 1.7-4.5 4.2 0 1.4-.6 2.6-1.5 3.3 3.8.6 8-.8 8-4.5" /></svg>
+);
