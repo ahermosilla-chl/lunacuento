@@ -67,7 +67,7 @@ const es = {
   plans: {
     title: "Planes",
     items: {
-      free: { name: "Gratis", price: "US$0", feat: ["2 cuentos", "2 dibujos"], cta: "Leer un cuento" },
+      free: { name: "Gratis", price: "US$0", feat: ["2 cuentos", "5 dibujos"], cta: "Leer un cuento" },
       full: { name: "Biblioteca completa", price: "US$7,99", per: "pago único", feat: ["Todos los cuentos", "Todos los dibujos", "Modo dormir", "Sin anuncios ni suscripción"], cta: "Descarga la app", badge: "Para siempre" },
     },
     appStore: { small: "Descárgala en", big: "App Store" },
@@ -175,7 +175,7 @@ const en: typeof es = {
   plans: {
     title: "Plans",
     items: {
-      free: { name: "Free", price: "US$0", feat: ["2 stories", "2 drawings"], cta: "Read a story" },
+      free: { name: "Free", price: "US$0", feat: ["2 stories", "5 drawings"], cta: "Read a story" },
       full: { name: "Full library", price: "US$7.99", per: "one-time purchase", feat: ["Every story", "Every drawing", "Sleep mode", "No ads, no subscription"], cta: "Get the app", badge: "Yours forever" },
     },
     appStore: { small: "Download on the", big: "App Store" },

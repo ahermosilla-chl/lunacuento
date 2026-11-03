@@ -521,8 +521,9 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
   .desk-only { display: none; }
 }
 .m-top { position: relative; overflow: hidden; background: var(--night); color: var(--moon-text); padding: 8px 20px 84px; }
-.m-moon { position: absolute; right: -34px; top: 14px; width: 120px; height: 120px; border-radius: 50%; background: var(--moon); opacity: .95; }
+.m-moon { position: absolute; right: 22px; top: 22px; width: 64px; height: 64px; border-radius: 50%; background: var(--moon); box-shadow: 0 0 0 10px rgba(255, 224, 138, .16); }
 .greet { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.greet-hi, .greet-sub { padding-right: 84px; } /* deja libre la luna */
 .greet-hi { font-size: 40px; line-height: 1.05; }
 .greet-sub { color: var(--moon-muted); font-size: 18px; font-weight: 600; }
 .greet-change { min-height: 44px; margin-top: 4px; padding: 0 18px; border-radius: 999px; border: 2px solid var(--moon-muted); background: transparent; color: var(--moon-text); font: 800 15px var(--font-body); }
@@ -559,25 +560,29 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
    Hero de escritorio y tablet: título, filtros y estante sobre la ilustración
    (niño y zorro a la izquierda hasta ~40 %, luna arriba a la derecha: todo el texto va desde --stage-left)
    ===================================================================== */
-.stage { --stage-left: 40%; --stage-shadow: 0 2px 14px rgba(45, 40, 119, .6); position: relative; overflow: hidden; background: var(--violet); color: #FFFFFF; min-height: clamp(620px, 56vw, 780px); display: flex; }
+.stage { --stage-left: 48%; --stage-shadow: 0 2px 14px rgba(45, 40, 119, .6); position: relative; overflow: hidden; background: var(--violet); color: #FFFFFF; min-height: clamp(660px, 58vw, 800px); display: flex; }
 .stage-art { position: absolute; inset: 0; }
 .stage-img, .stage-fallback { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; display: block; }
-.stage-body { position: relative; z-index: 1; width: 100%; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; padding-top: 34px; padding-bottom: 28px; }
-.stage-head { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-left: var(--stage-left); max-width: min(560px, calc(100% - var(--stage-left))); }
-.stage-head h1 { font-size: clamp(38px, 4.6vw, 62px); line-height: 1; color: #FFFFFF; text-shadow: var(--stage-shadow); }
+.stage-body { position: relative; z-index: 1; width: 100%; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; padding-top: 34px; padding-bottom: 76px; }
+.stage-head { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-left: var(--stage-left); }
+.stage-head h1 { font-size: clamp(36px, 4.2vw, 56px); line-height: 1; color: #FFFFFF; text-shadow: var(--stage-shadow); }
 .stage-for { display: inline-flex; align-items: baseline; gap: 10px; font: 700 clamp(20px, 2vw, 26px) var(--font-display); color: #FFFFFF; text-shadow: var(--stage-shadow); }
 .stage-for input { min-width: 4ch; max-width: 14ch; padding: 2px 6px 0; border: 0; border-bottom: 3px solid var(--sun); background: transparent; font: inherit; color: inherit; text-shadow: inherit; border-radius: 0; }
 .stage-for input:focus-visible { outline-offset: 4px; }
 .stage-for input::placeholder { color: inherit; opacity: .7; }
-.stage-chips { justify-content: flex-start; }
-.stage-chips .chip { min-height: 44px; box-shadow: 0 3px 10px -4px rgba(15, 27, 61, .5); }
+/* Filtros siempre en una sola fila; si no caben (tablet), se desliza en horizontal, nunca baja una etiqueta sola */
+.stage-chips { justify-content: flex-start; flex-wrap: nowrap; gap: 8px; max-width: 100%; overflow-x: auto; scrollbar-width: none; padding: 2px 2px 6px; margin-bottom: -6px; }
+.stage-chips .chip { flex: none; min-height: 44px; padding: 0 16px; font-size: 15px; box-shadow: 0 3px 10px -4px rgba(15, 27, 61, .5); }
+.stage-chips .short { display: none; }
+@media (max-width: 1100px) { .stage-chips .long { display: none; } .stage-chips .short { display: inline; } }
+@media (max-width: 900px) { .stage-chips { gap: 6px; } .stage-chips .chip { padding: 0 12px; font-size: 14px; } }
 .stage-shelf { position: relative; margin-left: var(--stage-left); }
-.stage-books { list-style: none; margin: 0; padding: 0 12px 6px; display: flex; align-items: flex-end; gap: 18px; overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-left: 12px; scrollbar-width: none; }
+.stage-books { list-style: none; margin: 0; padding: 0 20px 6px; display: flex; align-items: flex-end; gap: 26px; overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-left: 20px; scrollbar-width: none; }
 .stage-books > li { flex: none; scroll-snap-align: start; }
 .stage-books .bk { width: 142px; height: 200px; }
 .stage-plank { position: relative; height: 24px; margin-top: -4px; margin-right: 0; border-radius: 6px; background: var(--wood); border-top: 6px solid var(--wood-edge); box-shadow: 0 14px 18px -10px rgba(120, 70, 20, .55); }
 .stage-nav { position: absolute; top: 80px; z-index: 2; width: 48px; height: 48px; border: 0; border-radius: 50%; display: grid; place-items: center; background: #FFFFFF; color: var(--ink); box-shadow: 0 6px 16px -6px rgba(15, 27, 61, .55); }
-.stage-nav.prev { left: -20px; }
+.stage-nav.prev { left: -26px; }
 .stage-nav.next { right: -6px; }
 .stage-nav:active { transform: scale(.94); }
 .stage-empty { position: absolute; left: 24px; bottom: 40px; color: #FFFFFF; text-shadow: var(--stage-shadow); font-weight: 700; }

@@ -15,7 +15,7 @@ export default function MobileHome({ lang, t }: { lang: Lang; t: Dict }) {
     <div className="m-home m-only">
       <section className="m-top" aria-label={t.mobile.hi}>
         <div className="m-moon" aria-hidden="true" />
-        <NameGreeting lang={lang} t={t} />
+        <NameGreeting t={t} />
       </section>
       <section className="m-cards" aria-label={t.quick.label}>
         <Link href={`/${lang}/cuentos`} className="m-card read">

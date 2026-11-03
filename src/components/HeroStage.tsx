@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import type { Dict, Lang } from "@/lib/i18n";
 import { DEFAULT_NAME } from "@/lib/i18n";
 import { useKidName, setKidName, useRawKidName } from "@/lib/name-store";
-import { COMING_SOON, FILTERS, STORIES, VALUES, type ValueKey } from "@/lib/stories";
+import { COMING_SOON, FILTERS, STORIES, VALUES, VALUES_SHORT, type ValueKey } from "@/lib/stories";
 import BookCard from "./BookCard";
 import IlluImg from "./IlluImg";
 import { IconNext, IconPrev } from "./icons";
@@ -64,7 +64,12 @@ export default function HeroStage({ lang, t }: { lang: Lang; t: Dict }) {
           <div className="chips stage-chips" role="group" aria-label={t.shelf.filters}>
             {(["all", ...FILTERS] as Filter[]).map((k) => (
               <button key={k} type="button" className="chip" aria-pressed={filter === k} onClick={() => setFilter(k)}>
-                {k === "all" ? t.shelf.all : VALUES[k][lang]}
+                {k === "all" ? t.shelf.all : (
+                  <>
+                    <span className="long">{VALUES[k][lang]}</span>
+                    <span className="short" aria-hidden="true">{VALUES_SHORT[k][lang]}</span>
+                  </>
+                )}
               </button>
             ))}
           </div>

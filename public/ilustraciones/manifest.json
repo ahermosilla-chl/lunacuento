@@ -76,5 +76,17 @@
     "width": 1200,
     "height": 800,
     "srcset": "/ilustraciones/colorear-leon-600.webp 600w, /ilustraciones/colorear-leon-1200.webp 1200w"
+  },
+  "colorear-castillo": {
+    "src": "/ilustraciones/colorear-castillo-1200.webp",
+    "width": 1200,
+    "height": 800,
+    "srcset": "/ilustraciones/colorear-castillo-600.webp 600w, /ilustraciones/colorear-castillo-1200.webp 1200w"
+  },
+  "colorear-zorro": {
+    "src": "/ilustraciones/colorear-zorro-1200.webp",
+    "width": 1200,
+    "height": 800,
+    "srcset": "/ilustraciones/colorear-zorro-600.webp 600w, /ilustraciones/colorear-zorro-1200.webp 1200w"
   }
 }

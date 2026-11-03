@@ -5,8 +5,22 @@ import { chromium } from "playwright-core";
 import { mkdir } from "node:fs/promises";
 
 const BASE = process.env.BASE_URL || "http://localhost:4173";
-const OUT = "docs/capturas";
+// Todas las capturas se escriben en .capturas/ (ignorado por git). Al terminar sin problemas se copian a docs/capturas solo las finales (KEEP).
+const OUT = process.env.CAPTURAS_OUT || ".capturas";
+const FINAL = "docs/capturas";
+const KEEP = [
+  "home-375", "home-768", "home-1280", "home-375-oscuro", "home-1280-oscuro", "home-1280-en", "home-375-sigue-leyendo",
+  "cuentos-375", "cuentos-1280", "pintar-375", "pintar-768", "pintar-1280", "biblioteca-375", "biblioteca-1280",
+  "lector-375", "lector-768", "lector-1280", "lector-1280-tapa-abriendose", "lector-375-arrastre", "lector-1280-dormir",
+  "compra-375", "porton-375", "app-home-375",
+];
 const WIDTHS = [375, 768, 1280];
+/** Filtros del hero: cuántas filas ocupan y si desbordan su contenedor. */
+const filtrosHero = (page) => page.evaluate(() => {
+  const box = document.querySelector(".stage-chips");
+  const chips = [...box.querySelectorAll(".chip")];
+  return { filas: new Set(chips.map((c) => Math.round(c.getBoundingClientRect().top))).size, desborda: box.scrollWidth > box.clientWidth + 1 };
+});
 const NAME_INPUT = (w) => (w <= 760 ? "#kid-name-m" : "#kid-name"); // en móvil el saludo reemplaza al hero
 const executablePath = process.env.CHROME_PATH || "/usr/bin/google-chrome";
 
@@ -91,6 +105,11 @@ for (const w of WIDTHS) {
     if ((await page.locator(".stage .chips .chip").count()) !== 4) problems.push(`[${w}] faltan los filtros del hero`);
     if ((await page.locator(".stage-books .bk").count()) !== 6) problems.push(`[${w}] el hero debe mostrar 6 libros (3 + 3 Pronto)`);
     if (await page.locator(".shelf-grid").count()) problems.push(`[${w}] sigue el estante duplicado debajo del hero`);
+    const f = await filtrosHero(page);
+    if (f.filas !== 1 || f.desborda) problems.push(`[${w}] los filtros del hero deben ir en una sola fila sin desbordar (filas=${f.filas}, desborda=${f.desborda})`);
+    // el estante no se acerca al libro del niño: sus libros empiezan al menos al 46 % del ancho de la ventana
+    const x0 = await page.locator(".stage-books .bk").first().evaluate((el) => el.getBoundingClientRect().left);
+    if (x0 < w * 0.46) problems.push(`[${w}] el estante está muy cerca del libro del niño (x=${Math.round(x0)})`);
   }
   if (await page.locator("#continue-title, #continue-row-title, #news-title").count()) problems.push(`[${w}] aparece "Sigue leyendo"/"Novedades" sin datos reales`);
   if (w <= 760) {
@@ -254,12 +273,27 @@ const contrastJS = () => {
 // ---------------------------------------------------------------------------
 // Rediseño: taller de pintura, progreso, favoritos, biblioteca y contraste
 // ---------------------------------------------------------------------------
-const fillOf = (p, i) => p.locator(".canvas-art .f").nth(i).getAttribute("fill");
+// El taller usa los dibujos raster (relleno por píxeles). El color de un punto de la imagen (1200×800) se lee del lienzo.
+const listoRaster = (p) => p.waitForFunction(() => document.querySelector(".canvas-stack")?.getAttribute("aria-busy") === "false", null, { timeout: 15000 });
+const pxAt = (p, x, y) => p.evaluate(([x, y]) => { const c = document.querySelector("canvas.raster"); const d = c.getContext("2d").getImageData(x, y, 1, 1).data; return [d[0], d[1], d[2]].join(","); }, [x, y]);
+const clickImg = async (p, x, y) => {
+  await p.locator("canvas.raster").scrollIntoViewIfNeeded();
+  const b = await p.locator("canvas.raster").boundingBox();
+  await p.mouse.click(b.x + (x / 1200) * b.width, b.y + (y / 800) * b.height);
+};
+const MOON = [620, 180]; // dentro de la luna de "colorear-luna"
+const PINK_RGB = [255, 107, 158];
+const fillOf = async (p) => {
+  const a = (await pxAt(p, ...MOON)).split(",").map(Number);
+  return a.every((v, i) => Math.abs(v - PINK_RGB[i]) <= 3) ? "#FF6B9E" : "otro";
+};
 const strokes = (p) => p.locator(".ink path").count();
 
 for (const w of WIDTHS) {
   const p = await newPage(w);
   await p.goto(`${BASE}/es/pintar/`, { waitUntil: "networkidle" });
+  await listoRaster(p);
+  if ((await p.locator("canvas.raster").count()) !== 1) problems.push(`[${w}] pintar: debe usar el motor raster con los dibujos generados`);
   await noHScroll(p, `[${w}] pintar`);
   let box;
   const aim = async () => {
@@ -277,13 +311,13 @@ for (const w of WIDTHS) {
 
   // relleno por zonas
   await p.locator(".palette .sw").nth(1).click();
-  await p.locator(".canvas-art .f").nth(1).click({ force: true });
-  if ((await fillOf(p, 1)) !== "#FF6B9E") problems.push(`[${w}] pintar: el relleno no pinta (${await fillOf(p, 1)})`);
+  await clickImg(p, ...MOON);
+  if ((await fillOf(p)) !== "#FF6B9E") problems.push(`[${w}] pintar: el relleno no pinta (${await pxAt(p, ...MOON)})`);
   // deshacer / rehacer
   await p.getByRole("button", { name: "Deshacer" }).click();
-  if ((await fillOf(p, 1)) === "#FF6B9E") problems.push(`[${w}] pintar: deshacer no revierte el relleno`);
+  if ((await fillOf(p)) === "#FF6B9E") problems.push(`[${w}] pintar: deshacer no revierte el relleno`);
   await p.getByRole("button", { name: "Rehacer" }).click();
-  if ((await fillOf(p, 1)) !== "#FF6B9E") problems.push(`[${w}] pintar: rehacer no repone el relleno`);
+  if ((await fillOf(p)) !== "#FF6B9E") problems.push(`[${w}] pintar: rehacer no repone el relleno`);
   // pincel con mouse/táctil (pointer events)
   await p.getByRole("button", { name: "Pincel" }).click();
   await p.locator(".palette .sw").nth(2).click();
@@ -301,15 +335,14 @@ for (const w of WIDTHS) {
   await p.getByRole("button", { name: "Deshacer" }).click();
   if ((await strokes(p)) !== 1) problems.push(`[${w}] pintar: deshacer no repone el trazo borrado`);
   // goma sobre una zona: toque quita el color
-  await aim();
-  const zb = await p.locator(".canvas-art .f").nth(1).boundingBox();
-  await p.mouse.click(zb.x + zb.width / 2, zb.y + zb.height / 2);
-  if ((await fillOf(p, 1)) === "#FF6B9E") problems.push(`[${w}] pintar: la goma no quita el color de una zona`);
+  await clickImg(p, ...MOON);
+  if ((await fillOf(p)) === "#FF6B9E") problems.push(`[${w}] pintar: la goma no quita el color de una zona`);
   await p.getByRole("button", { name: "Deshacer" }).click();
-  if ((await fillOf(p, 1)) !== "#FF6B9E") problems.push(`[${w}] pintar: deshacer no repone el color borrado con la goma`);
+  if ((await fillOf(p)) !== "#FF6B9E") problems.push(`[${w}] pintar: deshacer no repone el color borrado con la goma`);
   // guardado automático: al recargar siguen el relleno y el trazo
   await p.reload({ waitUntil: "networkidle" });
-  if ((await fillOf(p, 1)) !== "#FF6B9E" || (await strokes(p)) !== 1) problems.push(`[${w}] pintar: el dibujo no se guardó en el dispositivo`);
+  await listoRaster(p);
+  if ((await fillOf(p)) !== "#FF6B9E" || (await strokes(p)) !== 1) problems.push(`[${w}] pintar: el dibujo no se guardó en el dispositivo`);
   await p.screenshot({ path: `${OUT}/pintar-${w}.png` });
   // exportar PNG
   const [dl] = await Promise.all([p.waitForEvent("download", { timeout: 8000 }).catch(() => null), p.getByRole("button", { name: "Guardar imagen" }).click()]);
@@ -326,10 +359,10 @@ for (const w of WIDTHS) {
   if ((await strokes(p)) !== 1) problems.push(`[${w}] pintar: "No" en la confirmación borró el dibujo`);
   await p.getByRole("button", { name: "Empezar de nuevo" }).click();
   await p.getByRole("button", { name: "Sí, borrar" }).click();
-  if ((await strokes(p)) !== 0 || (await fillOf(p, 1)) === "#FF6B9E") problems.push(`[${w}] pintar: reiniciar no limpia el dibujo`);
-  // categorías: Bosque deja solo el dibujo de Tilo
+  if ((await strokes(p)) !== 0 || (await fillOf(p)) === "#FF6B9E") problems.push(`[${w}] pintar: reiniciar no limpia el dibujo`);
+  // categorías: Bosque deja Tilo, el león y el zorro
   await p.getByRole("button", { name: "Bosque" }).click();
-  if ((await p.locator(".thumbs.small li").count()) !== 1) problems.push(`[${w}] pintar: el filtro por categoría no filtra`);
+  if ((await p.locator(".thumbs.small li").count()) !== 3) problems.push(`[${w}] pintar: el filtro por categoría no filtra (${await p.locator(".thumbs.small li").count()} en vez de 3)`);
   // dibujo bloqueado -> pantalla de compra
   await p.getByRole("button", { name: "Todos" }).click();
   await p.getByRole("button", { name: /dragón.*bloqueado/ }).click();
@@ -386,7 +419,8 @@ for (const w of WIDTHS) {
 
   // un dibujo pintado aparece en "Mis dibujos"
   await p.goto(`${BASE}/es/pintar/`, { waitUntil: "networkidle" });
-  await p.locator(".canvas-art .f").nth(2).click({ force: true });
+  await listoRaster(p);
+  await clickImg(p, ...MOON);
   await p.goto(`${BASE}/es/biblioteca/`, { waitUntil: "networkidle" });
   for (const h of ["Favoritos", "Leídos", "Mis dibujos"]) {
     if (!(await p.getByRole("heading", { name: h }).count())) problems.push(`[${w}] biblioteca: falta la sección ${h}`);
@@ -431,6 +465,25 @@ for (const w of [1280, 375]) {
   await p.context().close();
 }
 
+// Saludo móvil: "¡Hola, {nombre}!" con nombre; el campo solo sin nombre o al tocar "Cambiar nombre"; luna completa
+{
+  const p = await newPage(375);
+  await p.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
+  if (!(await p.locator("#kid-name-m").isVisible())) problems.push("móvil: sin nombre debe verse el campo para escribirlo");
+  if (!/^¡Hola!$/.test((await p.locator(".greet-hi").textContent())?.trim() || "")) problems.push("móvil: sin nombre el saludo debe ser '¡Hola!'");
+  await p.locator("#kid-name-m").click();
+  await p.keyboard.type("Ana", { delay: 60 });
+  if (!(await p.locator("#kid-name-m").isVisible())) problems.push("móvil: el campo del nombre desaparece mientras se escribe");
+  await p.getByRole("button", { name: "Listo" }).click();
+  if (await p.locator("#kid-name-m").isVisible()) problems.push("móvil: con nombre guardado el campo debe ocultarse");
+  if ((await p.locator(".greet-hi").textContent())?.trim() !== "¡Hola, Ana!") problems.push(`móvil: el saludo con nombre debe ser '¡Hola, Ana!' (${await p.locator(".greet-hi").textContent()})`);
+  await p.getByRole("button", { name: "Cambiar nombre" }).click();
+  if (!(await p.locator("#kid-name-m").isVisible())) problems.push("móvil: 'Cambiar nombre' no abre el campo");
+  const moon = await p.locator(".m-moon").boundingBox();
+  if (!moon || moon.x < 0 || moon.x + moon.width > 375 || moon.width !== moon.height) problems.push(`móvil: la luna del saludo está cortada o deformada (${JSON.stringify(moon)})`);
+  await p.context().close();
+}
+
 // Inglés + selector conserva la ruta
 {
   const p = await newPage(1280);
@@ -438,6 +491,8 @@ for (const w of [1280, 375]) {
   const href = await p.evaluate(() => [...document.querySelectorAll("a[hreflang]")].map((a) => a.getAttribute("href")));
   await p.goto(`${BASE}/en/`, { waitUntil: "networkidle" });
   await p.screenshot({ path: `${OUT}/home-1280-en.png` });
+  const fen = await filtrosHero(p);
+  if (fen.filas !== 1 || fen.desborda) problems.push(`[en 1280] los filtros del hero deben ir en una sola fila (filas=${fen.filas}, desborda=${fen.desborda})`);
   const sw = await p.evaluate(() => [...document.querySelectorAll(".lang-switch a")].map((a) => a.getAttribute("href")));
   if (!sw.includes("/es/")) problems.push(`selector de idioma: ${sw}`);
   console.log("hreflang en lector:", href);
@@ -469,4 +524,10 @@ if (problems.length) {
   console.error("PROBLEMAS:\n- " + problems.join("\n- "));
   process.exit(1);
 }
-console.log("Revisión visual OK: capturas en", OUT);
+{
+  const { mkdir: mk, copyFile, readdir, rm } = await import("node:fs/promises");
+  await mk(FINAL, { recursive: true });
+  for (const f of await readdir(FINAL)) if (f.endsWith(".png") && !KEEP.includes(f.slice(0, -4))) await rm(`${FINAL}/${f}`);
+  for (const k of KEEP) await copyFile(`${OUT}/${k}.png`, `${FINAL}/${k}.png`);
+}
+console.log(`Revisión visual OK: ${KEEP.length} capturas finales en ${FINAL} (todas, en ${OUT})`);
