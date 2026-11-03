@@ -13,6 +13,7 @@
 //   --dry-run            muestra qué haría y cuánto costaría; NO llama a la API
 //   --simular            prueba todo el proceso (WebP, srcset, manifiesto, contador) con una imagen falsa; NO llama a la API
 //   --salida <carpeta>   carpeta de salida (por defecto public/ilustraciones; con --simular, una carpeta temporal)
+//   --concurrencia <n>   cuántas imágenes en paralelo (por defecto 1)
 //   --clave-por-proxy    no envía clave: la agrega el proxy de la sesión de Claude Code (network secret de api.openai.com)
 //   --reiniciar-gasto    pone el contador acumulado en cero
 // Variable opcional OPENAI_BASE_URL: solo para pruebas con un servidor falso (por defecto https://api.openai.com/v1).
@@ -88,14 +89,39 @@ async function pedirImagen(img, q) {
   const r = await fetch(`${process.env.OPENAI_BASE_URL || "https://api.openai.com/v1"}/images/generations`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...(process.env.OPENAI_API_KEY ? { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` } : {}) },
-    body: JSON.stringify({ model: MODELO, prompt: promptDe(img), size: img.size, quality: q, n: 1 }),
+    // stream: la respuesta llega por eventos y la conexión no se corta en pasarelas con límite de 30 s
+    body: JSON.stringify({ model: MODELO, prompt: promptDe(img), size: img.size, quality: q, n: 1, stream: true, partial_images: 1 }),
   });
-  const body = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(`API ${r.status}: ${body?.error?.message ?? JSON.stringify(body).slice(0, 300)}`);
-  const d = body.data?.[0];
-  if (d?.b64_json) return Buffer.from(d.b64_json, "base64");
-  if (d?.url) return Buffer.from(await (await fetch(d.url)).arrayBuffer());
-  throw new Error("La respuesta no trae imagen (ni b64_json ni url).");
+  if (!r.ok) {
+    const body = await r.json().catch(() => ({}));
+    throw new Error(`API ${r.status}: ${body?.error?.message ?? JSON.stringify(body).slice(0, 300)}`);
+  }
+  if (!(r.headers.get("content-type") || "").includes("text/event-stream")) {
+    const body = await r.json();
+    const d = body.data?.[0];
+    if (d?.b64_json) return Buffer.from(d.b64_json, "base64");
+    if (d?.url) return Buffer.from(await (await fetch(d.url)).arrayBuffer());
+    throw new Error("La respuesta no trae imagen (ni b64_json ni url).");
+  }
+  const dec = new TextDecoder();
+  let buf = "";
+  let final = null;
+  for await (const chunk of r.body) {
+    buf += dec.decode(chunk, { stream: true });
+    let i;
+    while ((i = buf.indexOf("\n\n")) >= 0) {
+      const ev = buf.slice(0, i);
+      buf = buf.slice(i + 2);
+      const type = (ev.match(/^event: (.*)$/m) || [])[1] || "";
+      const data = (ev.match(/^data: (.*)$/m) || [])[1];
+      if (!data || data === "[DONE]") continue;
+      const j = JSON.parse(data);
+      if (type.endsWith("completed") && j.b64_json) final = j.b64_json;
+      if (type === "error" || j.error) throw new Error(`API (stream): ${j.error?.message ?? data.slice(0, 200)}`);
+    }
+  }
+  if (!final) throw new Error("El stream terminó sin imagen final.");
+  return Buffer.from(final, "base64");
 }
 
 /** Imagen falsa del tamaño correcto para probar el proceso sin gastar nada. */
@@ -131,43 +157,56 @@ async function procesar(img, buf) {
 
 let hechas = 0;
 let detenido = false;
+let fallo = false;
+let reservado = 0;
+const conc = Math.max(1, Number(val("concurrencia", 1)) || 1);
+const pendientes = [];
 for (const img of lista) {
-  const q = calidadForzada || img.quality;
-  const costo = estimar(img, q);
   const yaEsta = (await existe(join(OUT, `${img.name}-${img.widths.at(-1)}.webp`))) && !flag("forzar");
-  if (yaEsta) {
-    console.log(`= ${img.name}: ya existe (usa --forzar para regenerar)`);
-    continue;
-  }
-  if (!simular && gastado + costo > tope) {
-    console.log(`■ TOPE: ${img.name} costaría ~${fmt(costo)} y el acumulado pasaría de ${fmt(tope)} (llevas ${fmt(gastado)}). Me detengo.`);
-    detenido = true;
-    break;
-  }
-  if (dry) {
-    console.log(`· ${img.name}: ${img.size} ${q} → ~${fmt(costo)} (acumulado ${fmt(gastado + costo)})`);
-    gastado += costo;
-    hechas++;
-    continue;
-  }
-  process.stdout.write(`→ ${img.name} (${img.size}, ${q}, ~${fmt(costo)}) … `);
-  try {
-    const buf = simular ? await imagenFalsa(img) : await pedirImagen(img, q);
-    manifest[img.name] = await procesar(img, buf);
-    await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
-    if (!simular) {
-      gastado += costo;
-      await guardarGasto(gastado);
+  if (yaEsta) console.log(`= ${img.name}: ya existe (usa --forzar para regenerar)`);
+  else pendientes.push(img);
+}
+
+async function trabajar() {
+  while (!detenido && !fallo) {
+    const img = pendientes.shift();
+    if (!img) return;
+    const q = calidadForzada || img.quality;
+    const costo = estimar(img, q);
+    if (!simular && gastado + reservado + costo > tope) {
+      console.log(`■ TOPE: ${img.name} costaría ~${fmt(costo)} y el acumulado pasaría de ${fmt(tope)} (llevas ${fmt(gastado)}${reservado ? `, más ${fmt(reservado)} en curso` : ""}). Me detengo.`);
+      detenido = true;
+      return;
     }
-    hechas++;
-    console.log(`listo · acumulado estimado ${fmt(simular ? 0 : gastado)}`);
-  } catch (e) {
-    console.log(`ERROR: ${e.message}`);
-    console.log("  (Un error de la API normalmente no se cobra; el contador no sumó esta imagen. No reintento solo.)");
-    process.exitCode = 1;
-    break;
+    if (dry) {
+      console.log(`· ${img.name}: ${img.size} ${q} → ~${fmt(costo)} (acumulado ${fmt(gastado + costo)})`);
+      gastado += costo;
+      hechas++;
+      continue;
+    }
+    reservado += costo;
+    console.log(`→ ${img.name} (${img.size}, ${q}, ~${fmt(costo)})`);
+    try {
+      const buf = simular ? await imagenFalsa(img) : await pedirImagen(img, q);
+      manifest[img.name] = await procesar(img, buf);
+      await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
+      reservado -= costo;
+      if (!simular) {
+        gastado += costo;
+        await guardarGasto(gastado);
+      }
+      hechas++;
+      console.log(`✔ ${img.name} listo · acumulado estimado ${fmt(simular ? 0 : gastado)}`);
+    } catch (e) {
+      reservado -= costo;
+      console.log(`ERROR en ${img.name}: ${e.message}`);
+      console.log("  (Un error de la API normalmente no se cobra; el contador no sumó esta imagen. No reintento solo.)");
+      process.exitCode = 1;
+      fallo = true;
+    }
   }
 }
+await Promise.all(Array.from({ length: conc }, trabajar));
 
 console.log(`\n${dry ? "Plan (dry-run)" : "Resumen"}: ${hechas} imagen(es) ${dry ? "planificadas" : "generadas"}, gasto estimado acumulado ${fmt(dry ? gastado : simular ? 0 : gastado)} de ${fmt(tope)}${detenido ? " (detenido por el tope)" : ""}.`);
 if (!dry && !simular && hechas) console.log("Las cifras son ESTIMADAS con precios no verificados: compáralas con tu facturación de OpenAI y ajusta --factor-costo.");
