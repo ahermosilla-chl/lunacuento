@@ -35,15 +35,21 @@ async function dragTest(page, width, shot) {
   await page.mouse.move(x0, y);
   await page.mouse.down();
   const steps = 12;
-  const dist = book.width * (width < 700 ? 0.45 : 0.32);
+  // Primero un avance de ~25 % para la captura (la hoja se ve girando en 3D), luego se pasa el umbral.
+  const half = book.width * (width < 700 ? 0.25 : 0.12);
   for (let i = 1; i <= steps; i++) {
-    await page.mouse.move(x0 - (dist * i) / steps, y);
+    await page.mouse.move(x0 - (half * i) / steps, y);
     await page.waitForTimeout(16);
   }
   const tf = await page.evaluate(() => document.querySelector(".leaf")?.style.transform || "");
   const deg = Number((tf.match(/rotateY\((-?[\d.]+)deg\)/) || [])[1]);
   if (!(deg < -20 && deg > -170)) problems.push(`[${width}] la hoja no sigue el dedo (transform="${tf}")`);
   if (shot) await page.screenshot({ path: `${OUT}/${shot}` });
+  const dist = book.width * (width < 700 ? 0.45 : 0.3); // escritorio: el avance se mide sobre una página (mitad del libro)
+  for (let i = 1; i <= 4; i++) {
+    await page.mouse.move(x0 - half - ((dist - half) * i) / 4, y);
+    await page.waitForTimeout(16);
+  }
   await page.mouse.up();
   await page.waitForTimeout(1000);
   const dot = await page.evaluate(() => [...document.querySelectorAll(".dots span")].findIndex((d) => d.classList.contains("on")));
@@ -92,6 +98,16 @@ for (const w of WIDTHS) {
   if (!txt?.includes("Tomás")) problems.push(`[${w}] el nombre no llega al lector`);
   await dragTest(rp, w, `lector-${w}-arrastre.png`);
 
+  // Móvil: el temporizador aparece como chip solo con modo dormir
+  if (w < 700) {
+    if (await rp.locator("#timer-m").count()) problems.push(`[${w}] el temporizador se ve sin modo dormir`);
+    await rp.locator(".r-sleep-m").click();
+    await rp.waitForTimeout(400);
+    if (!(await rp.locator("#timer-m").isVisible())) problems.push(`[${w}] falta el temporizador con modo dormir`);
+    await noHScroll(rp, `[${w}] lector dormir`);
+    await rp.screenshot({ path: `${OUT}/lector-${w}-dormir.png` });
+  }
+
   // Teclado
   if (w >= 1000) {
     await rp.keyboard.press("ArrowRight");
@@ -112,6 +128,30 @@ for (const w of WIDTHS) {
   }
   await page.context().close();
   await rp.context().close();
+}
+
+// Modo oscuro del sistema: capturas del home y contraste del texto principal
+for (const w of [1280, 375]) {
+  const p = await newPage(w, { colorScheme: "dark" });
+  await p.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
+  await noHScroll(p, `[${w}] home oscuro`);
+  await p.screenshot({ path: `${OUT}/home-${w}-oscuro.png`, fullPage: true });
+  const low = await p.evaluate(() => {
+    const parse = (c) => (c.match(/[\d.]+/g) || []).map(Number);
+    const lum = ([r, g, b]) => [r, g, b].map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }).reduce((a, v, i) => a + v * [0.2126, 0.7152, 0.0722][i], 0);
+    const bgOf = (el) => { for (let e = el; e; e = e.parentElement) { const c = parse(getComputedStyle(e).backgroundColor); if (c.length >= 3 && (c[3] ?? 1) > 0.9) return c; } return [255, 255, 255]; };
+    const out = [];
+    for (const el of document.querySelectorAll("main h2, main h3, main p, main li, .chip, .btn, .site-footer a")) {
+      if (!el.textContent.trim() || el.closest("[aria-hidden=true]")) continue;
+      const fg = lum(parse(getComputedStyle(el).color)), bg = lum(bgOf(el));
+      const ratio = (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05);
+      const big = parseFloat(getComputedStyle(el).fontSize) >= 24;
+      if (ratio < (big ? 3 : 4.5)) out.push(`${el.tagName} "${el.textContent.trim().slice(0, 30)}" ${ratio.toFixed(2)}`);
+    }
+    return out;
+  });
+  low.forEach((l) => problems.push(`[${w}] oscuro, contraste bajo: ${l}`));
+  await p.context().close();
 }
 
 // Inglés + selector conserva la ruta
