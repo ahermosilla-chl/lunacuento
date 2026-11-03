@@ -132,8 +132,8 @@ for (const w of WIDTHS) {
     if ((await page.locator(".m-card:visible").count()) !== 2) problems.push(`[${w}] faltan los dos accesos grandes del móvil`);
   } else {
     // hero integrado: título, filtros y estante de portadas sobre la ilustración
-    if (!(await page.locator(".stage h1").isVisible())) problems.push(`[${w}] falta el título del hero`);
-    if ((await page.locator(".stage .chips .chip").count()) !== 4) problems.push(`[${w}] faltan los filtros del hero`);
+    if (!(await page.locator(".hstage h1").isVisible())) problems.push(`[${w}] falta el título del hero`);
+    if ((await page.locator(".hstage .chips .chip").count()) !== 4) problems.push(`[${w}] faltan los filtros del hero`);
     if ((await page.locator(".stage-books .bk").count()) !== 6) problems.push(`[${w}] el hero debe mostrar 6 libros (3 + 3 Pronto)`);
     if (await page.locator(".shelf-grid").count()) problems.push(`[${w}] sigue el estante duplicado debajo del hero`);
     const f = await filtrosHero(page);

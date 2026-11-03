@@ -21,7 +21,7 @@
   overflow-x: clip;
   transition: background .4s;
 }
-.reader .bg-stars { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
 
 /* ---------- Barra superior ---------- */
 .r-top { position: relative; z-index: 2; display: flex; align-items: center; gap: 16px; padding: calc(22px + env(safe-area-inset-top, 0px)) 40px 22px; }
@@ -43,7 +43,8 @@
 .book {
   width: min(1120px, 100%, max(520px, calc((100dvh - 240px) * 1.697)));
   container-type: inline-size;
-  transition: transform 1.1s var(--ease);
+  transition: transform 1.4s var(--ease), opacity .3s;
+  position: relative;
   touch-action: pan-y;               /* el scroll vertical sigue funcionando; el gesto horizontal pasa la página */
   -webkit-user-select: none; user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -53,7 +54,7 @@
  * Sin preserve-3d aquí: así la hoja que gira se apila sobre las páginas por z-index y no se mezcla
  * en profundidad con ellas cerca del lomo (eso cortaba el texto de la hoja).
  */
-.spread { position: relative; display: flex; aspect-ratio: 1120 / 660; perspective: 2400px; border-radius: 14px 22px 22px 14px; box-shadow: 0 40px 0 -14px var(--board-shadow), 0 50px 80px -30px rgba(0, 0, 0, .6); transition: box-shadow .3s; }
+.spread { position: relative; display: flex; aspect-ratio: 1120 / 660; perspective: 2400px; border-radius: 14px 22px 22px 14px; box-shadow: 0 40px 0 -14px var(--board-shadow), 0 58px 46px -20px rgba(0, 0, 0, .85), 0 24px 30px -10px rgba(0, 0, 0, .45); transition: box-shadow .3s; }
 .single { display: none; position: relative; perspective: 1600px; }
 
 /* Tapa dura: cada mitad lleva su parte del cartón; juntas forman una sola tapa. */
@@ -109,7 +110,7 @@
 
 /* ---------- Tapa que se abre en 3D ---------- */
 .cover-leaf { position: absolute; top: 0; bottom: 0; left: 50%; right: 0; z-index: 6; transform-origin: left center; transform-style: preserve-3d; transform: rotateY(0); }
-.book[data-cover="opening"] .cover-leaf { transform: rotateY(-180deg); transition: transform 1.1s cubic-bezier(.45, .05, .25, 1); }
+.book[data-cover="opening"] .cover-leaf { transform: rotateY(-180deg); transition: transform 1.4s cubic-bezier(.45, .05, .25, 1); }
 .cover-leaf .face { position: absolute; inset: 0; display: flex; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .cover-leaf .back { transform: rotateY(180deg); }
 .cover-front {
@@ -210,3 +211,85 @@
 @media (prefers-reduced-motion: reduce) {
   .book, .leaf.anim, .cover-leaf { transition: none !important; }
 }
+
+
+/* =====================================================================
+   Escenografía del lector (noche con atmósfera, mesa de madera) y libro más físico
+   ===================================================================== */
+.r-scene { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.r-backdrop { position: absolute; inset: -8%; filter: blur(24px) saturate(1.15) brightness(.52); transform: scale(1.08); transition: filter .8s; }
+.r-backdrop img, .r-backdrop-svg { width: 100%; height: 100%; display: block; object-fit: cover; }
+.r-backdrop-svg svg { width: 100%; height: 100%; display: block; }
+.r-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 42%, transparent 30%, rgba(10, 8, 40, .7) 100%); transition: background .8s; }
+.bg-stars i { position: absolute; border-radius: 50%; background: #FFF8E7; opacity: .2; box-shadow: 0 0 6px rgba(255, 248, 231, .7); animation: r-twinkle 7s ease-in-out infinite; }
+@keyframes r-twinkle { 0%, 100% { opacity: .12; transform: scale(.7); } 50% { opacity: .95; transform: scale(1.15); } }
+.r-moon { position: absolute; right: 9%; top: 13%; width: clamp(56px, 8vw, 110px); aspect-ratio: 1; border-radius: 50%; background: #FFE9A8; box-shadow: 0 0 0 14px rgba(255, 224, 138, .12), 0 0 60px 20px rgba(255, 224, 138, .35); opacity: 0; transition: opacity .8s; }
+.ff { position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #FFF3B0; box-shadow: 0 0 10px 4px rgba(255, 230, 120, .65); animation: ff-float var(--dur, 16s) ease-in-out infinite alternate, ff-glow 3.4s ease-in-out infinite; }
+@keyframes ff-float { from { transform: translate(0, 0); } to { transform: translate(var(--dx), var(--dy)); } }
+@keyframes ff-glow { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+/* La mesa de madera donde descansa el libro (veta, borde claro y luz cálida de lámpara) */
+.r-table { position: absolute; left: 0; right: 0; bottom: 0; height: 34%; border-top: 3px solid #B07A44; background: repeating-linear-gradient(90deg, rgba(0, 0, 0, .11) 0 2px, transparent 2px 13px), repeating-linear-gradient(0deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 8px), linear-gradient(to bottom, #8B5732 0%, #6A3F22 45%, #47281A 100%); box-shadow: inset 0 16px 24px -12px rgba(255, 214, 150, .35), 0 -14px 34px rgba(0, 0, 0, .4); transition: filter .8s; }
+.r-table::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0, rgba(255, 206, 130, .3), transparent 62%); }
+
+/* Modo dormir: la escena se oscurece; quedan la luna y las luciérnagas lentas */
+.reader.sleep { background: #0B0A2E; }
+.reader.sleep .r-backdrop { filter: blur(28px) brightness(.16) saturate(.8); }
+.reader.sleep .r-vignette { background: radial-gradient(ellipse at 50% 42%, transparent 20%, rgba(4, 3, 20, .88) 100%); }
+.reader.sleep .bg-stars { opacity: 0; }
+.reader.sleep .r-moon { opacity: 1; }
+.reader.sleep .ff { animation-duration: calc(var(--dur, 16s) * 2.4), 7s; }
+.reader.sleep .r-table { filter: brightness(.38); }
+
+/* Libro más físico: grosor de hojas abajo, curvatura leve junto al lomo y textura de papel */
+.paper { background-color: var(--paper-bg); background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35  0 0 0 0 .27  0 0 0 0 .18  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+.paper.pl { box-shadow: -2px 0 0 #EADFC6, -4px 0 0 #FFFDF6, -6px 0 0 #EADFC6, -8px 0 0 #FFFDF6, -10px 0 0 #D9C9A6, 0 2px 0 #EADFC6, 0 4px 0 #FFFDF6, 0 6px 0 #D9C9A6; transform: perspective(1600px) rotateY(1.3deg); transform-origin: right center; }
+.paper.pr { box-shadow: 2px 0 0 #EADFC6, 4px 0 0 #FFFDF6, 6px 0 0 #EADFC6, 8px 0 0 #FFFDF6, 10px 0 0 #D9C9A6, 0 2px 0 #EADFC6, 0 4px 0 #FFFDF6, 0 6px 0 #D9C9A6; transform: perspective(1600px) rotateY(-1.3deg); transform-origin: left center; }
+.leaf .face > .paper, .cover-leaf .paper { transform: none; }
+.spine-l { background: linear-gradient(to left, rgba(15, 27, 61, .36) 0, rgba(15, 27, 61, .15) 38%, rgba(15, 27, 61, 0) 100%); }
+.spine-r { background: linear-gradient(to right, rgba(15, 27, 61, .34) 0, rgba(15, 27, 61, .14) 38%, rgba(15, 27, 61, 0) 100%); }
+
+/* Libro cerrado: flota un instante con brillo antes de abrirse */
+@keyframes book-float { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -9px; rotate: .35deg; } }
+@keyframes cover-glow { 0%, 100% { opacity: .25; } 50% { opacity: .85; } }
+.book[data-cover="closed"] { animation: book-float 2.6s ease-in-out infinite; }
+.book[data-cover="closed"]::after { content: ""; position: absolute; left: 50%; right: 0; top: 0; bottom: 0; border-radius: 6px 22px 22px 6px; box-shadow: 0 0 60px 18px rgba(255, 214, 102, .55); pointer-events: none; animation: cover-glow 1.8s ease-in-out infinite; }
+.book[data-fly="wait"] { opacity: 0; transition: none; }
+.fly-host { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+.fly-host .bk { box-shadow: 0 22px 40px -10px rgba(0, 0, 0, .6); transition: none; }
+
+/* Apertura de la tapa: destellos de luz y partículas doradas que salen de las páginas */
+.burst { position: absolute; left: 50%; top: 50%; width: 0; height: 0; z-index: 7; pointer-events: none; }
+.burst.m { left: 8%; }
+.burst i { position: absolute; left: 0; top: 0; border-radius: 50%; background: radial-gradient(circle, #FFF6C8 0, #FFD66B 55%, rgba(255, 214, 107, 0) 72%); opacity: 0; animation: spark 1.6s ease-out both; }
+@keyframes spark { 0% { opacity: 0; transform: rotate(var(--a)) translateX(0) scale(.4); } 18% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--a)) translateX(var(--d)) scale(1); } }
+.burst-light { position: absolute; left: -260px; top: -260px; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 236, 160, .75) 0, rgba(255, 226, 140, .25) 45%, transparent 70%); opacity: 0; animation: light-pulse 1.9s ease-out both; }
+@keyframes light-pulse { 0% { opacity: 0; transform: scale(.4); } 35% { opacity: .9; } 100% { opacity: 0; transform: scale(1.3); } }
+.burst-rays { position: absolute; left: -300px; top: -300px; width: 600px; height: 600px; border-radius: 50%; background: repeating-conic-gradient(from 0deg, rgba(255, 236, 170, 0) 0 8deg, rgba(255, 236, 170, .24) 8deg 12deg); -webkit-mask-image: radial-gradient(circle, #000 5%, transparent 68%); mask-image: radial-gradient(circle, #000 5%, transparent 68%); opacity: 0; animation: rays 1.9s ease-out both; }
+@keyframes rays { 0% { opacity: 0; transform: rotate(0) scale(.5); } 30% { opacity: 1; } 100% { opacity: 0; transform: rotate(25deg) scale(1.1); } }
+
+/* Celebración al terminar el cuento: lluvia de estrellas y pantalla final */
+.finale { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 24px; overflow: hidden; background: rgba(15, 10, 50, .8); animation: fin-in .4s ease-out both; }
+@keyframes fin-in { from { opacity: 0; } to { opacity: 1; } }
+.fin-stars i { position: absolute; top: -30px; background: #FFD66B; clip-path: polygon(50% 0, 62% 36%, 100% 38%, 70% 60%, 80% 100%, 50% 76%, 20% 100%, 30% 60%, 0 38%, 38% 36%); opacity: 0; animation: fin-fall 3s ease-in both; }
+@keyframes fin-fall { 0% { transform: translateY(-5vh) scale(.6); opacity: 0; } 12% { opacity: 1; } 100% { transform: translateY(112vh) scale(1) rotate(260deg); opacity: .9; } }
+.fin-card { position: relative; width: min(100%, 420px); padding: 30px 28px 26px; border-radius: 28px; text-align: center; background: var(--paper); color: var(--paper-ink); box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .6); animation: fin-pop .65s .15s var(--ease) both; }
+@keyframes fin-pop { from { opacity: 0; transform: translateY(24px) scale(.92); } to { opacity: 1; transform: none; } }
+.fin-moon { width: 72px; height: 72px; margin: -66px auto 14px; border-radius: 50%; background: var(--moon); box-shadow: 0 0 0 12px rgba(255, 224, 138, .25), 0 0 40px 12px rgba(255, 224, 138, .5); }
+.fin-card h2 { font-size: 44px; color: var(--paper-ink); }
+.fin-card p { margin-top: 6px; font-size: 19px; font-weight: 700; color: var(--paper-muted); }
+.fin-actions { margin-top: 22px; display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
+.fin-back { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; color: var(--violet-ink); font-weight: 800; text-decoration: none; }
+.fin-back { color: #4F3FD6; }
+
+/* Con "reducir movimiento": sin vuelo, destellos ni lluvia de estrellas; solo un fundido simple al entrar */
+@keyframes reader-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .reader { animation: reader-fade .45s linear both !important; }
+  .burst, .fin-stars, .r-fireflies, .bg-stars { display: none; }
+  .book[data-cover="closed"]::after { display: none; }
+}
+
+.cover-photo { overflow: hidden; border-radius: 12px; }
+.cover-photo img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center 35%; }
+
+@media (max-width: 699px) { .book[data-cover="closed"]::after { left: 0; } }

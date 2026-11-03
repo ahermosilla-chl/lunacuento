@@ -53,7 +53,7 @@ const es = {
     goodnight: "Buenas noches", tapBack: "Toca para volver", noVoice: "Este navegador no tiene voz; las palabras se iluminan solas.",
     forName: "para {n}", closeBook: "Cerrar el libro", prevPage: "Página anterior", nextPage: "Página siguiente",
     pageOf: "Página {a} de {b}", timerOff: "Sin apagar", timerMin: "Apagar en {m} min", sleepOn: "Salir del modo dormir",
-    again: "Leer otra vez", cover: "Tapa del cuento", favAdd: "Guardar en favoritos", favRemove: "Quitar de favoritos", toLibrary: "Volver a los cuentos",
+    again: "Leer otra vez", cover: "Tapa del cuento", favAdd: "Guardar en favoritos", favRemove: "Quitar de favoritos", toLibrary: "Volver a los cuentos", endMsg: "¡Terminaste el cuento, {n}!",
   },
   coloring: {
     title: "¡A pintar!", studio: "Taller de pintura", clear: "Borrar", colors: "Colores", drawing: "Dibujo para colorear", pick: "Elige un dibujo", all: "Todos",
@@ -161,7 +161,7 @@ const en: typeof es = {
     goodnight: "Good night", tapBack: "Tap to go back", noVoice: "This browser has no voice; words will light up on their own.",
     forName: "for {n}", closeBook: "Close the book", prevPage: "Previous page", nextPage: "Next page",
     pageOf: "Page {a} of {b}", timerOff: "Don't stop", timerMin: "Stop in {m} min", sleepOn: "Leave sleep mode",
-    again: "Read again", cover: "Story cover", favAdd: "Save to favorites", favRemove: "Remove from favorites", toLibrary: "Back to stories",
+    again: "Read again", cover: "Story cover", favAdd: "Save to favorites", favRemove: "Remove from favorites", toLibrary: "Back to stories", endMsg: "You finished the story, {n}!",
   },
   coloring: {
     title: "Time to paint!", studio: "Paint studio", clear: "Clear", colors: "Colors", drawing: "Coloring page", pick: "Pick a drawing", all: "All",

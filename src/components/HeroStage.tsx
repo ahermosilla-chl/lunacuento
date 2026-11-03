@@ -90,7 +90,7 @@ export default function HeroStage({ lang, t }: { lang: Lang; t: Dict }) {
   }, []);
 
   return (
-    <section className="stage" ref={stage} aria-labelledby="stage-title">
+    <section className="hstage" ref={stage} aria-labelledby="stage-title">
       <div className="stage-art" aria-hidden="true">
         <span className="stage-side l" />
         <span className="stage-side r" />

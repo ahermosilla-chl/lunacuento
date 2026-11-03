@@ -565,7 +565,7 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
    La ilustración (3:2) va en una caja centrada de alto fijo: nunca se estira; a los lados el cielo continúa con el color
    de sus bordes. Niño y zorro a la izquierda (~12–40 %), luna arriba a la derecha: el texto y el estante empiezan en --stage-left.
    ===================================================================== */
-.stage { --stage-left: 48%; --stage-h: clamp(640px, min(calc(100dvh - 92px), 62vw), 860px); --stage-shadow: 0 2px 14px rgba(45, 40, 119, .6); position: relative; overflow: hidden; background: #5F64B3; color: #FFFFFF; height: var(--stage-h); display: flex; }
+.hstage { --stage-left: 48%; --stage-h: clamp(640px, min(calc(100dvh - 92px), 62vw), 860px); --stage-shadow: 0 2px 14px rgba(45, 40, 119, .6); position: relative; overflow: hidden; background: #5F64B3; color: #FFFFFF; height: var(--stage-h); display: flex; }
 .stage-art { position: absolute; inset: 0; }
 /* Cielo de los lados: degradado vertical con los colores muestreados de cada borde de la ilustración */
 .stage-side { position: absolute; top: 0; bottom: 0; width: 51%; }
@@ -628,10 +628,53 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
 .bk.has-cover .bk-art img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
 .bk.has-cover .bk-ttl { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: 12px 12px 12px 18px; background: rgba(15, 27, 61, .78); color: #FFF8E7; }
 .bk.has-cover .bk-ttl small { background: transparent; padding: 0; color: #D5D2FA; }
-@media (max-width: 760px) { .stage { display: none; } }
+@media (max-width: 760px) { .hstage { display: none; } }
 
 /* Botón de sonido */
 .site-header .snd, .native-bar .snd { width: 44px; height: 44px; }
 .round.snd[aria-pressed="false"] { opacity: .75; }
 .r-snd-m { display: none; }
 @media (max-width: 699px) { .r-snd-m { display: inline-flex; } .r-actions .snd { display: none; } }
+
+
+/* =====================================================================
+   Emoción: destello al tocar un libro, separadores con forma y "noche mágica" en modo oscuro
+   ===================================================================== */
+/* Destello de estrella en la esquina del libro al pasar, enfocar o tocar */
+.bk::after { content: ""; position: absolute; right: 12px; top: 14px; z-index: 3; width: 24px; height: 24px; background: #FFF8E7; clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); opacity: 0; transform: scale(.2) rotate(-40deg); pointer-events: none; transition: opacity .25s, transform .45s var(--ease); }
+a.bk:hover::after, a.bk:focus-visible::after, a.bk:active::after { opacity: .95; transform: scale(1) rotate(0deg); }
+.bk.soon::after { display: none; }
+
+/* Separadores: nubes sobre "¡A pintar!", colinas bajo ella y antes del cierre */
+.coloring .wave { height: 70px; }
+.hills-out { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 120px; display: block; }
+.hills-out path { fill: var(--bg); }
+.coloring { padding-bottom: 170px; }
+.final-hills { position: absolute; left: 0; right: 0; top: -1px; width: 100%; height: 90px; display: block; z-index: 0; }
+.final-hills path { fill: var(--bg); }
+.final .wrap { padding-top: 130px; }
+@media (max-width: 640px) { .coloring { padding-bottom: 120px; } .hills-out { height: 80px; } .final .wrap { padding-top: 96px; } .final-hills { height: 60px; } }
+
+/* Modo oscuro = noche mágica: azul-violeta profundo con estrellas sutiles; las tarjetas claras brillan suave */
+@media (prefers-color-scheme: dark) {
+  :root { --stars: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='260'><g fill='%23FFF8E7'><circle cx='24' cy='40' r='1.1' opacity='.55'/><circle cx='88' cy='150' r='.8' opacity='.4'/><circle cx='140' cy='24' r='1.4' opacity='.6'/><circle cx='196' cy='98' r='.9' opacity='.45'/><circle cx='250' cy='200' r='1.2' opacity='.5'/><circle cx='310' cy='60' r='.8' opacity='.4'/><circle cx='330' cy='170' r='1.3' opacity='.55'/><circle cx='60' cy='230' r='.9' opacity='.4'/><circle cx='170' cy='210' r='.8' opacity='.35'/><circle cx='278' cy='128' r='.7' opacity='.35'/></g></svg>"); }
+  body { background-color: var(--bg); background-image: var(--stars); }
+  /* Secciones que en claro son un bloque de color: en oscuro son escenas nocturnas */
+  .coloring { background-color: #1C1B58; background-image: var(--stars); }
+  .coloring .wave path, .hills-out path, .final-hills path { fill: var(--bg); }
+  /* Tarjetas claras con brillo suave (con sus propios tokens para que el texto siga siendo oscuro sobre claro) */
+  .thumb, .resume, .m-resume, .empty-state, .plan:not(.main), .page-plain .card, .toolbar {
+    --ink: #0F1B3D; --muted: #5A6385; --line: #E1E5F7; --surface: #FFFFFF; --violet-ink: #4F3FD6; --violet-soft: #E8E5FF; --shadow-card: none;
+    background: #FFFDF8; color: var(--ink);
+    box-shadow: 0 0 0 1px rgba(255, 240, 194, .4), 0 0 26px 2px rgba(255, 214, 120, .2), 0 16px 30px -14px rgba(0, 0, 0, .65);
+  }
+  .thumb[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--violet), 0 0 26px 2px rgba(255, 214, 120, .25); }
+  .tbtn:not([aria-pressed="true"]) { color: #0F1B3D; }
+  .tbtn.soft { background: #FFFDF8; color: #0F1B3D; }
+  .palette .sw, .sizes .size { --surface: #FFFFFF; }
+  .size { background: #FFFFFF; }
+  .size i { background: #0F1B3D; }
+  .chip { background: #24266B; border-color: #3C3F9A; }
+  .chip[aria-pressed="true"] { background: var(--violet); border-color: var(--violet); }
+  .shelf-more .btn-line { background: #FFFDF8; color: #0F1B3D; box-shadow: 0 4px 0 #6B6FD0; border-color: #0F1B3D; }
+}
