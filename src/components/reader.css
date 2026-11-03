@@ -51,13 +51,13 @@
  * Sin preserve-3d aquí: así la hoja que gira se apila sobre las páginas por z-index y no se mezcla
  * en profundidad con ellas cerca del lomo (eso cortaba el texto de la hoja).
  */
-.spread { position: relative; display: flex; aspect-ratio: 1120 / 660; perspective: 2400px; }
+.spread { position: relative; display: flex; aspect-ratio: 1120 / 660; perspective: 2400px; border-radius: 14px 22px 22px 14px; box-shadow: 0 40px 0 -14px var(--board-shadow), 0 50px 80px -30px rgba(0, 0, 0, .6); transition: box-shadow .3s; }
 .single { display: none; position: relative; perspective: 1600px; }
 
 /* Tapa dura: cada mitad lleva su parte del cartón; juntas forman una sola tapa. */
 .half { position: relative; flex: 1; min-width: 0; display: flex; background: var(--cover); }
-.half.l { padding: 16px 0 16px 16px; border-radius: 14px 0 0 14px; box-shadow: inset 3px 3px 0 rgba(255, 255, 255, .12), inset 0 -3px 0 rgba(255, 255, 255, .06), 0 40px 0 -14px var(--board-shadow), 0 50px 80px -30px rgba(0, 0, 0, .6); }
-.half.r { padding: 16px 16px 16px 0; border-radius: 0 22px 22px 0; box-shadow: inset -3px 3px 0 rgba(255, 255, 255, .12), inset 0 -3px 0 rgba(255, 255, 255, .06), 0 40px 0 -14px var(--board-shadow), 0 50px 80px -30px rgba(0, 0, 0, .6); }
+.half.l { padding: 16px 0 16px 16px; border-radius: 14px 0 0 14px; box-shadow: inset 3px 3px 0 rgba(255, 255, 255, .12), inset 0 -3px 0 rgba(255, 255, 255, .06); }
+.half.r { padding: 16px 16px 16px 0; border-radius: 0 22px 22px 0; box-shadow: inset -3px 3px 0 rgba(255, 255, 255, .12), inset 0 -3px 0 rgba(255, 255, 255, .06); }
 
 /* Papel cálido con canto de hojas apiladas (box-shadow escalonado) y sombra del lomo. */
 .paper { position: relative; flex: 1; min-width: 0; background: var(--paper-bg); color: var(--paper-fg); transition: background .4s, color .4s; }
@@ -121,6 +121,8 @@
 .cover-front p { margin-top: .5cqw; font-size: clamp(12px, 1.2cqw, 15px); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .book[data-cover="closed"] { transform: translateX(-25%); }
 .book[data-cover="closed"] .half.l, .book[data-cover="opening"] .half.l { visibility: hidden; }
+/* Con la tapa cerrada la base solo va bajo la mitad derecha (la tapa lleva la suya). */
+.book[data-cover="closed"] .spread, .book[data-cover="opening"] .spread { box-shadow: none; }
 
 /* ---------- Barra inferior ---------- */
 .r-bottom { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 28px; padding: 18px 40px 28px; }
