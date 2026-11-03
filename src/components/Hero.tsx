@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Dict, Lang } from "@/lib/i18n";
 import { DEFAULT_NAME } from "@/lib/i18n";
 import { setKidName, useKidName, useRawKidName } from "@/lib/name-store";
+import { fmt } from "@/lib/text";
 import { IconPerson } from "./icons";
 
 /** Estrellas fijas (deterministas) del cielo del hero, según docs/diseno/Main.dc.html. */
@@ -28,7 +29,7 @@ export default function Hero({ lang, t, firstStory }: { lang: Lang; t: Dict; fir
       <div className="hero-moon-m" aria-hidden="true" />
       <div className="wrap hero-grid">
         <div className="hero-copy">
-          <span className="eyebrow-pill">{t.hero.eyebrow}</span>
+          <span className="eyebrow-pill">{raw.trim() ? fmt(t.hero.hello, { n: name }) : t.hero.eyebrow}</span>
           <h1 id="hero-title">
             {t.hero.title[0]} {t.hero.title[1]} <em>{t.hero.title[2]}</em>
           </h1>
@@ -52,6 +53,7 @@ export default function Hero({ lang, t, firstStory }: { lang: Lang; t: Dict; fir
           </div>
         </div>
 
+        {/* ILUSTRACION-PENDIENTE: ilustración hero definitiva (fase 3, gpt-image-2). Hoy: libro vectorial provisorio. */}
         <div className="hero-book" aria-hidden="true">
           <div className="hero-moon" />
           <div className="mini-book">

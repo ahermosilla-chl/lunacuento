@@ -1,11 +1,13 @@
 import Link from "next/link";
-import Coloring from "@/components/Coloring";
+import ContinueReading from "@/components/ContinueReading";
 import Features from "@/components/Features";
 import Hero from "@/components/Hero";
+import Novelties from "@/components/Novelties";
+import PaintTeaser from "@/components/PaintTeaser";
 import Plans from "@/components/Plans";
+import QuickActions from "@/components/QuickActions";
+import Shell from "@/components/Shell";
 import Shelf from "@/components/Shelf";
-import SiteFooter from "@/components/SiteFooter";
-import SiteHeader from "@/components/SiteHeader";
 import { getDict, isLang, type Lang } from "@/lib/i18n";
 import { STORIES } from "@/lib/stories";
 
@@ -15,23 +17,22 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
   const t = getDict(lang);
   const first = STORIES.find((s) => !s.premium) ?? STORIES[0];
   return (
-    <>
-      <SiteHeader lang={lang} t={t} />
-      <main id="contenido">
-        <Hero lang={lang} t={t} firstStory={first.id} />
-        <Shelf lang={lang} t={t} stories={STORIES} />
-        <Features t={t} />
-        <Coloring lang={lang} t={t} stories={STORIES} />
-        <Plans lang={lang} t={t} firstStory={first.id} />
-        <section className="final" aria-labelledby="final-title">
-          <div className="moon" aria-hidden="true" />
-          <div className="wrap">
-            <h2 id="final-title">{t.final.title}</h2>
-            <Link href={`/${lang}/cuento/${first.id}`} className="btn btn-sun btn-lg">{t.final.cta}</Link>
-          </div>
-        </section>
-      </main>
-      <SiteFooter lang={lang} t={t} />
-    </>
+    <Shell lang={lang}>
+      <Hero lang={lang} t={t} firstStory={first.id} />
+      <QuickActions lang={lang} t={t} />
+      <ContinueReading lang={lang} t={t} />
+      <Shelf lang={lang} t={t} stories={STORIES} moreHref={`/${lang}/cuentos`} />
+      <Novelties lang={lang} t={t} stories={STORIES} />
+      <Features t={t} />
+      <PaintTeaser lang={lang} t={t} />
+      <Plans lang={lang} t={t} firstStory={first.id} />
+      <section className="final" aria-labelledby="final-title">
+        <div className="moon" aria-hidden="true" />
+        <div className="wrap">
+          <h2 id="final-title">{t.final.title}</h2>
+          <Link href={`/${lang}/cuento/${first.id}`} className="btn btn-sun btn-lg">{t.final.cta}</Link>
+        </div>
+      </section>
+    </Shell>
   );
 }

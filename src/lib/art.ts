@@ -1,6 +1,7 @@
 import type { Scene } from "./stories";
 
 /**
+ * ILUSTRACION-PENDIENTE (todo este archivo): ilustraciones vectoriales provisorias de páginas, portadas y dibujos para colorear.
  * Ilustraciones vectoriales provisorias. Se reemplazan por imágenes de gpt-image-2
  * cuando una página tiene `image`. Todo es determinista (sin Math.random) para que
  * el HTML del servidor y del cliente coincida.

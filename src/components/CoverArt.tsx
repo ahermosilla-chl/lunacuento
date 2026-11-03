@@ -2,6 +2,7 @@ import { sceneSVG } from "@/lib/art";
 import type { Story } from "@/lib/stories";
 
 /** Tapa de un cuento: ilustración de su página de portada (o la imagen definitiva si ya existe). */
+/** ILUSTRACION-PENDIENTE: portadas definitivas (fase 3, gpt-image-2): se activan solas al poner `image` en la página de portada. */
 export default function CoverArt({ story }: { story: Story }) {
   const page = story.pages[story.coverPage] ?? story.pages[0];
   if (page.image) {
