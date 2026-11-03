@@ -14,7 +14,7 @@ const base = (size: number) => ({
 
 export const MoonLogo = ({ size = 38 }: P) => (
   <svg width={size} height={size} viewBox="0 0 38 38" aria-hidden="true" focusable="false">
-    <path d="M25 5a15 15 0 1 0 9 26A12.5 12.5 0 0 1 25 5z" fill="#FFB703" />
+    <path d="M25 5a15 15 0 1 0 9 26A12.5 12.5 0 0 1 25 5z" fill="#FFC94D" />
     <circle cx="30" cy="9" r="2" fill="#FFF8E7" />
   </svg>
 );

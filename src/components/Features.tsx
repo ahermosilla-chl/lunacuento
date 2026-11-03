@@ -2,9 +2,9 @@ import type { Dict } from "@/lib/i18n";
 import { IconMoon, IconPerson, IconSound } from "./icons";
 
 const ICONS = [
-  { bg: "#FFE6A3", color: "#3A2600", Icon: IconPerson },
-  { bg: "#DDF5EC", color: "#1F6E57", Icon: IconSound },
-  { bg: "#E4E6FA", color: "#27317A", Icon: IconMoon },
+  { bg: "#FFF0C2", color: "#3A2600", Icon: IconPerson },
+  { bg: "#D9F6F1", color: "#00796B", Icon: IconSound },
+  { bg: "#E8E5FF", color: "#2D2877", Icon: IconMoon },
 ];
 
 export default function Features({ t }: { t: Dict }) {

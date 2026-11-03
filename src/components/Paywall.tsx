@@ -66,7 +66,7 @@ export default function Paywall({ lang, t, story }: { lang: Lang; t: Dict; story
   if (MODO_PRUEBA) return null;
 
   const back = story ? `/${lang}#cuentos` : `/${lang}`;
-  const cover = story?.color ?? "#2F3E9E";
+  const cover = story?.color ?? "#4A3FC0";
 
   return (
     <main id="contenido" className="paywall">

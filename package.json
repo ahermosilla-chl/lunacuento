@@ -11,7 +11,7 @@
     "build:app": "next build && cap sync",
     "cap:ios": "cap open ios",
     "cap:android": "cap open android",
-    "assets": "capacitor-assets generate --iconBackgroundColor '#27317A' --splashBackgroundColor '#27317A'",
+    "assets": "capacitor-assets generate --iconBackgroundColor '#2D2877' --splashBackgroundColor '#2D2877'",
     "probar:modo-prueba": "node scripts/probar-modo-prueba.mjs"
   },
   "dependencies": {

@@ -42,7 +42,7 @@ const es = {
   },
   coloring: {
     title: "¡A colorear!", clear: "Borrar", colors: "Colores", drawing: "Dibujo para colorear", pick: "Elige un dibujo",
-    names: { "#FFB703": "Amarillo", "#FF6F61": "Coral", "#E24F7A": "Rosado", "#7C6CF0": "Uva", "#4FA9F0": "Cielo", "#2FB58F": "Menta", "#9C6A43": "Café", "#FFFFFF": "Blanco" } as Record<string, string>,
+    names: { "#FFC94D": "Amarillo", "#FF6B9E": "Rosa", "#6D5BFF": "Violeta", "#4FA9F0": "Cielo", "#00C2AB": "Turquesa", "#FF8A4C": "Naranja", "#9C6A43": "Café", "#FFFFFF": "Blanco" } as Record<string, string>,
   },
   plans: {
     title: "Planes",
@@ -130,7 +130,7 @@ const en: typeof es = {
   },
   coloring: {
     title: "Time to color!", clear: "Clear", colors: "Colors", drawing: "Coloring page", pick: "Pick a drawing",
-    names: { "#FFB703": "Yellow", "#FF6F61": "Coral", "#E24F7A": "Pink", "#7C6CF0": "Grape", "#4FA9F0": "Sky", "#2FB58F": "Mint", "#9C6A43": "Brown", "#FFFFFF": "White" } as Record<string, string>,
+    names: { "#FFC94D": "Yellow", "#FF6B9E": "Pink", "#6D5BFF": "Violet", "#4FA9F0": "Sky", "#00C2AB": "Turquoise", "#FF8A4C": "Orange", "#9C6A43": "Brown", "#FFFFFF": "White" } as Record<string, string>,
   },
   plans: {
     title: "Plans",

@@ -22,8 +22,8 @@ export default function Hero({ lang, t, firstStory }: { lang: Lang; t: Dict; fir
         <g fill="#FFF8E7">
           {STARS.map(([x, y, r]) => <circle key={`${x}-${y}`} cx={x} cy={y} r={r} />)}
         </g>
-        <path d="M600 110 l6 13 14 2 -10 10 3 14 -13 -7 -13 7 3 -14 -10 -10 14 -2z" fill="#FFB703" opacity=".9" />
-        <path d="M150 300 l4 9 10 1 -7 7 2 10 -9 -5 -9 5 2 -10 -7 -7 10 -1z" fill="#FFB703" opacity=".7" />
+        <path d="M600 110 l6 13 14 2 -10 10 3 14 -13 -7 -13 7 3 -14 -10 -10 14 -2z" fill="#FFC94D" opacity=".9" />
+        <path d="M150 300 l4 9 10 1 -7 7 2 10 -9 -5 -9 5 2 -10 -7 -7 10 -1z" fill="#FFC94D" opacity=".7" />
       </svg>
       <div className="hero-moon-m" aria-hidden="true" />
       <div className="wrap hero-grid">
@@ -73,8 +73,8 @@ export default function Hero({ lang, t, firstStory }: { lang: Lang; t: Dict; fir
         </div>
       </div>
       <svg className="hills" aria-hidden="true" focusable="false" viewBox="0 0 1440 200" preserveAspectRatio="none">
-        <path d="M0 90 Q240 20 480 80 T960 70 T1440 60 V200 H0Z" fill="#333F93" />
-        <path d="M0 130 Q300 70 620 120 T1180 110 T1440 120 V200 H0Z" fill="#2FB58F" />
+        <path d="M0 90 Q240 20 480 80 T960 70 T1440 60 V200 H0Z" fill="#3D36A0" />
+        <path d="M0 130 Q300 70 620 120 T1180 110 T1440 120 V200 H0Z" fill="#00C2AB" />
         <path className="h3" d="M0 165 Q360 125 760 160 T1440 150 V200 H0Z" />
       </svg>
     </section>
