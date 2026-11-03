@@ -456,8 +456,12 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
 .thumb { display: flex; flex-direction: column; gap: 10px; width: 100%; padding: 12px; border: 0; border-radius: var(--r-card); background: var(--surface); box-shadow: var(--shadow-card); color: var(--ink); text-align: left; text-decoration: none; cursor: pointer; transition: transform .2s var(--ease), box-shadow .2s; -webkit-tap-highlight-color: transparent; }
 .thumb:hover { transform: translateY(-3px); }
 .thumb[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--violet); }
-.thumb-art { display: block; background: #FFFFFF; border-radius: 12px; overflow: hidden; }
-.thumb-art svg { width: 100%; height: auto; display: block; }
+.thumb-art { display: block; aspect-ratio: 3 / 2; background: #FFFFFF; border-radius: 12px; overflow: hidden; }
+/* El <img> trae width/height de la imagen; sin esto el alto queda fijo y se estira. contain = nunca se deforma. */
+.thumb-art svg, .thumb-art .thumb-img { display: block; width: 100%; height: 100%; object-fit: contain; }
+/* "¡A pintar!" del inicio: 3 columnas en escritorio y tablet, 2 en móvil */
+.thumbs.teaser { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 760px) { .thumbs.teaser { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
 .thumb-name { display: flex; align-items: center; gap: 6px; min-height: 24px; font: 700 16px var(--font-body); }
 @media (max-width: 640px) { .thumbs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 20px; } .thumb { padding: 8px; gap: 8px; } .thumb-name { font-size: 14px; } }
 

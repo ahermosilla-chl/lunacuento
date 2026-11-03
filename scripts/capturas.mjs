@@ -21,6 +21,28 @@ const filtrosHero = (page) => page.evaluate(() => {
   const chips = [...box.querySelectorAll(".chip")];
   return { filas: new Set(chips.map((c) => Math.round(c.getBoundingClientRect().top))).size, desborda: box.scrollWidth > box.clientWidth + 1 };
 });
+/** Fuerza la carga de las imágenes lazy (también las fuera de pantalla) y espera a que terminen: sin esto las capturas de página completa salen con miniaturas en blanco. */
+async function cargarImagenes(page) {
+  await page.evaluate(async () => {
+    document.querySelectorAll('img[loading="lazy"]').forEach((i) => { i.loading = "eager"; });
+    await Promise.all([...document.images].map((i) => (i.complete ? null : new Promise((r) => { i.onload = i.onerror = r; }))));
+  });
+}
+/** Miniaturas (.thumb-img): todas cargan y ninguna se deforma (proporción renderizada ≈ natural). Devuelve los problemas. */
+async function revisarMiniaturas(page, etiqueta, esperadas) {
+  await cargarImagenes(page);
+  const r = await page.evaluate(() => [...document.querySelectorAll(".thumb-img")].filter((i) => i.offsetParent !== null).map((i) => {
+    const b = i.getBoundingClientRect();
+    return { src: i.currentSrc.split("/").pop(), ok: i.complete && i.naturalWidth > 0, render: b.width / b.height, natural: i.naturalWidth / i.naturalHeight };
+  }));
+  const out = [];
+  if (esperadas !== undefined && r.length !== esperadas) out.push(`${etiqueta}: se esperaban ${esperadas} miniaturas y hay ${r.length}`);
+  for (const m of r) {
+    if (!m.ok) out.push(`${etiqueta}: la miniatura ${m.src} no cargó`);
+    else if (Math.abs(m.render / m.natural - 1) > 0.02) out.push(`${etiqueta}: la miniatura ${m.src} está deformada (renderizada ${m.render.toFixed(2)} vs natural ${m.natural.toFixed(2)})`);
+  }
+  return out;
+}
 const NAME_INPUT = (w) => (w <= 760 ? "#kid-name-m" : "#kid-name"); // en móvil el saludo reemplaza al hero
 const executablePath = process.env.CHROME_PATH || "/usr/bin/google-chrome";
 
@@ -89,6 +111,15 @@ for (const w of WIDTHS) {
   await page.fill(NAME_INPUT(w), "Tomás");
   await page.waitForTimeout(300);
   await noHScroll(page, `[${w}] home`);
+  {
+    const tarjetas = await page.locator("#pintar .thumbs.teaser .thumb").count();
+    if (tarjetas < 1 || tarjetas > 6) problems.push(`[${w}] "¡A pintar!": debe mostrar entre 1 y 6 tarjetas (hay ${tarjetas})`);
+    const cols = await page.evaluate(() => new Set([...document.querySelectorAll("#pintar .thumbs.teaser .thumb")].map((e) => Math.round(e.getBoundingClientRect().left))).size);
+    if (cols !== (w <= 760 ? 2 : 3)) problems.push(`[${w}] "¡A pintar!": debe tener ${w <= 760 ? 2 : 3} columnas (hay ${cols})`);
+    if (!(await page.getByRole("link", { name: "Ir al taller" }).isVisible())) problems.push(`[${w}] "¡A pintar!": falta el botón "Ir al taller"`);
+    (await revisarMiniaturas(page, `[${w}] inicio`, tarjetas)).forEach((x) => problems.push(x));
+  }
+  await cargarImagenes(page);
   await page.screenshot({ path: `${OUT}/home-${w}.png`, fullPage: true });
   const shelfName = await (w <= 760 ? page.locator(".greet-hi").first().textContent() : page.locator("#kid-name").inputValue());
   if (!shelfName?.includes("Tomás")) problems.push(`[${w}] el nombre no llega al ${w <= 760 ? "saludo" : "estante"}`);
@@ -238,7 +269,7 @@ for (const w of WIDTHS) {
   if (await app.locator(".stores").first().isVisible()) problems.push(`[${w}] app: siguen los botones de descarga`);
   if (!(await app.locator("#planes a.app-only").isVisible())) problems.push(`[${w}] app: falta el botón para desbloquear en Planes`);
   await noHScroll(app, `[${w}] app home`);
-  if (w === 375) await app.screenshot({ path: `${OUT}/app-home-375.png`, fullPage: true });
+  if (w === 375) { await cargarImagenes(app); await app.screenshot({ path: `${OUT}/app-home-375.png`, fullPage: true }); }
   await app.goto(`${BASE}/es/comprar/`, { waitUntil: "networkidle" });
   if (await app.locator(".stores").first().isVisible()) problems.push(`[${w}] app: la compra muestra botones de descarga`);
   await gateFlow(app, w, null, /no están disponibles/);
@@ -293,6 +324,7 @@ for (const w of WIDTHS) {
   const p = await newPage(w);
   await p.goto(`${BASE}/es/pintar/`, { waitUntil: "networkidle" });
   await listoRaster(p);
+  (await revisarMiniaturas(p, `[${w}] taller`, 6)).forEach((x) => problems.push(x));
   if ((await p.locator("canvas.raster").count()) !== 1) problems.push(`[${w}] pintar: debe usar el motor raster con los dibujos generados`);
   await noHScroll(p, `[${w}] pintar`);
   let box;
@@ -426,6 +458,7 @@ for (const w of WIDTHS) {
     if (!(await p.getByRole("heading", { name: h }).count())) problems.push(`[${w}] biblioteca: falta la sección ${h}`);
   }
   await noHScroll(p, `[${w}] biblioteca`);
+  (await revisarMiniaturas(p, `[${w}] biblioteca`)).forEach((x) => problems.push(x));
   await p.screenshot({ path: `${OUT}/biblioteca-${w}.png`, fullPage: true });
   // quitar de favoritos desde la biblioteca
   await p.getByRole("button", { name: /Quitar de favoritos/ }).click();
@@ -437,6 +470,7 @@ for (const w of WIDTHS) {
   const shown = await p.locator(".shelf-grid a.bk").count();
   if (shown !== 2 || (await p.locator('.shelf-grid a.bk[href*="tilo"]').count())) problems.push(`[${w}] cuentos: el filtro 6–7 años debe dejar lámpara y dragón, sin Tilo (hay ${shown})`);
   await p.getByRole("button", { name: "6–7 años" }).click();
+  await cargarImagenes(p);
   await p.screenshot({ path: `${OUT}/cuentos-${w}.png`, fullPage: true });
   await p.context().close();
 }
@@ -459,6 +493,7 @@ for (const w of [1280, 375]) {
   const p = await newPage(w, { colorScheme: "dark" });
   await p.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
   await noHScroll(p, `[${w}] home oscuro`);
+  await cargarImagenes(p);
   await p.screenshot({ path: `${OUT}/home-${w}-oscuro.png`, fullPage: true });
   const low = await p.evaluate(contrastJS);
   low.forEach((l) => problems.push(`[${w}] oscuro, contraste bajo: ${l}`));

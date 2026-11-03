@@ -8,6 +8,9 @@ import { useLibrary } from "@/lib/purchases";
 import DrawingThumb from "./DrawingThumb";
 import { IconLock } from "./icons";
 
+/** Máximo de tarjetas en el inicio; el resto se ve en el taller ("Ir al taller"). */
+const MAX_TARJETAS = 6;
+
 /** Home: miniaturas de los dibujos (con lo que ya pintaste) y acceso al taller. */
 export default function PaintTeaser({ lang, t }: { lang: Lang; t: Dict }) {
   const owned = useLibrary();
@@ -22,8 +25,8 @@ export default function PaintTeaser({ lang, t }: { lang: Lang; t: Dict }) {
           <h2 id="color-title" className="section-title">{t.coloring.title}</h2>
           <Link href={`/${lang}/pintar`} className="btn btn-violet">{t.coloring.go}</Link>
         </div>
-        <ul className="thumbs">
-          {availableDrawings().map((d) => {
+        <ul className="thumbs teaser">
+          {availableDrawings().slice(0, MAX_TARJETAS).map((d) => {
             const locked = isPremiumDrawing(d) && !owned;
             const title = drawingTitle(d, lang);
             return (
