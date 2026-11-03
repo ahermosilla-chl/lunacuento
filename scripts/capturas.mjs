@@ -170,6 +170,7 @@ for (const w of WIDTHS) {
   // Estante: el cuento premium muestra candado y abre la pantalla de compra
   const page = await newPage(w);
   await page.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
+  if (w <= 900 && (await page.locator(".shelf-aside.in-grid").isVisible())) problems.push(`[${w}] el aviso del estante deja un tablón vacío`);
   if ((await page.locator(".shelf-grid .bk .lock-on").count()) !== 1) problems.push(`[${w}] el estante debe mostrar 1 libro con candado`);
   await page.locator(".shelf-grid a.bk", { has: page.locator(".lock-on") }).click();
   await page.waitForURL(`**/cuento/${PREMIUM}/`);

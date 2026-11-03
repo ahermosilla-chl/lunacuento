@@ -193,6 +193,12 @@ img, svg { max-width: 100%; }
   border-radius: 6px;
 }
 .shelf-grid > * { min-width: 0; }
+.shelf-aside.below { display: none; }
+/* Hasta 900 px la grilla tiene 3 columnas o menos: el aviso va debajo del estante y no en una fila con tablón vacío. */
+@media (max-width: 900px) {
+  .shelf-aside.in-grid { display: none; }
+  .shelf-aside.below { display: flex; grid-column: auto; height: auto; padding: 8px 8px 0; align-items: center; text-align: center; max-width: none; margin: 0 auto; }
+}
 .shelf-aside { grid-column: span 2; height: var(--bh); display: flex; flex-direction: column; justify-content: center; gap: 12px; max-width: 340px; padding: 0 0 10px 20px; }
 .shelf-aside p:first-child { font-family: var(--font-display); font-size: 26px; font-weight: 600; line-height: 1.15; }
 .shelf-aside p + p { font-size: 17px; color: var(--muted); }
@@ -329,7 +335,6 @@ a.bk:active { transform: translateY(-6px) rotate(-1deg); }
   .bk-ttl { padding: 10px 10px 10px 16px; }
   .bk-ttl b { font-size: 17px; }
   .bk-ttl small { font-size: 11px; }
-  .shelf-aside { padding: 0 8px 10px; align-items: center; text-align: center; max-width: none; }
   .shelf-aside p:first-child { font-size: 22px; }
   .features { flex-direction: column; gap: 14px; }
   .feature { flex: none; border-radius: 26px; padding: 18px; gap: 16px; box-shadow: 0 5px 0 var(--card-shadow); }

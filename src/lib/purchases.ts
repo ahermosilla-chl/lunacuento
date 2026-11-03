@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import type { CustomerInfo, PRODUCT_CATEGORY, PurchasesStoreProduct } from "@revenuecat/purchases-capacitor";
+import { MODO_PRUEBA } from "./modo-prueba";
 import { getPlatform } from "./platform";
 
 /**
@@ -58,7 +59,8 @@ function setOwned(v: boolean) {
   if (prev !== v) listeners.forEach((l) => l());
 }
 
-export const isLibraryOwned = () => (owned ??= readCache());
+/** En modo de prueba (NEXT_PUBLIC_MODO_PRUEBA=1) la biblioteca siempre está desbloqueada. */
+export const isLibraryOwned = () => MODO_PRUEBA || (owned ??= readCache());
 
 function subscribe(cb: () => void) {
   listeners.add(cb);
@@ -67,9 +69,9 @@ function subscribe(cb: () => void) {
   };
 }
 
-/** ¿Está desbloqueada la biblioteca completa? Falso en el servidor y en la hidratación. */
+/** ¿Está desbloqueada la biblioteca completa? Falso en el servidor y en la hidratación (verdadero en modo de prueba). */
 export function useLibrary(): boolean {
-  return useSyncExternalStore(subscribe, isLibraryOwned, () => false);
+  return useSyncExternalStore(subscribe, isLibraryOwned, () => MODO_PRUEBA);
 }
 
 /* ------------------------------------------------------------------ */

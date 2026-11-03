@@ -19,6 +19,17 @@ npm run lint
 
 La web y los cuentos gratis funcionan sin variables de entorno. Solo la app nativa necesita las claves públicas de RevenueCat (`NEXT_PUBLIC_RC_IOS_KEY`, `NEXT_PUBLIC_RC_ANDROID_KEY`); ver `.env.example`.
 
+## Modo de prueba
+
+Para probar la funcionalidad antes de configurar los pagos:
+
+```bash
+echo 'NEXT_PUBLIC_MODO_PRUEBA=1' >> .env.local
+npm run build            # o npm run build:app para la app
+```
+
+Con `NEXT_PUBLIC_MODO_PRUEBA=1` todos los cuentos premium (y sus dibujos) quedan desbloqueados, no hay candados ni pantalla de compra (`/comprar` vuelve al estante) y el pie del sitio dice "Modo de prueba". Con la variable vacía o ausente todo funciona como siempre. La variable se incrusta al compilar: si la cambias, vuelve a compilar o a desplegar. **No la actives en la versión que se sube a las tiendas.** Comprobación automática: compilar con la variable, servir `out/` y `npm run probar:modo-prueba`.
+
 ## Sitio estático (listo para Capacitor)
 
 `next.config.ts` usa `output: "export"`: `npm run build` deja todo en `out/` (HTML, JS, CSS, fuentes embebidas e ilustraciones). No hay middleware ni rutas de servidor:
@@ -44,6 +55,7 @@ npm run assets       # regenera ícono y splash desde assets/*.svg
 - **Portón para adultos**: `src/components/ParentalGate.tsx`, antes de comprar, restaurar y abrir enlaces externos.
 - **Cuento con candado**: `premium: true` en `src/lib/stories.ts`; tocarlo abre la pantalla de compra (`Paywall`).
 - En la app se oculta el header de la web y los botones "descarga la app" (`<html data-native>`).
+- Probar en simulador/emulador (Mac): [`docs/PROBAR-EN-MAC.md`](docs/PROBAR-EN-MAC.md).
 - Guía completa de publicación: [`docs/PUBLICAR.md`](docs/PUBLICAR.md).
 
 ## Revisión visual
@@ -58,7 +70,7 @@ npm run capturas                      # Playwright en 375, 768 y 1280 px
 
 ## Publicar la web
 
-Cualquier hosting estático sirve la carpeta `out/`. En Vercel: importar el repo, framework Next.js; Vercel detecta `output: "export"` y publica el resultado estático.
+Cualquier hosting estático sirve la carpeta `out/`. En Vercel el repo ya trae `vercel.json` (`npm run build`, salida `out/`, `trailingSlash`): importar el repo y listo. Para que las previews usen el modo de prueba, crear `NEXT_PUBLIC_MODO_PRUEBA=1` solo en el entorno *Preview* (pasos exactos en el PR de despliegue y en la sección de arriba).
 
 Antes de publicar, reemplazar en `src/lib/stores.ts` los marcadores `[APP_STORE_URL]` y `[PLAY_STORE_URL]` por los enlaces reales. Mientras sean marcadores, los botones muestran un aviso de "muy pronto".
 
