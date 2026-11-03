@@ -16,7 +16,7 @@ const es = {
     title: "Lunacuento · Cuentos con su nombre",
     description: "Cuentos ilustrados para niños de 0 a 7 años, con su nombre, narración y modo dormir.",
   },
-  nav: { home: "Inicio", stories: "Cuentos", paint: "Pintar", library: "Mi biblioteca", libraryShort: "Biblioteca", app: "Descarga la app", menu: "Menú principal", lang: "Idioma", skip: "Saltar al contenido" },
+  nav: { home: "Inicio", stories: "Cuentos", paint: "Pintar", library: "Mi biblioteca", libraryShort: "Biblioteca", app: "Descarga la app", soundOn: "Sonido activado: apagar", soundOff: "Sonido apagado: activar", menu: "Menú principal", lang: "Idioma", skip: "Saltar al contenido" },
   hero: {
     eyebrow: "Para niños de 0 a 7 años",
     hello: "¡Hola, {n}!",
@@ -53,7 +53,7 @@ const es = {
     goodnight: "Buenas noches", tapBack: "Toca para volver", noVoice: "Este navegador no tiene voz; las palabras se iluminan solas.",
     forName: "para {n}", closeBook: "Cerrar el libro", prevPage: "Página anterior", nextPage: "Página siguiente",
     pageOf: "Página {a} de {b}", timerOff: "Sin apagar", timerMin: "Apagar en {m} min", sleepOn: "Salir del modo dormir",
-    again: "Leer otra vez", cover: "Tapa del cuento", favAdd: "Guardar en favoritos", favRemove: "Quitar de favoritos", toLibrary: "Volver a los cuentos",
+    again: "Leer otra vez", cover: "Tapa del cuento", favAdd: "Guardar en favoritos", favRemove: "Quitar de favoritos", toLibrary: "Volver a los cuentos", endMsg: "¡Terminaste el cuento, {n}!",
   },
   coloring: {
     title: "¡A pintar!", studio: "Taller de pintura", clear: "Borrar", colors: "Colores", drawing: "Dibujo para colorear", pick: "Elige un dibujo", all: "Todos",
@@ -124,7 +124,7 @@ const en: typeof es = {
     title: "Lunacuento · Stories with their name",
     description: "Illustrated stories for kids ages 0 to 7, with their name, narration and a sleep mode.",
   },
-  nav: { home: "Home", stories: "Stories", paint: "Paint", library: "My library", libraryShort: "Library", app: "Get the app", menu: "Main menu", lang: "Language", skip: "Skip to content" },
+  nav: { home: "Home", stories: "Stories", paint: "Paint", library: "My library", libraryShort: "Library", app: "Get the app", soundOn: "Sound on: turn off", soundOff: "Sound off: turn on", menu: "Main menu", lang: "Language", skip: "Skip to content" },
   hero: {
     eyebrow: "For kids ages 0 to 7",
     hello: "Hi, {n}!",
@@ -161,7 +161,7 @@ const en: typeof es = {
     goodnight: "Good night", tapBack: "Tap to go back", noVoice: "This browser has no voice; words will light up on their own.",
     forName: "for {n}", closeBook: "Close the book", prevPage: "Previous page", nextPage: "Next page",
     pageOf: "Page {a} of {b}", timerOff: "Don't stop", timerMin: "Stop in {m} min", sleepOn: "Leave sleep mode",
-    again: "Read again", cover: "Story cover", favAdd: "Save to favorites", favRemove: "Remove from favorites", toLibrary: "Back to stories",
+    again: "Read again", cover: "Story cover", favAdd: "Save to favorites", favRemove: "Remove from favorites", toLibrary: "Back to stories", endMsg: "You finished the story, {n}!",
   },
   coloring: {
     title: "Time to paint!", studio: "Paint studio", clear: "Clear", colors: "Colors", drawing: "Coloring page", pick: "Pick a drawing", all: "All",

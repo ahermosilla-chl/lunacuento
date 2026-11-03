@@ -11,6 +11,10 @@ import type { Story } from "@/lib/stories";
 import { fmt, tokenize, wordStarts, type Word } from "@/lib/text";
 import { useMedia, useReducedMotion } from "@/lib/use-media";
 import { saveProgress, toggleFavorite, useLibraryData } from "@/lib/library";
+import { playSound } from "@/lib/sound";
+import { COVER_KEY, ilu } from "@/lib/ilustraciones";
+import ReaderScene from "./ReaderScene";
+import SoundToggle from "./SoundToggle";
 import { IconClose, IconHeart, IconMoon, IconNext, IconPause, IconPlay, IconPrev } from "./icons";
 import "./reader.css";
 
@@ -21,8 +25,8 @@ const DRAG_START_PX = 8;          // movimiento mínimo para considerar que es u
 const COMPLETE_AT = 0.35;          // al soltar: si pasó el 35 % termina de pasar
 const FLICK_PX_MS = 0.45;          // ... o si fue un swipe rápido (px/ms)
 const TURN_MS = 750;               // duración de la animación completa de una hoja
-const COVER_DELAY_MS = 350;        // el libro aparece cerrado un momento antes de abrirse
-const COVER_MS = 1100;
+const COVER_DELAY_MS = 1100;       // el libro cerrado flota con brillo un instante antes de abrirse
+const COVER_MS = 1400;             // la tapa se abre despacio
 
 type Dir = 1 | -1;
 type Turn = { dir: Dir; auto: boolean };
@@ -40,10 +44,19 @@ const easeOut = (x: number) => 1 - Math.pow(1 - x, 3);
  */
 function Art({ story, index, where, lang }: { story: Story; index: number; where: string; lang: Lang }) {
   const page = story.pages[index];
+  const gen = ilu(`pagina-${story.id}-${index + 1}`); // generada con gpt-image-2 (grupo "paginas"); si falta, escena vectorial
   const html = useMemo(
     () => (page.image ? "" : sceneSVG(page.scene, `${story.id}-${index}`, `${where}-${story.id}-${index}`)),
     [page, story.id, index, where],
   );
+  if (gen && !page.image) {
+    return (
+      <div className="art">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={gen.src} srcSet={gen.srcset} sizes="(min-width: 900px) 560px, 100vw" width={gen.width} height={gen.height} alt="" loading="eager" decoding="async" />
+      </div>
+    );
+  }
   if (page.image) {
     return (
       <div className="art">
@@ -68,6 +81,26 @@ function StoryText({ words, active, live }: { words: Word[]; active: number; liv
     </p>
   );
 }
+
+/** Destellos de luz y partículas doradas que salen de las páginas al abrirse la tapa (deterministas, solo CSS). */
+const SPARKS = Array.from({ length: 30 }, (_, i) => {
+  const a = (i * 137.5) % 360;
+  return { a, d: 90 + ((i * 53) % 190), s: 4 + ((i * 7) % 7), t: (i % 10) * 0.07 };
+});
+function OpeningBurst({ mobile }: { mobile?: boolean }) {
+  return (
+    <div className={`burst${mobile ? " m" : ""}`} aria-hidden="true">
+      <span className="burst-light" />
+      <span className="burst-rays" />
+      {SPARKS.map((p, i) => (
+        <i key={i} style={{ "--a": `${p.a}deg`, "--d": `${p.d}px`, width: p.s, height: p.s, animationDelay: `${p.t}s` } as React.CSSProperties} />
+      ))}
+    </div>
+  );
+}
+
+/** Lluvia breve de estrellas de la celebración final. */
+const CONFETTI = Array.from({ length: 26 }, (_, i) => ({ x: (i * 37) % 100, d: (i % 8) * 0.12, s: 10 + ((i * 5) % 14), r: (i * 47) % 360 }));
 
 /* ------------------------------------------------------------------ */
 /* Lector                                                              */
@@ -95,6 +128,9 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
   const [timer, setTimer] = useState(0);
   const [goodnight, setGoodnight] = useState(false);
   const [notice, setNotice] = useState("");
+  const [finale, setFinale] = useState(false);
+  const [flying, setFlying] = useState(false);   // la portada del estante todavía vuela hacia el libro
+  const [landed, setLanded] = useState(false);   // el libro cerrado ya está a la vista
 
   const bookRef = useRef<HTMLDivElement>(null);
   const leafRef = useRef<HTMLDivElement>(null);
@@ -126,19 +162,61 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
 
   const words = useMemo(() => story.pages.map((p) => tokenize(p.text[lang], name)), [story, lang, name]);
 
+  /* ---------------- Llegada: la portada vuela del estante al libro cerrado ---------------- */
+  useLayoutEffect(() => {
+    let fly = false;
+    try {
+      fly = !reduced && Date.now() - Number(sessionStorage.getItem("lc_fly") || 0) < 4000;
+      sessionStorage.removeItem("lc_fly");
+    } catch {
+      /* sin sessionStorage */
+    }
+    if (!fly) {
+      setLanded(true);
+      return;
+    }
+    setFlying(true);
+    const done = () => {
+      setFlying(false);
+      setLanded(true);
+    };
+    window.addEventListener("lc:fly-done", done, { once: true });
+    // con el libro ya montado (y la vista móvil/escritorio resuelta), se mide dónde queda la tapa y la portada vuela hasta allí
+    let r2 = 0;
+    const r1 = requestAnimationFrame(() => {
+      r2 = requestAnimationFrame(() => {
+        const covers = [...(bookRef.current?.querySelectorAll<HTMLElement>(".cover-front") ?? [])];
+        const box = covers.map((c) => c.getBoundingClientRect()).find((b) => b.width > 0);
+        if (box) window.dispatchEvent(new CustomEvent("lc:fly-to", { detail: { x: box.left, y: box.top, w: box.width, h: box.height } }));
+        else done();
+      });
+    });
+    const fallback = window.setTimeout(done, 2200);
+    return () => {
+      cancelAnimationFrame(r1);
+      cancelAnimationFrame(r2);
+      window.clearTimeout(fallback);
+      window.removeEventListener("lc:fly-done", done);
+    };
+  }, [reduced]);
+
   /* ---------------- Apertura de la tapa ---------------- */
   useEffect(() => {
     if (reduced) {
       setCover("open");
       return;
     }
-    const a = window.setTimeout(() => setCover("opening"), COVER_DELAY_MS);
+    if (!landed) return;
+    const a = window.setTimeout(() => {
+      setCover("opening");
+      playSound("open");
+    }, COVER_DELAY_MS);
     const b = window.setTimeout(() => setCover("open"), COVER_DELAY_MS + COVER_MS + 60);
     return () => {
       window.clearTimeout(a);
       window.clearTimeout(b);
     };
-  }, [reduced]);
+  }, [reduced, landed]);
 
   /* ---------------- Hoja que gira ---------------- */
 
@@ -163,6 +241,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
     turnRef.current = null;
     setTurn(null);
     if (done) {
+      playSound("page");
       setActive(-1);
       setPage((p) => Math.min(last, Math.max(0, p + tr.dir)));
     }
@@ -194,8 +273,18 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
 
   /** Pasa de página con animación (flechas, teclado, toque en los lados, narración). */
   const turnPage = useCallback((dir: Dir, auto = false) => {
-    if (turnRef.current || !canTurn(dir)) return false;
+    if (turnRef.current) return false;
+    if (dir === 1 && pageRef.current >= last) {
+      // Pasar de la última página (flecha, toque o fin de la narración) abre el final del cuento
+      setPlaying(false);
+      setActive(-1);
+      setFinale(true);
+      playSound("celebrate");
+      return true;
+    }
+    if (!canTurn(dir)) return false;
     if (reduced) {
+      playSound("page");
       setActive(-1);
       setPage((p) => p + dir);
       return true;
@@ -207,7 +296,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
     // Cuando la hoja ya está montada (useLayoutEffect de abajo), arranca la animación.
     requestAnimationFrame(() => settle(1));
     return true;
-  }, [canTurn, reduced, settle]);
+  }, [canTurn, reduced, settle, last]);
 
   // Posición inicial de la hoja al montarse (antes de pintar, sin parpadeo).
   useLayoutEffect(() => {
@@ -287,6 +376,10 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (goodnight) return;
+      if (finale) {
+        if (e.key === "Escape") setFinale(false);
+        return;
+      }
       const tag = (e.target as HTMLElement).tagName;
       if (tag === "SELECT" || tag === "INPUT") return;
       if (e.key === "ArrowRight") {
@@ -301,7 +394,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [turnPage, router, home, goodnight]);
+  }, [turnPage, router, home, goodnight, finale]);
 
   /* ---------------- Lectura acompañada ---------------- */
   const speakId = useRef(0);
@@ -334,6 +427,8 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
       }, sleepRef.current ? 700 : 350);
     } else {
       setPlaying(false);
+      setFinale(true);
+      playSound("celebrate");
     }
   }, [last, turnPage]);
 
@@ -481,6 +576,10 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
     return () => window.clearTimeout(id);
   }, [timer]);
 
+  const finBtn = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (finale) finBtn.current?.focus();
+  }, [finale]);
   const gnBtn = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (goodnight) gnBtn.current?.focus();
@@ -499,12 +598,6 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
     <div className={cls}>
       <div className="spine-r" />
       <StoryText words={words[i]} active={i === page ? hl : -1} live={live} />
-      {i === last && live ? (
-        <div className="end-actions">
-          <button type="button" className="btn btn-sun" onClick={() => { setPlaying(false); setPage(0); }}>{R.again}</button>
-          <Link href={`/${lang}/pintar?dibujo=${story.coloring}`} className="btn btn-line">{R.color}</Link>
-        </div>
-      ) : null}
       <span className="pnum">{i * 2 + 2}</span>
     </div>
   );
@@ -520,18 +613,20 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
       <div className="spine-r" />
       <Art story={story} index={i} where={where} lang={lang} />
       <StoryText words={words[i]} active={i === page ? hl : -1} live={live} />
-      {i === last && live ? (
-        <div className="end-actions">
-          <button type="button" className="btn btn-sun" onClick={() => { setPlaying(false); setPage(0); }}>{R.again}</button>
-          <Link href={`/${lang}/pintar?dibujo=${story.coloring}`} className="btn btn-line">{R.color}</Link>
-        </div>
-      ) : null}
       <span className="pnum">{i + 1}</span>
     </div>
   );
+  const coverImg = ilu(COVER_KEY[story.id]); // ILUSTRACION-PENDIENTE: sin portada generada se usa la escena vectorial
   const coverFront = (
     <div className="cover-front" style={{ "--cover-ink": ink } as React.CSSProperties}>
-      <Art story={story} index={coverPage} where="cover" lang={lang} />
+      {coverImg ? (
+        <div className="art cover-photo">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={coverImg.src} srcSet={coverImg.srcset} sizes="(min-width: 700px) 480px, 90vw" width={coverImg.width} height={coverImg.height} alt="" decoding="async" />
+        </div>
+      ) : (
+        <Art story={story} index={coverPage} where="cover" lang={lang} />
+      )}
       <h2>{story.title[lang]}</h2>
       <p>{forName} · {story.age} {t.shelf.ages}</p>
     </div>
@@ -543,7 +638,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
     <>
       <label htmlFor={id} className="sr-only">{R.timer}</label>
       <select id={id} className={`r-timer${compact ? " chip-timer" : ""}`} value={timer} onChange={(e) => setTimer(Number(e.target.value))}>
-        <option value={0}>{compact ? "—" : R.timerOff}</option>
+        <option value={0}>{R.timerOff}</option>
         <option value={10}>{compact ? "10 min" : fmt(R.timerMin, { m: 10 })}</option>
         <option value={20}>{compact ? "20 min" : fmt(R.timerMin, { m: 20 })}</option>
       </select>
@@ -555,12 +650,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
       <noscript>
         <style>{".cover-leaf{display:none}.book{transform:none!important}.half.l{visibility:visible!important}"}</style>
       </noscript>
-      <svg className="bg-stars" aria-hidden="true" focusable="false" viewBox="0 0 1440 900" preserveAspectRatio="none">
-        <g fill="#FFF8E7" opacity=".55">
-          <circle cx="80" cy="140" r="2" /><circle cx="200" cy="820" r="2" /><circle cx="1360" cy="160" r="2" /><circle cx="1300" cy="800" r="2.5" />
-          <circle cx="60" cy="560" r="1.5" /><circle cx="1400" cy="520" r="1.5" /><circle cx="700" cy="860" r="1.5" />
-        </g>
-      </svg>
+      <ReaderScene story={story} />
 
       <header className="r-top">
         <Link href={home} className="round" aria-label={`${R.closeBook} · ${R.toLibrary}`}><IconClose /></Link>
@@ -569,6 +659,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
           <p>{forName}</p>
         </div>
         {sleep ? <span className="r-timer-m">{timerSelect("timer-m", true)}</span> : null}
+        <SoundToggle t={t} className="round snd r-snd-m" />
         <button type="button" className="round r-fav-m" aria-pressed={isFav} aria-label={isFav ? R.favRemove : R.favAdd} onClick={() => toggleFavorite(story.id)}>
           <IconHeart size={20} filled={isFav} />
         </button>
@@ -576,6 +667,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
           <IconMoon size={20} />
         </button>
         <div className="r-actions">
+          <SoundToggle t={t} />
           <button type="button" className="round r-fav" aria-pressed={isFav} aria-label={isFav ? R.favRemove : R.favAdd} onClick={() => toggleFavorite(story.id)}>
             <IconHeart size={22} filled={isFav} />
           </button>
@@ -594,6 +686,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
           ref={bookRef}
           className="book"
           data-cover={cover}
+          data-fly={flying ? "wait" : undefined}
           role="region"
           aria-roledescription={lang === "es" ? "libro" : "book"}
           aria-label={`${story.title[lang]} · ${fmt(R.pageOf, { a: page + 1, b: story.pages.length })}`}
@@ -627,6 +720,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
               </>
             ) : null}
 
+            {cover === "opening" ? <OpeningBurst /> : null}
             {cover !== "open" && !mobile ? (
               <div className="cover-leaf" aria-hidden="true">
                 <div className="face front">{coverFront}</div>
@@ -637,6 +731,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
 
           {/* Móvil: una sola página que gira sobre el lomo izquierdo */}
           {showSingle ? <div className="single">
+            {cover === "opening" && mobile ? <OpeningBurst mobile /> : null}
             <div className="half s">
               {singlePaper(singleIdx, "s", !turn)}
               {turn && mobile ? (
@@ -661,7 +756,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
 
       <nav className="r-bottom" aria-label={fmt(R.pageOf, { a: page + 1, b: story.pages.length })}>
         {notice ? <p className="notice" role="status">{notice}</p> : null}
-        <button type="button" className="round round-lg" aria-label={R.prevPage} disabled={page === 0} onClick={() => turnPage(-1)}>
+        <button type="button" data-sound="none" className="round round-lg" aria-label={R.prevPage} disabled={page === 0} onClick={() => turnPage(-1)}>
           <IconPrev />
         </button>
         <button type="button" className="btn btn-sun play-m" onClick={() => setPlaying((v) => !v)} aria-pressed={playing}>
@@ -672,14 +767,41 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
         </div>
         <button
           type="button"
+          data-sound="none"
           className="round round-lg sun"
           aria-label={page === last ? R.end : R.nextPage}
-          onClick={() => (page === last ? router.push(home) : turnPage(1))}
+          onClick={() => {
+            if (page !== last) return turnPage(1);
+            setPlaying(false);
+            stopSpeech();
+            setFinale(true);
+            playSound("celebrate");
+          }}
         >
           <IconNext />
         </button>
         <span className="hint">{R.hint}</span>
       </nav>
+
+      {finale ? (
+        <div className="finale" role="dialog" aria-modal="true" aria-labelledby="fin-title">
+          <div className="fin-stars" aria-hidden="true">
+            {CONFETTI.map((c, i) => (
+              <i key={i} style={{ left: `${c.x}%`, width: c.s, height: c.s, animationDelay: `${c.d}s`, rotate: `${c.r}deg` }} />
+            ))}
+          </div>
+          <div className="fin-card">
+            <div className="fin-moon" aria-hidden="true" />
+            <h2 id="fin-title">{R.end}</h2>
+            <p>{fmt(R.endMsg, { n: name })}</p>
+            <div className="fin-actions">
+              <button ref={finBtn} type="button" className="btn btn-sun btn-lg" onClick={() => { setFinale(false); setPlaying(false); setActive(-1); setPage(0); }}>{R.again}</button>
+              <Link href={`/${lang}/pintar?dibujo=${story.coloring}`} className="btn btn-line">{R.color}</Link>
+              <Link href={home} className="fin-back">{R.toLibrary}</Link>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {goodnight ? (
         <div className="goodnight" role="dialog" aria-modal="true" aria-labelledby="gn-title">

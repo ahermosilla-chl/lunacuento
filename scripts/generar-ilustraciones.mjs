@@ -5,7 +5,7 @@
 //   node --env-file=.env.local scripts/generar-ilustraciones.mjs --solo hero
 //
 // Opciones:
-//   --solo <lista>       nombres o grupos separados por coma: hero, portadas, accesos, colorear, o un nombre exacto
+//   --solo <lista>       nombres o grupos separados por coma: hero, portadas, accesos, colorear, paginas, o un nombre exacto
 //   --tope <US$>         tope de gasto estimado acumulado (por defecto 8). Se detiene antes de pasarlo
 //   --factor-costo <n>   multiplica la estimación (por defecto 1); úsalo cuando confirmes el precio real en tu facturación
 //   --calidad <q>        fuerza low | medium | high en todas (por defecto la del plan B)
@@ -64,7 +64,7 @@ const existe = (p) => access(p).then(() => true, () => false);
 const solo = val("solo", "").split(",").map((s) => s.trim()).filter(Boolean);
 const lista = IMAGENES.filter((i) => !solo.length || solo.some((s) => s === i.group || s === i.name || i.name.startsWith(s)));
 if (!lista.length) {
-  console.error(`Nada coincide con --solo ${solo.join(",")}. Grupos: hero, portadas, accesos, colorear.`);
+  console.error(`Nada coincide con --solo ${solo.join(",")}. Grupos: hero, portadas, accesos, colorear, paginas.`);
   process.exit(1);
 }
 

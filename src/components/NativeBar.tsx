@@ -3,6 +3,7 @@ import type { Dict, Lang } from "@/lib/i18n";
 import { MoonLogo } from "./icons";
 import LangSwitch from "./LangSwitch";
 import MainNav from "./MainNav";
+import SoundToggle from "./SoundToggle";
 
 /**
  * Barra de la app nativa: logo, navegación (en pantallas anchas; en móvil va la barra inferior) y selector ES/EN.
@@ -18,6 +19,7 @@ export default function NativeBar({ lang, t }: { lang: Lang; t: Dict }) {
           <span>Lunacuento</span>
         </Link>
         <MainNav lang={lang} t={t} />
+        <SoundToggle t={t} />
         <LangSwitch lang={lang} t={t} />
       </div>
     </header>

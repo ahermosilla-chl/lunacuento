@@ -232,7 +232,7 @@ a.bk:active { transform: translateY(-6px) rotate(-1deg); }
 .final { background: var(--night); color: var(--moon-text); position: relative; overflow: hidden; }
 .final .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px; padding-top: 90px; padding-bottom: 90px; position: relative; z-index: 1; }
 .final h2 { font-size: clamp(40px, 5.4vw, 64px); line-height: 1.02; }
-.final .moon { position: absolute; right: 8%; top: -40px; width: 120px; height: 120px; border-radius: 50%; background: var(--moon); opacity: .9; }
+.final .moon { position: absolute; right: 30%; top: 96px; width: 120px; height: 120px; border-radius: 50%; background: var(--moon); opacity: .9; }
 .site-footer { background: var(--night-3); color: var(--moon-muted); }
 .site-footer .wrap { display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: center; padding-top: 28px; padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px)); font-size: 15px; }
 .site-footer nav { display: flex; gap: 24px; }
@@ -291,7 +291,7 @@ a.bk:active { transform: translateY(-6px) rotate(-1deg); }
   .plan .price { font-size: 40px; }
   .final .wrap { padding-top: 48px; padding-bottom: 48px; flex-direction: column; align-items: stretch; gap: 20px; }
   .final .btn { width: 100%; min-height: 56px; font-size: 18px; }
-  .final .moon { width: 80px; height: 80px; top: -30px; }
+  .final .moon { width: 80px; height: 80px; top: 64px; right: 6%; }
   .site-footer .wrap { gap: 8px 16px; font-size: 14px; padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
   .site-footer nav { gap: 16px; }
 }
@@ -562,14 +562,33 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
 
 /* =====================================================================
    Hero de escritorio y tablet: título, filtros y estante sobre la ilustración
-   (niño y zorro a la izquierda hasta ~40 %, luna arriba a la derecha: todo el texto va desde --stage-left)
+   La ilustración (3:2) va en una caja centrada de alto fijo: nunca se estira; a los lados el cielo continúa con el color
+   de sus bordes. Niño y zorro a la izquierda (~12–40 %), luna arriba a la derecha: el texto y el estante empiezan en --stage-left.
    ===================================================================== */
-.stage { --stage-left: 48%; --stage-shadow: 0 2px 14px rgba(45, 40, 119, .6); position: relative; overflow: hidden; background: var(--violet); color: #FFFFFF; min-height: clamp(660px, 58vw, 800px); display: flex; }
+.hstage { --stage-left: 48%; --stage-h: clamp(640px, min(calc(100dvh - 92px), 62vw), 860px); --stage-shadow: 0 2px 14px rgba(45, 40, 119, .6); position: relative; overflow: hidden; background: #5F64B3; color: #FFFFFF; height: var(--stage-h); display: flex; }
 .stage-art { position: absolute; inset: 0; }
-.stage-img, .stage-fallback { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; display: block; }
+/* Cielo de los lados: degradado vertical con los colores muestreados de cada borde de la ilustración */
+.stage-side { position: absolute; top: 0; bottom: 0; width: 51%; }
+.stage-side.l { left: 0; background: linear-gradient(to bottom, #2f2e84 5%, #393893 15%, #4244a2 25%, #5055ad 35%, #5f64b3 45%, #7b7aba 55%, #8176ba 65%, #484e5a 75%, #20333c 85%, #1b2d20 95%); }
+.stage-side.r { right: 0; background: linear-gradient(to bottom, #5e50a7 5%, #7462b3 15%, #8472bf 25%, #9781c7 35%, #b796c8 45%, #e1b3c4 55%, #f0c3c1 65%, #937d80 75%, #304029 85%, #192a1f 95%); }
+.stage-pic { position: absolute; top: 0; left: 50%; height: 100%; aspect-ratio: 3 / 2; transform: translateX(-50%); }
+.pic-img { position: absolute; inset: 0; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%); }
+.stage-img, .stage-fallback { width: 100%; height: 100%; object-fit: cover; display: block; transform: translate3d(calc(var(--mx, 0) * -4px), calc(var(--my, 0) * -3px), 0) scale(1.03); }
+/* Capas de parallax: cada una con su profundidad (--d) */
+.px { position: absolute; pointer-events: none; will-change: transform; transform: translate3d(calc(var(--mx, 0) * var(--d) * 14px), calc(var(--my, 0) * var(--d) * 8px + var(--sy, 0) * var(--d) * 26px), 0); }
+.px-moon { --d: .5; left: 78%; top: 3%; width: 17%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255, 224, 138, .5) 0, rgba(255, 224, 138, .18) 45%, transparent 70%); animation: moon-glow 5.5s ease-in-out infinite; }
+.px-cloud { --d: 1.1; height: 9%; background: radial-gradient(ellipse at center, rgba(255, 240, 255, .2) 0, rgba(255, 240, 255, .08) 50%, transparent 72%); animation: cloud-drift 60s linear infinite; }
+.px-cloud.c1 { left: -12%; top: 12%; width: 22%; animation-duration: 90s; }
+.px-cloud.c2 { left: 30%; top: 5%; width: 18%; --d: .8; animation-duration: 120s; animation-delay: -40s; }
+.px-cloud.c3 { left: 62%; top: 24%; width: 20%; --d: 1.4; animation-duration: 75s; animation-delay: -20s; }
+.px-stars { --d: 1.6; inset: 0; }
+.px-stars i { position: absolute; background: #FFF8E7; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); opacity: 0; animation: twinkle 4.2s ease-in-out infinite; }
+@keyframes moon-glow { 50% { transform: translate3d(calc(var(--mx, 0) * var(--d) * 14px), calc(var(--my, 0) * var(--d) * 8px + var(--sy, 0) * var(--d) * 26px), 0) scale(1.12); opacity: .85; } }
+@keyframes cloud-drift { from { margin-left: 0; } to { margin-left: 18%; } }
+@keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(.6); } 50% { opacity: .9; transform: scale(1); } }
 .stage-body { position: relative; z-index: 1; width: 100%; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; padding-top: 34px; padding-bottom: 76px; }
 .stage-head { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-left: var(--stage-left); }
-.stage-head h1 { font-size: clamp(36px, 4.2vw, 56px); line-height: 1; color: #FFFFFF; text-shadow: var(--stage-shadow); }
+.stage-head h1 { font-size: clamp(34px, 3.6vw, 50px); line-height: 1; color: #FFFFFF; text-shadow: var(--stage-shadow); }
 .stage-for { display: inline-flex; align-items: baseline; gap: 10px; font: 700 clamp(20px, 2vw, 26px) var(--font-display); color: #FFFFFF; text-shadow: var(--stage-shadow); }
 .stage-for input { min-width: 4ch; max-width: 14ch; padding: 2px 6px 0; border: 0; border-bottom: 3px solid var(--sun); background: transparent; font: inherit; color: inherit; text-shadow: inherit; border-radius: 0; }
 .stage-for input:focus-visible { outline-offset: 4px; }
@@ -581,15 +600,27 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
 @media (max-width: 1100px) { .stage-chips .long { display: none; } .stage-chips .short { display: inline; } }
 @media (max-width: 900px) { .stage-chips { gap: 6px; } .stage-chips .chip { padding: 0 12px; font-size: 14px; } }
 .stage-shelf { position: relative; margin-left: var(--stage-left); }
-.stage-books { list-style: none; margin: 0; padding: 0 20px 6px; display: flex; align-items: flex-end; gap: 26px; overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-left: 20px; scrollbar-width: none; }
+/* El estante se desliza; el borde derecho se difumina bajo la flecha y deja un hueco (84 px) para que la última portada nunca quede debajo de ella */
+.stage-books { list-style: none; margin: 0; padding: 0 84px 6px 20px; display: flex; align-items: flex-end; gap: 26px; overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-left: 20px; scrollbar-width: none; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 96px), transparent 100%); mask-image: linear-gradient(to right, #000 calc(100% - 96px), transparent 100%); }
 .stage-books > li { flex: none; scroll-snap-align: start; }
 .stage-books .bk { width: 142px; height: 200px; }
-.stage-plank { position: relative; height: 24px; margin-top: -4px; margin-right: 0; border-radius: 6px; background: var(--wood); border-top: 6px solid var(--wood-edge); box-shadow: 0 14px 18px -10px rgba(120, 70, 20, .55); }
-.stage-nav { position: absolute; top: 80px; z-index: 2; width: 48px; height: 48px; border: 0; border-radius: 50%; display: grid; place-items: center; background: #FFFFFF; color: var(--ink); box-shadow: 0 6px 16px -6px rgba(15, 27, 61, .55); }
+.stage-plank { position: relative; height: 24px; margin-top: -4px; border-radius: 6px; background: var(--wood); border-top: 6px solid var(--wood-edge); box-shadow: 0 14px 18px -10px rgba(120, 70, 20, .55); }
+.stage-nav { position: absolute; top: 76px; z-index: 2; width: 48px; height: 48px; border: 0; border-radius: 50%; display: grid; place-items: center; background: #FFFFFF; color: var(--ink); box-shadow: 0 6px 16px -6px rgba(15, 27, 61, .55); }
 .stage-nav.prev { left: -26px; }
-.stage-nav.next { right: -6px; }
+.stage-nav.next { right: 14px; }
 .stage-nav:active { transform: scale(.94); }
 .stage-empty { position: absolute; left: 24px; bottom: 40px; color: #FFFFFF; text-shadow: var(--stage-shadow); font-weight: 700; }
+
+/* Entrada orquestada: el cielo aparece, la luna brilla, luego el título y los libros suben al estante uno por uno */
+@keyframes stage-sky { from { filter: brightness(.82) saturate(.9); } to { filter: none; } }
+@keyframes stage-rise { from { transform: translateY(10px); } to { transform: none; } }
+@keyframes book-rise { from { transform: translateY(18px) scale(.98); } to { transform: none; } }
+.stage-art { animation: stage-sky 1s ease-out both; }
+.stage-head h1 { animation: stage-rise .7s .45s var(--ease) both; }
+.stage-for { animation: stage-rise .7s .6s var(--ease) both; }
+.stage-chips { animation: stage-rise .7s .72s var(--ease) both; }
+.stage-plank { animation: stage-rise .6s .8s var(--ease) both; }
+.stage-books > li { animation: book-rise .7s calc(.95s + var(--i, 0) * .09s) var(--ease) both; }
 
 /* Portadas generadas: la imagen cubre el libro y el título va en una banda sólida abajo */
 .bk.has-cover { background: var(--c); }
@@ -597,4 +628,56 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
 .bk.has-cover .bk-art img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
 .bk.has-cover .bk-ttl { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: 12px 12px 12px 18px; background: rgba(15, 27, 61, .78); color: #FFF8E7; }
 .bk.has-cover .bk-ttl small { background: transparent; padding: 0; color: #D5D2FA; }
-@media (max-width: 760px) { .stage { display: none; } }
+@media (max-width: 760px) { .hstage { display: none; } }
+
+/* Botón de sonido */
+.site-header .snd, .native-bar .snd { width: 44px; height: 44px; }
+.round.snd[aria-pressed="false"] { opacity: .75; }
+.r-snd-m { display: none; }
+@media (max-width: 699px) { .r-snd-m { display: inline-flex; } .r-actions .snd { display: none; } }
+
+
+/* =====================================================================
+   Emoción: destello al tocar un libro, separadores con forma y "noche mágica" en modo oscuro
+   ===================================================================== */
+/* Destello de estrella en la esquina del libro al pasar, enfocar o tocar */
+.bk::after { content: ""; position: absolute; right: 12px; top: 14px; z-index: 3; width: 24px; height: 24px; background: #FFF8E7; clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); opacity: 0; transform: scale(.2) rotate(-40deg); pointer-events: none; transition: opacity .25s, transform .45s var(--ease); }
+a.bk:hover::after, a.bk:focus-visible::after, a.bk:active::after { opacity: .95; transform: scale(1) rotate(0deg); }
+.bk.soon::after { display: none; }
+
+/* Separadores: nubes sobre "¡A pintar!", colinas bajo ella y antes del cierre */
+.coloring .wave { height: 70px; }
+.hills-out { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 120px; display: block; }
+.hills-out path { fill: var(--bg); }
+.coloring { padding-bottom: 170px; }
+.final-hills { position: absolute; left: 0; right: 0; top: -1px; width: 100%; height: 90px; display: block; z-index: 0; }
+.final-hills path { fill: var(--bg); }
+.final .wrap { padding-top: 130px; }
+@media (max-width: 640px) { .coloring { padding-bottom: 120px; } .hills-out { height: 80px; } .final .wrap { padding-top: 96px; } .final-hills { height: 60px; } }
+
+/* Modo oscuro = noche mágica: azul-violeta profundo con estrellas sutiles; las tarjetas claras brillan suave */
+@media (prefers-color-scheme: dark) {
+  :root { --stars: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='260'><g fill='%23FFF8E7'><circle cx='24' cy='40' r='1.1' opacity='.55'/><circle cx='88' cy='150' r='.8' opacity='.4'/><circle cx='140' cy='24' r='1.4' opacity='.6'/><circle cx='196' cy='98' r='.9' opacity='.45'/><circle cx='250' cy='200' r='1.2' opacity='.5'/><circle cx='310' cy='60' r='.8' opacity='.4'/><circle cx='330' cy='170' r='1.3' opacity='.55'/><circle cx='60' cy='230' r='.9' opacity='.4'/><circle cx='170' cy='210' r='.8' opacity='.35'/><circle cx='278' cy='128' r='.7' opacity='.35'/></g></svg>"); }
+  body { background-color: var(--bg); background-image: var(--stars); }
+  /* Secciones que en claro son un bloque de color: en oscuro son escenas nocturnas */
+  .coloring { background-color: #1C1B58; background-image: var(--stars); }
+  .coloring .wave path, .hills-out path, .final-hills path { fill: var(--bg); }
+  /* Tarjetas claras con brillo suave (con sus propios tokens para que el texto siga siendo oscuro sobre claro) */
+  .thumb, .resume, .m-resume, .empty-state, .plan:not(.main), .page-plain .card, .toolbar {
+    --ink: #0F1B3D; --muted: #5A6385; --line: #E1E5F7; --surface: #FFFFFF; --violet-ink: #4F3FD6; --violet-soft: #E8E5FF; --shadow-card: none;
+    background: #FFFDF8; color: var(--ink);
+    box-shadow: 0 0 0 1px rgba(255, 240, 194, .4), 0 0 26px 2px rgba(255, 214, 120, .2), 0 16px 30px -14px rgba(0, 0, 0, .65);
+  }
+  .thumb[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--violet), 0 0 26px 2px rgba(255, 214, 120, .25); }
+  .tbtn:not([aria-pressed="true"]) { color: #0F1B3D; }
+  .tbtn.soft { background: #FFFDF8; color: #0F1B3D; }
+  .palette .sw, .sizes .size { --surface: #FFFFFF; }
+  .size { background: #FFFFFF; }
+  .size i { background: #0F1B3D; }
+  .chip { background: #24266B; border-color: #3C3F9A; }
+  .chip[aria-pressed="true"] { background: var(--violet); border-color: var(--violet); }
+  .shelf-more .btn-line { background: #FFFDF8; color: #0F1B3D; box-shadow: 0 4px 0 #6B6FD0; border-color: #0F1B3D; }
+}
+
+/* Tablet: el encabezado con el botón de sonido no debe desbordar */
+@media (min-width: 761px) and (max-width: 1000px) { .site-header .bar { gap: 14px; } .navlinks { gap: 16px; font-size: 16px; } }

@@ -120,3 +120,12 @@ Tokens (modo claro; el modo oscuro usa los mismos nombres en `globals.css`):
 
 - Cada cuento: 6 páginas, ES y EN, un valor/tema, rango de edad, minutos de lectura, color de tapa, página de portada y dibujo para colorear.
 - Revisar cada texto antes de publicarlo: frases cortas, vocabulario simple, final tranquilo (son cuentos para antes de dormir).
+
+## Emoción y acabado premium (ronda 5)
+
+- **Sonido** (`src/lib/sound.ts`, `docs/sonidos.md`): todo sintetizado con Web Audio (sin archivos ni licencias de terceros). Nada suena antes de la primera interacción; botón on/off en el encabezado y el lector (`lc_sound`). Ganchos: `data-sound` en botones, `playSound(nombre)`.
+- **Apertura del libro**: al tocar una portada del estante, `BookFlyer` la hace volar al centro; el lector la recibe cerrada, flota ~1,1 s con brillo y la tapa se abre en ~1,4 s con destellos. Con `prefers-reduced-motion`: sin vuelo, sin giros.
+- **Lector con escenografía** (`ReaderScene`): fondo nocturno desde la portada, viñeta, estrellas, luciérnagas, mesa de madera; modo dormir apaga la escena. Al terminar: pantalla final con "Leer otra vez" y "Colorear".
+- **Modo oscuro = noche mágica**: secciones claras pasan a azul-violeta con estrellas; tarjetas claras con brillo suave.
+- **Nitidez**: `scripts/ampliar-ilustraciones.mjs` (upscaler local gratuito, ver `docs/ampliar-ilustraciones.md`).
+- **Páginas ilustradas**: grupo `paginas` (18 imágenes) preparado en `scripts/ilustraciones.config.mjs`, **sin generar**; el lector las usa si existen (`pagina-<cuento>-<n>`). Presupuesto en `docs/presupuesto-ilustraciones.md`.

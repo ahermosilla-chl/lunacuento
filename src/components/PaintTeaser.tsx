@@ -8,6 +8,9 @@ import { useLibrary } from "@/lib/purchases";
 import DrawingThumb from "./DrawingThumb";
 import { IconLock } from "./icons";
 
+/** Borde de nubes (festón) para separar el inicio de "¡A pintar!": 12 arcos de 120 px. */
+const CLOUDS = `M0 0 H1440 V34 ${Array.from({ length: 12 }, () => "a60 34 0 0 1 -120 0").join(" ")} Z`;
+
 /** Máximo de tarjetas en el inicio; el resto se ve en el taller ("Ir al taller"). */
 const MAX_TARJETAS = 6;
 
@@ -17,8 +20,8 @@ export default function PaintTeaser({ lang, t }: { lang: Lang; t: Dict }) {
   const saved = usePaintings();
   return (
     <section id="pintar" className="section coloring" aria-labelledby="color-title">
-      <svg className="wave" aria-hidden="true" focusable="false" viewBox="0 0 1440 60" preserveAspectRatio="none">
-        <path d="M0 0 H1440 V20 Q1080 60 720 30 T0 30Z" />
+      <svg className="wave" aria-hidden="true" focusable="false" viewBox="0 0 1440 70" preserveAspectRatio="none">
+        <path d={CLOUDS} />
       </svg>
       <div className="wrap">
         <div className="teaser-head">
@@ -40,6 +43,9 @@ export default function PaintTeaser({ lang, t }: { lang: Lang; t: Dict }) {
           })}
         </ul>
       </div>
+      <svg className="hills-out" aria-hidden="true" focusable="false" viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path d="M0 120 V74 Q180 14 400 58 T820 46 T1200 62 T1440 40 V120 Z" />
+      </svg>
     </section>
   );
 }

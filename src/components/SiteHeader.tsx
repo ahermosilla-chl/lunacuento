@@ -4,6 +4,7 @@ import { MoonLogo } from "./icons";
 import LangSwitch from "./LangSwitch";
 import MainNav from "./MainNav";
 import NativeBar from "./NativeBar";
+import SoundToggle from "./SoundToggle";
 
 /** Header de la web (en la app se oculta y se usa NativeBar). La navegación móvil es la barra inferior. */
 export default function SiteHeader({ lang, t }: { lang: Lang; t: Dict }) {
@@ -18,6 +19,7 @@ export default function SiteHeader({ lang, t }: { lang: Lang; t: Dict }) {
             <span>Lunacuento</span>
           </Link>
           <MainNav lang={lang} t={t} />
+          <SoundToggle t={t} />
           <LangSwitch lang={lang} t={t} />
           <Link href={`/${lang}#planes`} className="btn btn-ghost-moon acct">{t.nav.app}</Link>
         </div>

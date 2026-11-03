@@ -92,3 +92,6 @@ export const IconRestart = ({ size = 22 }: P) => (
 export const IconPaintbrush = ({ size = 22 }: P) => (
   <svg {...base(size)} strokeWidth={2.4}><path d="M19.5 3.5l1 1a1.4 1.4 0 0 1 0 2L12 15l-3-3 8.5-8.5a1.4 1.4 0 0 1 2 0zM9 12c-2.8 0-4.5 1.7-4.5 4.2 0 1.4-.6 2.6-1.5 3.3 3.8.6 8-.8 8-4.5" /></svg>
 );
+export const IconSoundOff = ({ size = 22, className }: P) => (
+  <svg {...base(size)} strokeWidth={2.4} className={className}><path d="M4 9v6h4l5 4V5L8 9H4zM17 9.5l4 5M21 9.5l-4 5" /></svg>
+);

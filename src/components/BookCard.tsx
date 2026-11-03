@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { coverInk, SOON_ART } from "@/lib/art";
 import type { Dict, Lang } from "@/lib/i18n";
 import { COVER_KEY, ilu, type Ilu } from "@/lib/ilustraciones";
@@ -21,6 +22,7 @@ function CoverImg({ cover }: { cover: Ilu }) {
  */
 export default function BookCard({ lang, t, story, soon }: { lang: Lang; t: Dict; story?: Story; soon?: SoonBook }) {
   const unlocked = useLibrary();
+  const router = useRouter();
   if (soon) {
     const cover = ilu(COVER_KEY[soon.id]);
     return (
@@ -44,6 +46,21 @@ export default function BookCard({ lang, t, story, soon }: { lang: Lang; t: Dict
   return (
     <Link
       href={`/${lang}/cuento/${story.id}`}
+      data-sound="pop"
+      onClick={(e) => {
+        // La portada vuela del estante al libro cerrado (no con "reducir movimiento", ni con modificadores, ni si está bloqueado)
+        if (locked || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        e.preventDefault();
+        const el = e.currentTarget;
+        try {
+          sessionStorage.setItem("lc_fly", String(Date.now()));
+        } catch {
+          /* sin sessionStorage: se abre igual, sin vuelo */
+        }
+        window.dispatchEvent(new CustomEvent("lc:fly", { detail: { node: el, rect: el.getBoundingClientRect() } }));
+        router.push(`/${lang}/cuento/${story.id}`);
+      }}
       className={`bk${cover ? " has-cover" : ""}`}
       style={{ "--c": story.color, "--bk-ink": coverInk(story.color) } as React.CSSProperties}
       aria-label={`${t.shelf.open}: ${story.title[lang]} · ${story.age} ${t.shelf.ages} · ${story.minutes} ${t.shelf.minutes}${locked ? ` · ${t.buy.lock}` : ""}`}

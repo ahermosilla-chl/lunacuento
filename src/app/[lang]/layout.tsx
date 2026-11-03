@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { baloo, nunito } from "@/lib/fonts";
+import BookFlyer from "@/components/BookFlyer";
 import PurchasesBoot from "@/components/PurchasesBoot";
+import SoundBoot from "@/components/SoundBoot";
 import { getDict, isLang, LANGS } from "@/lib/i18n";
 import { NATIVE_BOOT_SCRIPT } from "@/lib/platform";
 import "../globals.css";
@@ -41,6 +43,8 @@ export default async function RootLayout({ children, params }: { children: React
       </head>
       <body>
         <PurchasesBoot />
+        <SoundBoot />
+        <BookFlyer />
         {children}
       </body>
     </html>
