@@ -232,7 +232,7 @@ a.bk:active { transform: translateY(-6px) rotate(-1deg); }
 .final { background: var(--night); color: var(--moon-text); position: relative; overflow: hidden; }
 .final .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px; padding-top: 90px; padding-bottom: 90px; position: relative; z-index: 1; }
 .final h2 { font-size: clamp(40px, 5.4vw, 64px); line-height: 1.02; }
-.final .moon { position: absolute; right: 8%; top: -40px; width: 120px; height: 120px; border-radius: 50%; background: var(--moon); opacity: .9; }
+.final .moon { position: absolute; right: 30%; top: 96px; width: 120px; height: 120px; border-radius: 50%; background: var(--moon); opacity: .9; }
 .site-footer { background: var(--night-3); color: var(--moon-muted); }
 .site-footer .wrap { display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: center; padding-top: 28px; padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px)); font-size: 15px; }
 .site-footer nav { display: flex; gap: 24px; }
@@ -291,7 +291,7 @@ a.bk:active { transform: translateY(-6px) rotate(-1deg); }
   .plan .price { font-size: 40px; }
   .final .wrap { padding-top: 48px; padding-bottom: 48px; flex-direction: column; align-items: stretch; gap: 20px; }
   .final .btn { width: 100%; min-height: 56px; font-size: 18px; }
-  .final .moon { width: 80px; height: 80px; top: -30px; }
+  .final .moon { width: 80px; height: 80px; top: 64px; right: 6%; }
   .site-footer .wrap { gap: 8px 16px; font-size: 14px; padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
   .site-footer nav { gap: 16px; }
 }
@@ -678,3 +678,6 @@ a.bk:hover::after, a.bk:focus-visible::after, a.bk:active::after { opacity: .95;
   .chip[aria-pressed="true"] { background: var(--violet); border-color: var(--violet); }
   .shelf-more .btn-line { background: #FFFDF8; color: #0F1B3D; box-shadow: 0 4px 0 #6B6FD0; border-color: #0F1B3D; }
 }
+
+/* Tablet: el encabezado con el botón de sonido no debe desbordar */
+@media (min-width: 761px) and (max-width: 1000px) { .site-header .bar { gap: 14px; } .navlinks { gap: 16px; font-size: 16px; } }

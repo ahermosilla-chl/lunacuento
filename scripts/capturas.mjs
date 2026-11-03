@@ -82,7 +82,7 @@ async function dragTest(page, width, shot) {
   const deg = Number((tf.match(/rotateY\((-?[\d.]+)deg\)/) || [])[1]);
   if (!(deg < -20 && deg > -170)) problems.push(`[${width}] la hoja no sigue el dedo (transform="${tf}")`);
   if (shot) await page.screenshot({ path: `${OUT}/${shot}` });
-  const dist = book.width * (width < 700 ? 0.45 : 0.3); // escritorio: el avance se mide sobre una página (mitad del libro)
+  const dist = book.width * (width < 700 ? 0.45 : 0.42); // escritorio: el avance se mide sobre una página (mitad del libro)
   for (let i = 1; i <= 4; i++) {
     await page.mouse.move(x0 - half - ((dist - half) * i) / 4, y);
     await page.waitForTimeout(16);
@@ -153,9 +153,10 @@ for (const w of WIDTHS) {
   await rp.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
   await rp.fill(NAME_INPUT(w), "Tomás");
   await rp.goto(`${BASE}/es/cuento/la-lampara-de-la-luna/`, { waitUntil: "domcontentloaded" });
-  await rp.waitForTimeout(w < 700 ? 900 : 700);
+  await rp.waitForTimeout(1700);
   await rp.screenshot({ path: `${OUT}/lector-${w}-tapa-abriendose.png` });
-  await rp.waitForTimeout(1400);
+  await rp.locator('.book[data-cover="open"]').waitFor({ timeout: 8000 }).catch(() => problems.push(`[${w}] lector: la tapa no llegó a abrirse`));
+  await rp.waitForTimeout(500);
   await noHScroll(rp, `[${w}] lector`);
   await rp.screenshot({ path: `${OUT}/lector-${w}.png` });
   const txt = await rp.locator(".story-text").first().textContent();
@@ -422,7 +423,8 @@ for (const w of WIDTHS) {
   if (!html.includes("skeletons")) problems.push(`[${w}] biblioteca: el HTML estático no trae el esqueleto de carga`);
 
   await p.goto(`${BASE}/es/cuento/tilo-y-las-moras/`, { waitUntil: "networkidle" });
-  await p.waitForTimeout(1700);
+  await p.locator('.book[data-cover="open"]').waitFor({ timeout: 8000 });
+  await p.waitForTimeout(600);
   const fav = p.locator(w < 700 ? ".r-fav-m" : ".r-fav");
   await fav.click();
   if ((await fav.getAttribute("aria-pressed")) !== "true") problems.push(`[${w}] lector: el favorito no queda marcado`);
@@ -440,8 +442,8 @@ for (const w of WIDTHS) {
   await noHScroll(p, `[${w}] home con progreso`);
   if (w <= 760 || w === 1280) await p.screenshot({ path: `${OUT}/home-${w}-sigue-leyendo.png`, fullPage: false });
   await p.locator(".resume:visible, .m-resume:visible").first().click();
-  await p.locator(".book").waitFor();
-  await p.waitForTimeout(w < 700 ? 1800 : 1800);
+  await p.locator('.book[data-cover="open"]').waitFor({ timeout: 8000 });
+  await p.waitForTimeout(600);
   if (!/Página 3 de/.test((await p.locator(".book").getAttribute("aria-label")) || "")) problems.push(`[${w}] lector: "Seguir leyendo" no retomó en la página 3`);
 
   // terminar el cuento: pasa a "Leídos" y sale de "Sigue leyendo"
@@ -542,12 +544,39 @@ for (const [locale, want] of [["en-US", "/en/"], ["es-CL", "/es/"]]) {
   await p.context().close();
 }
 
+// Sonido: nada suena antes de la primera interacción; el botón apaga y se recuerda; el final del cuento muestra la celebración
+{
+  const p = await newPage(1280);
+  await p.goto(`${BASE}/es/cuento/tilo-y-las-moras/`, { waitUntil: "networkidle" });
+  await p.waitForTimeout(500);
+  const st0 = await p.evaluate(() => window.__lcSound || { contexts: 0, plays: 0 });
+  if (st0.contexts > 0 || st0.plays > 0) problems.push(`sonido: algo sonó antes de la primera interacción (${JSON.stringify(st0)})`);
+  const snd = p.locator(".r-top .snd:visible").first();
+  await snd.click();
+  if ((await snd.getAttribute("aria-pressed")) !== "false") problems.push("sonido: el botón no apaga el sonido");
+  if ((await p.evaluate(() => localStorage.getItem("lc_sound"))) === null) problems.push("sonido: no se guardó la preferencia en el dispositivo");
+  await p.reload({ waitUntil: "networkidle" });
+  if ((await p.locator(".r-top .snd:visible").first().getAttribute("aria-pressed")) !== "false") problems.push("sonido: la preferencia apagada no se recordó");
+  const before = await p.evaluate(() => window.__lcSound?.plays ?? 0);
+  await p.locator('.book[data-cover="open"]').waitFor({ timeout: 8000 });
+  await p.keyboard.press("ArrowRight"); await p.waitForTimeout(900);
+  if (((await p.evaluate(() => window.__lcSound?.plays ?? 0)) - before) > 0) problems.push("sonido: suena con el sonido apagado");
+  for (let i = 0; i < 6; i++) { await p.keyboard.press("ArrowRight"); await p.waitForTimeout(1100); }
+  if (!(await p.locator(".finale").count())) problems.push("final: no aparece la pantalla final");
+  else {
+    for (const re of [/Leer otra vez/, /Colorear/]) if (!(await p.locator(".finale").getByText(re).count())) problems.push(`final: falta el botón ${re}`);
+    await p.screenshot({ path: `${OUT}/lector-1280-final.png` });
+  }
+  await p.context().close();
+}
+
 // prefers-reduced-motion: sin tapa ni giros
 {
   const p = await newPage(1280, { reducedMotion: "reduce" });
   await p.goto(`${BASE}/es/cuento/tilo-y-las-moras/`, { waitUntil: "networkidle" });
   await p.waitForTimeout(200);
   if (await p.locator(".cover-leaf").count()) problems.push("reduced-motion: la tapa sigue animándose");
+  if (await p.locator(".fly-host > *").count()) problems.push("reduced-motion: queda un libro volando");
   await p.keyboard.press("ArrowRight");
   await p.waitForTimeout(50);
   if (await p.locator(".leaf").count()) problems.push("reduced-motion: aparece hoja girando");

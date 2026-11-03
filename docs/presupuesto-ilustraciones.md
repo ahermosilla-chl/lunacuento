@@ -47,3 +47,23 @@ Cota pesimista del plan B (si las imágenes no cuadradas costaran como las cuadr
 1. Tu autorización explícita (y qué plan: A, B o C, y el tope).
 2. Confirmar el precio vigente (o permitir `platform.openai.com` en la red de la sesión para que lo lea).
 3. Poder llamar a la API: **esta sesión no resuelve `api.openai.com` y no tiene `OPENAI_API_KEY`**. O bien permites ese host y añades la clave como secreto del entorno, o yo dejo listo `scripts/generar-ilustraciones.mjs` y lo ejecutas tú en tu máquina.
+
+## Ronda 2 · Ilustraciones de las páginas (18 imágenes) — PENDIENTE DE AUTORIZACIÓN
+
+**No se ha generado nada.** Los prompts ya están en `scripts/ilustraciones.config.mjs` (grupo `paginas`, mismo estilo de lana/arcilla que el resto).
+
+| Qué | Cantidad | Tamaño | Calidad | Estimado |
+|---|---|---|---|---|
+| Páginas de 3 cuentos (La lámpara de la luna, Tilo y las moras, El dragón que no podía dormir) × 6 páginas | 18 | 1536×1024 | alta | 18 × 0,165 = **US$2,97** |
+| Con 2× reintentos | | | | US$5,94 |
+| Cota pesimista (si costaran como cuadradas) | | | | 18 × 0,211 = US$3,80 |
+
+El contador del script lleva ya ~US$2,48 de la ronda anterior (+0,65 de las pruebas): el tope de US$8 alcanza para las 18 sin reintentos y para unos 10 reintentos. Precios **no verificados**: compáralos con tu facturación y ajusta `--factor-costo`.
+
+Cuando lo autorices:
+
+```bash
+node --env-file=.env.local scripts/generar-ilustraciones.mjs --solo paginas
+```
+
+(En una sesión de Claude Code con la clave como network secret: añade `--clave-por-proxy`.) Salen a `public/ilustraciones/pagina-<cuento>-<n>.webp` + manifiesto. El lector ya usa estas imágenes en cuanto existen y, mientras tanto, muestra la escena vectorial provisoria.

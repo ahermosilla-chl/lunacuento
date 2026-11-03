@@ -44,10 +44,19 @@ const easeOut = (x: number) => 1 - Math.pow(1 - x, 3);
  */
 function Art({ story, index, where, lang }: { story: Story; index: number; where: string; lang: Lang }) {
   const page = story.pages[index];
+  const gen = ilu(`pagina-${story.id}-${index + 1}`); // generada con gpt-image-2 (grupo "paginas"); si falta, escena vectorial
   const html = useMemo(
     () => (page.image ? "" : sceneSVG(page.scene, `${story.id}-${index}`, `${where}-${story.id}-${index}`)),
     [page, story.id, index, where],
   );
+  if (gen && !page.image) {
+    return (
+      <div className="art">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={gen.src} srcSet={gen.srcset} sizes="(min-width: 900px) 560px, 100vw" width={gen.width} height={gen.height} alt="" loading="eager" decoding="async" />
+      </div>
+    );
+  }
   if (page.image) {
     return (
       <div className="art">
@@ -264,7 +273,16 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
 
   /** Pasa de página con animación (flechas, teclado, toque en los lados, narración). */
   const turnPage = useCallback((dir: Dir, auto = false) => {
-    if (turnRef.current || !canTurn(dir)) return false;
+    if (turnRef.current) return false;
+    if (dir === 1 && pageRef.current >= last) {
+      // Pasar de la última página (flecha, toque o fin de la narración) abre el final del cuento
+      setPlaying(false);
+      setActive(-1);
+      setFinale(true);
+      playSound("celebrate");
+      return true;
+    }
+    if (!canTurn(dir)) return false;
     if (reduced) {
       playSound("page");
       setActive(-1);
@@ -278,7 +296,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
     // Cuando la hoja ya está montada (useLayoutEffect de abajo), arranca la animación.
     requestAnimationFrame(() => settle(1));
     return true;
-  }, [canTurn, reduced, settle]);
+  }, [canTurn, reduced, settle, last]);
 
   // Posición inicial de la hoja al montarse (antes de pintar, sin parpadeo).
   useLayoutEffect(() => {
