@@ -524,13 +524,13 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
 
   const playLabel = playing ? R.pause : R.listen;
   const PlayIcon = playing ? IconPause : IconPlay;
-  const timerSelect = (id: string) => (
+  const timerSelect = (id: string, compact = false) => (
     <>
       <label htmlFor={id} className="sr-only">{R.timer}</label>
-      <select id={id} className="r-timer" value={timer} onChange={(e) => setTimer(Number(e.target.value))}>
-        <option value={0}>{R.timerOff}</option>
-        <option value={10}>{fmt(R.timerMin, { m: 10 })}</option>
-        <option value={20}>{fmt(R.timerMin, { m: 20 })}</option>
+      <select id={id} className={`r-timer${compact ? " chip-timer" : ""}`} value={timer} onChange={(e) => setTimer(Number(e.target.value))}>
+        <option value={0}>{compact ? "—" : R.timerOff}</option>
+        <option value={10}>{compact ? "10 min" : fmt(R.timerMin, { m: 10 })}</option>
+        <option value={20}>{compact ? "20 min" : fmt(R.timerMin, { m: 20 })}</option>
       </select>
     </>
   );
@@ -553,6 +553,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
           <h1 className="disp">{story.title[lang]}</h1>
           <p>{forName}</p>
         </div>
+        {sleep ? <span className="r-timer-m">{timerSelect("timer-m", true)}</span> : null}
         <button type="button" className="round r-sleep-m" aria-pressed={sleep} aria-label={sleep ? R.sleepOn : R.sleep} onClick={() => setSleep((v) => !v)}>
           <IconMoon size={20} />
         </button>
