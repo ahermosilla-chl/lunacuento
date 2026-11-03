@@ -86,12 +86,32 @@ if (!dry && !simular && !porProxy && !process.env.OPENAI_API_KEY) {
 const promptDe = (img) => `${img.estilo === "linea" ? BASE_LINEA : BASE_ESTILO}\n\n${img.prompt}`;
 
 async function pedirImagen(img, q) {
-  const r = await fetch(`${process.env.OPENAI_BASE_URL || "https://api.openai.com/v1"}/images/generations`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...(process.env.OPENAI_API_KEY ? { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` } : {}) },
-    // stream: la respuesta llega por eventos y la conexión no se corta en pasarelas con límite de 30 s
-    body: JSON.stringify({ model: MODELO, prompt: promptDe(img), size: img.size, quality: q, n: 1, stream: true, partial_images: 1 }),
-  });
+  const base = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
+  const auth = process.env.OPENAI_API_KEY ? { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` } : {};
+  let r;
+  if (img.ref?.length) {
+    // Con imágenes de referencia (campo `ref` = nombres ya generados): endpoint de edición, multipart
+    const fd = new FormData();
+    fd.set("model", MODELO);
+    fd.set("prompt", promptDe(img));
+    fd.set("size", img.size);
+    fd.set("quality", q);
+    fd.set("n", "1");
+    fd.set("stream", "true");
+    fd.set("partial_images", "1");
+    for (const nombre of img.ref) {
+      const png = await sharp(join(OUT, `${nombre}-1536.webp`)).png().toBuffer();
+      fd.append("image[]", new Blob([png], { type: "image/png" }), `${nombre}.png`);
+    }
+    r = await fetch(`${base}/images/edits`, { method: "POST", headers: auth, body: fd });
+  } else {
+    r = await fetch(`${base}/images/generations`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...auth },
+      // stream: la respuesta llega por eventos y la conexión no se corta en pasarelas con límite de 30 s
+      body: JSON.stringify({ model: MODELO, prompt: promptDe(img), size: img.size, quality: q, n: 1, stream: true, partial_images: 1 }),
+    });
+  }
   if (!r.ok) {
     const body = await r.json().catch(() => ({}));
     throw new Error(`API ${r.status}: ${body?.error?.message ?? JSON.stringify(body).slice(0, 300)}`);
