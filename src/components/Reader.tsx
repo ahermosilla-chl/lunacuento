@@ -102,7 +102,9 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
   const mobileRef = useRef(false);
   const drag = useRef<{ id: number; x0: number; y0: number; active: boolean; samples: { x: number; t: number }[]; width: number } | null>(null);
 
+  const sleepRef = useRef(false);
   pageRef.current = page;
+  sleepRef.current = sleep;
   turnRef.current = turn;
   playingRef.current = playing;
   mobileRef.current = mobile;
@@ -314,11 +316,11 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
     if (pageRef.current < last) {
       window.setTimeout(() => {
         if (next === speakId.current && playingRef.current) turnPage(1, true);
-      }, sleep ? 700 : 350);
+      }, sleepRef.current ? 700 : 350);
     } else {
       setPlaying(false);
     }
-  }, [last, sleep, turnPage]);
+  }, [last, turnPage]);
 
   /**
    * Ilumina las palabras con un ritmo fijo (sin voz, o si el navegador no informa los límites de palabra).
@@ -337,8 +339,8 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
         return;
       }
       setActive(i);
-    }, sleep ? 600 : 420);
-  }, [pageDone, sleep]);
+    }, sleepRef.current ? 600 : 420);
+  }, [pageDone]);
 
   const speak = useCallback((index: number) => {
     stopSpeech();
@@ -350,7 +352,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
     const rec = story.pages[index].audio?.[lang];
     if (rec && (rec.recordedName === "" || rec.recordedName === name)) {
       const a = new Audio(rec.src);
-      a.playbackRate = sleep ? 0.9 : 1;
+      a.playbackRate = sleepRef.current ? 0.9 : 1;
       audioRef.current = a;
       a.ontimeupdate = () => {
         if (id !== speakId.current) return;
@@ -376,7 +378,8 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
     const u = new SpeechSynthesisUtterance(text);
     u.voice = voice;
     u.lang = voice.lang;
-    u.rate = sleep ? 0.75 : 0.92;
+    // La velocidad se lee al empezar cada página: activar el modo dormir no corta la página actual.
+    u.rate = sleepRef.current ? 0.75 : 0.92;
     u.pitch = 1.05;
     let boundary = false;
     u.onboundary = (ev) => {
@@ -397,7 +400,7 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
       if (id === speakId.current) timed(id, ws.length);
     };
     synth.speak(u);
-  }, [words, story.pages, lang, name, sleep, stopSpeech, pageDone, timed, R.noVoice]);
+  }, [words, story.pages, lang, name, stopSpeech, pageDone, timed, R.noVoice]);
 
   // Narra la página actual mientras esté sonando y no haya una hoja girando.
   useEffect(() => {
@@ -563,7 +566,6 @@ export default function Reader({ lang, t, story }: { lang: Lang; t: Dict; story:
           </button>
         </div>
       </header>
-      <div className="r-timer-m">{timerSelect("timer-m")}</div>
 
       <main className="stage" id="contenido">
         <div
