@@ -1,14 +1,11 @@
 import Link from "next/link";
 import ContinueReading from "@/components/ContinueReading";
-import Features from "@/components/Features";
-import Hero from "@/components/Hero";
+import HeroStage from "@/components/HeroStage";
 import MobileHome from "@/components/MobileHome";
 import Novelties from "@/components/Novelties";
 import PaintTeaser from "@/components/PaintTeaser";
 import Plans from "@/components/Plans";
-import QuickActions from "@/components/QuickActions";
 import Shell from "@/components/Shell";
-import Shelf from "@/components/Shelf";
 import { getDict, isLang, type Lang } from "@/lib/i18n";
 import { STORIES } from "@/lib/stories";
 
@@ -21,13 +18,10 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
     <Shell lang={lang}>
       <MobileHome lang={lang} t={t} />
       <div className="desk-only">
-        <Hero lang={lang} t={t} firstStory={first.id} />
-        <QuickActions lang={lang} t={t} />
+        <HeroStage lang={lang} t={t} />
         <ContinueReading lang={lang} t={t} />
-        <Shelf lang={lang} t={t} stories={STORIES} moreHref={`/${lang}/cuentos`} />
       </div>
       <Novelties lang={lang} t={t} stories={STORIES} />
-      <Features t={t} />
       <PaintTeaser lang={lang} t={t} />
       <Plans lang={lang} t={t} firstStory={first.id} />
       <section className="final" aria-labelledby="final-title">

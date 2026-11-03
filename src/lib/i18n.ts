@@ -27,7 +27,7 @@ const es = {
     cta: "Leer un cuento",
     bookLine: "Cuando la casa se quedó en silencio, {n} miró por la ventana…",
   },
-  shelf: { title: "Elige un cuento", note: "Toca un libro para abrirlo.", soon: "Pronto", open: "Abrir", all: "Todos", ages: "años", minutes: "min", more: "Ver todos los cuentos", ageFilter: "Filtrar por edad", ageGroups: ["Hasta 3 años", "4–5 años", "6–7 años"], forName: "para {n}", filters: "Filtrar por tema", empty: "Pronto habrá más cuentos de este tema." },
+  shelf: { title: "¡Elige un cuento!", forLabel: "para", note: "Toca un libro para abrirlo.", soon: "Pronto", open: "Abrir", all: "Todos", ages: "años", minutes: "min", more: "Ver todos los cuentos", ageFilter: "Filtrar por edad", ageGroups: ["Hasta 3 años", "4–5 años", "6–7 años"], forName: "para {n}", filters: "Filtrar por tema", empty: "Pronto habrá más cuentos de este tema." },
   features: [
     { title: "Con su nombre", text: "Tu peque es quien vive la aventura." },
     { title: "Escucha y lee", text: "Las palabras se iluminan al narrar." },
@@ -40,7 +40,7 @@ const es = {
   },
   mobile: { hi: "¡Hola!", change: "Cambiar nombre", done: "Listo", all: "Ver todos" },
   continue: { title: "Sigue leyendo", page: "Página {a} de {b}", resume: "Seguir leyendo" },
-  news: { title: "Novedades", badge: "Nuevo" },
+  news: { title: "Nuevos contenidos", badge: "Nuevo" },
   library: {
     title: "Mi biblioteca", continue: "Sigue leyendo", favs: "Favoritos", read: "Leídos", drawings: "Mis dibujos",
     emptyTitle: "Aquí vivirán tus cuentos", emptyText: "Toca el corazón de un cuento o termina de leer uno.", cta: "Elegir un cuento",
@@ -135,7 +135,7 @@ const en: typeof es = {
     cta: "Read a story",
     bookLine: "When the house went quiet, {n} looked out the window…",
   },
-  shelf: { title: "Pick a story", note: "Tap a book to open it.", soon: "Soon", open: "Open", all: "All", ages: "yrs", minutes: "min", more: "See all stories", ageFilter: "Filter by age", ageGroups: ["Up to 3 yrs", "4–5 yrs", "6–7 yrs"], forName: "for {n}", filters: "Filter by topic", empty: "More stories on this topic are coming soon." },
+  shelf: { title: "Pick a story!", forLabel: "for", note: "Tap a book to open it.", soon: "Soon", open: "Open", all: "All", ages: "yrs", minutes: "min", more: "See all stories", ageFilter: "Filter by age", ageGroups: ["Up to 3 yrs", "4–5 yrs", "6–7 yrs"], forName: "for {n}", filters: "Filter by topic", empty: "More stories on this topic are coming soon." },
   features: [
     { title: "With their name", text: "Your little one lives the adventure." },
     { title: "Listen and read", text: "Words light up as it reads." },
@@ -148,7 +148,7 @@ const en: typeof es = {
   },
   mobile: { hi: "Hi!", change: "Change name", done: "Done", all: "See all" },
   continue: { title: "Keep reading", page: "Page {a} of {b}", resume: "Keep reading" },
-  news: { title: "What's new", badge: "New" },
+  news: { title: "New content", badge: "New" },
   library: {
     title: "My library", continue: "Keep reading", favs: "Favorites", read: "Finished", drawings: "My drawings",
     emptyTitle: "Your stories will live here", emptyText: "Tap the heart on a story or finish reading one.", cta: "Pick a story",

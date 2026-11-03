@@ -7,6 +7,7 @@ Claude (chat) revisa cada PR contra esta lista. Estado: ✅ cumple · ⚠️ par
 - [ ] ES y EN completos en todas las pantallas; el selector mantiene la ruta actual.
 - [ ] Nombre del niño se aplica en hero, estante y lector; se guarda en el dispositivo.
 - [ ] Estante de madera con libros parados, efecto al pasar el dedo, libros "Pronto" y filtros (tema y edad); sin tablón vacío en 375/768.
+- [ ] Hero de escritorio/tablet: título "¡Elige un cuento! para {nombre}", filtros y estante de portadas sobre la ilustración, sin tapar al niño ni la luna; portadas, accesos y dibujos con las imágenes generadas.
 - [ ] Navegación Inicio · Cuentos · Pintar · Mi biblioteca (barra inferior en móvil); dos accesos protagonistas en el inicio.
 - [ ] "Sigue leyendo" solo con progreso real; "Novedades" solo con `isNew` real; sin avatar, foto ni campanita.
 - [ ] Estados de contenido: disponible, bloqueado (candado) y próximamente; estado vacío y esqueleto de carga en Mi biblioteca.

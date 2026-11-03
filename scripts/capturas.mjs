@@ -76,14 +76,22 @@ for (const w of WIDTHS) {
   await page.waitForTimeout(300);
   await noHScroll(page, `[${w}] home`);
   await page.screenshot({ path: `${OUT}/home-${w}.png`, fullPage: true });
-  const shelfName = await page.locator(w <= 760 ? ".greet-hi" : ".shelf-head .for").first().textContent();
+  const shelfName = await (w <= 760 ? page.locator(".greet-hi").first().textContent() : page.locator("#kid-name").inputValue());
   if (!shelfName?.includes("Tomás")) problems.push(`[${w}] el nombre no llega al ${w <= 760 ? "saludo" : "estante"}`);
 
   // Navegación: horizontal en tablet/escritorio, inferior en móvil
   const navVisible = await page.locator(w <= 760 ? ".bottom-nav" : ".site-header .navlinks").isVisible();
   if (!navVisible) problems.push(`[${w}] no se ve la navegación principal`);
   if (w > 760 && (await page.locator(".bottom-nav").isVisible())) problems.push(`[${w}] la barra inferior se ve en pantalla ancha`);
-  if ((await page.locator(w <= 760 ? ".m-card:visible" : ".quick-card:visible").count()) !== 2) problems.push(`[${w}] faltan los dos accesos protagonistas`);
+  if (w <= 760) {
+    if ((await page.locator(".m-card:visible").count()) !== 2) problems.push(`[${w}] faltan los dos accesos grandes del móvil`);
+  } else {
+    // hero integrado: título, filtros y estante de portadas sobre la ilustración
+    if (!(await page.locator(".stage h1").isVisible())) problems.push(`[${w}] falta el título del hero`);
+    if ((await page.locator(".stage .chips .chip").count()) !== 4) problems.push(`[${w}] faltan los filtros del hero`);
+    if ((await page.locator(".stage-books .bk").count()) !== 6) problems.push(`[${w}] el hero debe mostrar 6 libros (3 + 3 Pronto)`);
+    if (await page.locator(".shelf-grid").count()) problems.push(`[${w}] sigue el estante duplicado debajo del hero`);
+  }
   if (await page.locator("#continue-title, #continue-row-title, #news-title").count()) problems.push(`[${w}] aparece "Sigue leyendo"/"Novedades" sin datos reales`);
   if (w <= 760) {
     const row = await page.locator(".h-row.covers").evaluate((el) => ({ sw: el.scrollWidth, cw: el.clientWidth, ox: getComputedStyle(el).overflowX }));
@@ -176,8 +184,7 @@ for (const w of WIDTHS) {
   // Estante: el cuento premium muestra candado y abre la pantalla de compra
   const page = await newPage(w);
   await page.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
-  if (w <= 900 && (await page.locator(".shelf-aside.in-grid").isVisible())) problems.push(`[${w}] el aviso del estante deja un tablón vacío`);
-  const books = w <= 760 ? ".h-row.covers" : ".shelf-grid";
+  const books = w <= 760 ? ".h-row.covers" : ".stage-books";
   if ((await page.locator(`${books} .bk .lock-on`).count()) !== 1) problems.push(`[${w}] el estante debe mostrar 1 libro con candado`);
   await page.locator(`${books} a.bk`, { has: page.locator(".lock-on") }).click();
   await page.waitForURL(`**/cuento/${PREMIUM}/`);
