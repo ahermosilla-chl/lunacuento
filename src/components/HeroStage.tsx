@@ -92,11 +92,9 @@ export default function HeroStage({ lang, t }: { lang: Lang; t: Dict }) {
   return (
     <section className="hstage" ref={stage} aria-labelledby="stage-title">
       <div className="stage-art" aria-hidden="true">
-        <span className="stage-side l" />
-        <span className="stage-side r" />
         <div className="stage-pic">
           <div className="pic-img">
-            <IlluImg name="hero-inicio" sizes="(min-width: 1400px) 1290px, 100vw" className="stage-img" fallback={<HeroFallback />} />
+            <IlluImg name="hero-inicio" sizes="100vw" className="stage-img" fallback={<HeroFallback />} />
           </div>
           <span className="px px-moon" />
           <span className="px px-cloud c1" />

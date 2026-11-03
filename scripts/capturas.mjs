@@ -562,6 +562,28 @@ for (const w of [1280, 768]) {
   }
 }
 
+// Hero a sangre: la ilustración cubre todo el ancho, sin fundidos ni viñeta, compacto (≈540–620 px) y sin deformarse
+for (const w of [768, 1280, 1440, 1920]) {
+  const p = await newPage(w);
+  await p.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
+  await p.waitForTimeout(1600);
+  const info = await p.evaluate(() => {
+    const st = document.querySelector(".hstage"); const img = document.querySelector(".stage-img"); const sr = st.getBoundingClientRect(); const ir = img.getBoundingClientRect();
+    const masked = [...st.querySelectorAll(".stage-art, .stage-art *")].some((e) => { const c = getComputedStyle(e); return (c.maskImage && c.maskImage !== "none") || (c.webkitMaskImage && c.webkitMaskImage !== "none"); });
+    const nat = img.naturalWidth ? img.naturalWidth / img.naturalHeight : 1.5;
+    return { h: Math.round(sr.height), w: Math.round(sr.width), imgW: Math.round(ir.width), imgH: Math.round(ir.height), ratio: ir.width / ir.height, nat, covers: ir.left <= sr.left + 2 && ir.right >= sr.right - 2 && ir.top <= sr.top + 2 && ir.bottom >= sr.bottom - 2, masked, side: !!document.querySelector(".stage-side") };
+  });
+  if (!info.covers) problems.push(`[${w}] hero: la ilustración no cubre todo el hero (${JSON.stringify(info)})`);
+  if (info.masked || info.side) problems.push(`[${w}] hero: hay fundidos/bordes difuminados (${JSON.stringify(info)})`);
+  if (info.h < 530 || info.h > 640) problems.push(`[${w}] hero: alto fuera de 540–620 px (${info.h})`);
+  if (Math.abs(info.ratio - 1.5) > 0.03) problems.push(`[${w}] hero: la ilustración se deforma (${info.ratio.toFixed(2)})`);
+  const gap = await p.evaluate(() => { const c = document.querySelector(".stage-chips").getBoundingClientRect(); const b = document.querySelector(".stage-books").getBoundingClientRect(); return b.top - c.bottom; });
+  if (gap > 60) problems.push(`[${w}] hero: demasiado espacio entre filtros y estante (${Math.round(gap)} px)`);
+  if (w >= 1280) await p.screenshot({ path: `${OUT}/hero-${w}.png`, clip: { x: 0, y: 0, width: w, height: 760 } });
+  await noHScroll(p, `[${w}] hero`);
+  await p.context().close();
+}
+
 // Sonido: nada suena antes de la primera interacción; el botón apaga y se recuerda; el final del cuento muestra la celebración
 {
   const p = await newPage(1280);

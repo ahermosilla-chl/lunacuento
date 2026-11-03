@@ -31,3 +31,42 @@ Nota: de las portadas solo quedó guardada la variante de 672 px (el original de
 
 ## Probar el proceso sin IA
 `--motor sharp` amplía con Lanczos (no mejora la nitidez real); sirve para comprobar archivos y srcset: `node scripts/ampliar-ilustraciones.mjs --motor sharp --salida /tmp/prueba --solo hero`.
+
+## Pasos en tu Mac, de a uno
+1. Entra al repo y trae esta rama:
+   ```bash
+   cd ~/ruta/a/lunacuento && git fetch origin && git checkout claude/lunacuento-hero-compacto && git pull
+   ```
+2. Baja Real-ESRGAN ncnn-vulkan para macOS (Releases de `xinntao/Real-ESRGAN-ncnn-vulkan`), descomprímelo en `~/Descargas/realesrgan-ncnn-vulkan` y desbloquéalo:
+   ```bash
+   xattr -dr com.apple.quarantine ~/Descargas/realesrgan-ncnn-vulkan && chmod +x ~/Descargas/realesrgan-ncnn-vulkan/realesrgan-ncnn-vulkan
+   ```
+3. Ver el plan sin ejecutar (hero hasta 3072 px y portadas):
+   ```bash
+   node scripts/ampliar-ilustraciones.mjs --bin ~/Descargas/realesrgan-ncnn-vulkan/realesrgan-ncnn-vulkan --dry-run
+   ```
+4. Ampliar de verdad (hero + portadas):
+   ```bash
+   node scripts/ampliar-ilustraciones.mjs --bin ~/Descargas/realesrgan-ncnn-vulkan/realesrgan-ncnn-vulkan
+   ```
+5. Revisa a ojo `public/ilustraciones/hero-inicio-3072.webp` (sin halos ni texturas raras) y haz commit y push:
+   ```bash
+   git add public/ilustraciones && git commit -m "Hero y portadas ampliados 2x (Real-ESRGAN)" && git push
+   ```
+
+## Con Upscayl (si Real-ESRGAN da segmentation fault en tu Mac)
+Usa el motor de la app Upscayl (ya instalada): ejecutable `/Applications/Upscayl.app/Contents/Resources/bin/upscayl-bin`, carpeta de modelos `/Applications/Upscayl.app/Contents/Resources/models` y modelo `digital-art-4x` (probado con una portada).
+
+Opciones del script: `--bin <ruta>` (ejecutable), `--modelos <carpeta>` (se pasa como `-m`; alias `--models`) y `--modelo <nombre>` (se pasa como `-n`).
+
+Ver el plan sin ejecutar:
+
+```bash
+node scripts/ampliar-ilustraciones.mjs --bin /Applications/Upscayl.app/Contents/Resources/bin/upscayl-bin --modelos /Applications/Upscayl.app/Contents/Resources/models --modelo digital-art-4x --dry-run
+```
+
+Ampliar de verdad (hero hasta 3072 px + portadas):
+
+```bash
+node scripts/ampliar-ilustraciones.mjs --bin /Applications/Upscayl.app/Contents/Resources/bin/upscayl-bin --modelos /Applications/Upscayl.app/Contents/Resources/models --modelo digital-art-4x
+```

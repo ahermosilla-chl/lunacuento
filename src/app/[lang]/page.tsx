@@ -28,7 +28,6 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         <svg className="final-hills" aria-hidden="true" focusable="false" viewBox="0 0 1440 90" preserveAspectRatio="none">
           <path d="M0 0 H1440 V38 Q1260 92 1060 52 T640 60 T240 38 T0 66 Z" />
         </svg>
-        <div className="moon" aria-hidden="true" />
         <div className="wrap">
           <h2 id="final-title">{t.final.title}</h2>
           <Link href={`/${lang}/cuento/${first.id}`} className="btn btn-sun btn-lg">{t.final.cta}</Link>
