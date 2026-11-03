@@ -40,5 +40,41 @@
     "width": 672,
     "height": 1008,
     "srcset": "/ilustraciones/portada-adios-chupete-336.webp 336w, /ilustraciones/portada-adios-chupete-672.webp 672w"
+  },
+  "colorear-luna": {
+    "src": "/ilustraciones/colorear-luna-1200.webp",
+    "width": 1200,
+    "height": 800,
+    "srcset": "/ilustraciones/colorear-luna-600.webp 600w, /ilustraciones/colorear-luna-1200.webp 1200w"
+  },
+  "acceso-pintar": {
+    "src": "/ilustraciones/acceso-pintar-512.webp",
+    "width": 512,
+    "height": 512,
+    "srcset": "/ilustraciones/acceso-pintar-256.webp 256w, /ilustraciones/acceso-pintar-512.webp 512w"
+  },
+  "acceso-leer": {
+    "src": "/ilustraciones/acceso-leer-512.webp",
+    "width": 512,
+    "height": 512,
+    "srcset": "/ilustraciones/acceso-leer-256.webp 256w, /ilustraciones/acceso-leer-512.webp 512w"
+  },
+  "colorear-dragon": {
+    "src": "/ilustraciones/colorear-dragon-1200.webp",
+    "width": 1200,
+    "height": 800,
+    "srcset": "/ilustraciones/colorear-dragon-600.webp 600w, /ilustraciones/colorear-dragon-1200.webp 1200w"
+  },
+  "colorear-tilo": {
+    "src": "/ilustraciones/colorear-tilo-1200.webp",
+    "width": 1200,
+    "height": 800,
+    "srcset": "/ilustraciones/colorear-tilo-600.webp 600w, /ilustraciones/colorear-tilo-1200.webp 1200w"
+  },
+  "colorear-leon": {
+    "src": "/ilustraciones/colorear-leon-1200.webp",
+    "width": 1200,
+    "height": 800,
+    "srcset": "/ilustraciones/colorear-leon-600.webp 600w, /ilustraciones/colorear-leon-1200.webp 1200w"
   }
 }
