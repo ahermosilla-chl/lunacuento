@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import { atkinson, fredoka } from "@/lib/fonts";
+import { baloo, nunito } from "@/lib/fonts";
 import PurchasesBoot from "@/components/PurchasesBoot";
 import { getDict, isLang, LANGS } from "@/lib/i18n";
 import { NATIVE_BOOT_SCRIPT } from "@/lib/platform";
@@ -28,14 +28,14 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#27317A",
+  themeColor: "#2D2877",
 };
 
 export default async function RootLayout({ children, params }: { children: React.ReactNode; params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   if (!isLang(lang)) notFound();
   return (
-    <html lang={lang} className={`${fredoka.variable} ${atkinson.variable}`}>
+    <html lang={lang} className={`${baloo.variable} ${nunito.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: NATIVE_BOOT_SCRIPT }} />
       </head>

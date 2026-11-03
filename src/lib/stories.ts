@@ -61,6 +61,8 @@ export type Story = {
   color: string;
   coverPage: number;
   coloring: string;
+  /** Novedad real: la sección "Novedades" solo aparece si algún cuento la tiene en true. */
+  isNew?: boolean;
   /** Con candado: se desbloquea con la compra única "Biblioteca completa". */
   premium: boolean;
   pages: StoryPage[];

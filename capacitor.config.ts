@@ -8,7 +8,7 @@ const config: CapacitorConfig = {
   appId: "com.lunacuento.app",
   appName: "Lunacuento",
   webDir: "out",
-  backgroundColor: "#27317A",
+  backgroundColor: "#2D2877",
   ios: { contentInset: "never" },
 };
 

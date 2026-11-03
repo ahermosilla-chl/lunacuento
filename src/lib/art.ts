@@ -1,6 +1,7 @@
 import type { Scene } from "./stories";
 
 /**
+ * ILUSTRACION-PENDIENTE (todo este archivo): ilustraciones vectoriales provisorias de páginas, portadas y dibujos para colorear.
  * Ilustraciones vectoriales provisorias. Se reemplazan por imágenes de gpt-image-2
  * cuando una página tiene `image`. Todo es determinista (sin Math.random) para que
  * el HTML del servidor y del cliente coincida.
@@ -76,7 +77,7 @@ export const SOON_ART: Record<string, string> = {
 };
 
 /** Paleta de colorear (docs/diseno/Main.dc.html). */
-export const PALETTE = ["#FFB703", "#FF6F61", "#E24F7A", "#7C6CF0", "#4FA9F0", "#2FB58F", "#9C6A43", "#FFFFFF"] as const;
+export const PALETTE = ["#FFC94D", "#FF6B9E", "#6D5BFF", "#4FA9F0", "#00C2AB", "#FF8A4C", "#9C6A43", "#FFFFFF"] as const;
 
 /** Luminancia relativa WCAG de un color #RRGGBB. */
 function luminance(hex: string): number {
@@ -96,6 +97,6 @@ export function contrast(a: string, b: string): number {
 /** Tinta del título sobre una tapa: crema o tinta oscura, la que tenga más contraste (AA). */
 export function coverInk(bg: string): string {
   const light = "#FFF8E7";
-  const dark = "#1F2147";
+  const dark = "#0F1B3D";
   return contrast(light, bg) >= contrast(dark, bg) ? light : dark;
 }

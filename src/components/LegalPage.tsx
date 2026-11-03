@@ -1,16 +1,14 @@
 import Link from "next/link";
 import { getDict, type Lang } from "@/lib/i18n";
 import { ExternalLink } from "./ParentalGate";
-import SiteFooter from "./SiteFooter";
-import SiteHeader from "./SiteHeader";
+import Shell from "./Shell";
 
 export default function LegalPage({ lang, kind }: { lang: Lang; kind: "privacy" | "terms" }) {
   const t = getDict(lang);
   const doc = t.legal[kind];
   return (
-    <>
-      <SiteHeader lang={lang} t={t} />
-      <main id="contenido" className="wrap page-plain">
+    <Shell lang={lang}>
+      <div className="wrap page-plain">
         <article className="card">
           <h1>{doc.title}</h1>
           <span className="draft-note">{t.legal.draft}</span>
@@ -27,8 +25,7 @@ export default function LegalPage({ lang, kind }: { lang: Lang; kind: "privacy" 
             <Link href={`/${lang}`} className="btn btn-line">{t.legal.back}</Link>
           </p>
         </article>
-      </main>
-      <SiteFooter lang={lang} t={t} />
-    </>
+      </div>
+    </Shell>
   );
 }

@@ -2,34 +2,40 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { coverInk, SOON_ART } from "@/lib/art";
 import type { Dict, Lang } from "@/lib/i18n";
 import { DEFAULT_NAME } from "@/lib/i18n";
 import { useKidName } from "@/lib/name-store";
-import { useLibrary } from "@/lib/purchases";
 import { COMING_SOON, FILTERS, VALUES, VALUES_SHORT, type Story, type ValueKey } from "@/lib/stories";
 import { fmt } from "@/lib/text";
-import CoverArt from "./CoverArt";
-import { IconLock } from "./icons";
+import BookCard from "./BookCard";
 
 type Filter = "all" | ValueKey;
 
-export default function Shelf({ lang, t, stories }: { lang: Lang; t: Dict; stories: Story[] }) {
+const AGE_RANGES: [number, number][] = [[0, 3], [4, 5], [6, 7]];
+
+/** "3–6" → [3, 6]; el cuento sirve para el grupo si los rangos se cruzan. */
+function ageOverlaps(age: string, [lo, hi]: [number, number]) {
+  const [a, b] = age.split("–").map(Number);
+  return a <= hi && (b ?? a) >= lo;
+}
+
+export default function Shelf({ lang, t, stories, ageFilter, moreHref, as: Heading = "h2" }: { lang: Lang; t: Dict; stories: Story[]; ageFilter?: boolean; moreHref?: string; as?: "h1" | "h2" }) {
   const [filter, setFilter] = useState<Filter>("all");
+  const [age, setAge] = useState<number | null>(null);
   const name = useKidName(DEFAULT_NAME[lang]);
-  const unlocked = useLibrary();
-  const match = (values: ValueKey[]) => filter === "all" || values.includes(filter);
-  const list = stories.filter((s) => match(s.values));
-  const soon = COMING_SOON.filter((s) => match(s.values));
+  const match = (values: ValueKey[], ageStr: string) =>
+    (filter === "all" || values.includes(filter)) && (age === null || ageOverlaps(ageStr, AGE_RANGES[age]));
+  const list = stories.filter((s) => match(s.values, s.age));
+  const soon = COMING_SOON.filter((s) => match(s.values, s.age));
 
   return (
     <section id="cuentos" className="section shelf" aria-labelledby="shelf-title">
       <div className="wrap">
         <div className="shelf-head">
-          <h2 id="shelf-title" className="section-title">
+          <Heading id="shelf-title" className="section-title">
             {t.shelf.title}
             <span className="for">{fmt(t.shelf.forName, { n: name })}</span>
-          </h2>
+          </Heading>
           <div className="chips" role="group" aria-label={t.shelf.filters}>
             {(["all", ...FILTERS] as Filter[]).map((k) => (
               <button key={k} type="button" className="chip" aria-pressed={filter === k} onClick={() => setFilter(k)}>
@@ -43,49 +49,29 @@ export default function Shelf({ lang, t, stories }: { lang: Lang; t: Dict; stori
             ))}
           </div>
         </div>
+        {ageFilter ? (
+          <div className="chips ages" role="group" aria-label={t.shelf.ageFilter}>
+            {t.shelf.ageGroups.map((label, i) => (
+              <button key={label} type="button" className="chip" aria-pressed={age === i} onClick={() => setAge(age === i ? null : i)}>{label}</button>
+            ))}
+          </div>
+        ) : null}
 
         <div className="shelf-grid">
-          {list.map((s) => {
-            const ink = coverInk(s.color);
-            const locked = s.premium && !unlocked;
-            return (
-              <Link
-                key={s.id}
-                href={`/${lang}/cuento/${s.id}`}
-                className="bk"
-                style={{ "--c": s.color, "--bk-ink": ink } as React.CSSProperties}
-                aria-label={`${t.shelf.open}: ${s.title[lang]} · ${s.age} ${t.shelf.ages} · ${s.minutes} ${t.shelf.minutes}${locked ? ` · ${t.buy.lock}` : ""}`}
-              >
-                {locked ? <span className="lock-on"><IconLock /> {t.buy.tag}</span> : null}
-                <span className="bk-art"><CoverArt story={s} /></span>
-                <span className="bk-ttl">
-                  <b>{s.title[lang]}</b>
-                  <small>{s.age} {t.shelf.ages} · {s.minutes} {t.shelf.minutes}</small>
-                </span>
-              </Link>
-            );
-          })}
-          {soon.map((s) => (
-            <div key={s.id} className="bk soon" style={{ "--c": s.color, "--bk-ink": coverInk(s.color) } as React.CSSProperties} role="img" aria-label={`${t.shelf.soon}: ${s.title[lang]}`}>
-              <span className="ribbon" aria-hidden="true">{t.shelf.soon}</span>
-              <span className="bk-art" aria-hidden="true" dangerouslySetInnerHTML={{ __html: SOON_ART[s.art] }} />
-              <span className="bk-ttl" aria-hidden="true">
-                <b>{s.title[lang]}</b>
-                <small>{s.age} {t.shelf.ages}</small>
-              </span>
-            </div>
-          ))}
+          {list.map((s) => <BookCard key={s.id} lang={lang} t={t} story={s} />)}
+          {soon.map((s) => <BookCard key={s.id} lang={lang} t={t} soon={s} />)}
           {list.length + soon.length === 0 ? <p className="shelf-empty">{t.shelf.empty}</p> : null}
           <div className="shelf-aside in-grid">
-            <p>{t.shelf.weekly}</p>
             <p>{t.shelf.note}</p>
           </div>
         </div>
         {/* En pantallas chicas el aviso va debajo del estante: dentro de la grilla ocuparía una fila con un tablón vacío. */}
         <div className="shelf-aside below">
-          <p>{t.shelf.weekly}</p>
           <p>{t.shelf.note}</p>
         </div>
+        {moreHref ? (
+          <p className="shelf-more"><Link href={moreHref} className="btn btn-line">{t.shelf.more}</Link></p>
+        ) : null}
       </div>
     </section>
   );

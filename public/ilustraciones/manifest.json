@@ -1,0 +1,92 @@
+{
+  "portada-lampara-de-la-luna": {
+    "src": "/ilustraciones/portada-lampara-de-la-luna-672.webp",
+    "width": 672,
+    "height": 1008,
+    "srcset": "/ilustraciones/portada-lampara-de-la-luna-336.webp 336w, /ilustraciones/portada-lampara-de-la-luna-672.webp 672w"
+  },
+  "hero-inicio": {
+    "src": "/ilustraciones/hero-inicio-1536.webp",
+    "width": 1536,
+    "height": 1024,
+    "srcset": "/ilustraciones/hero-inicio-768.webp 768w, /ilustraciones/hero-inicio-1152.webp 1152w, /ilustraciones/hero-inicio-1536.webp 1536w"
+  },
+  "portada-tilo-y-las-moras": {
+    "src": "/ilustraciones/portada-tilo-y-las-moras-672.webp",
+    "width": 672,
+    "height": 1008,
+    "srcset": "/ilustraciones/portada-tilo-y-las-moras-336.webp 336w, /ilustraciones/portada-tilo-y-las-moras-672.webp 672w"
+  },
+  "portada-dragon-que-no-podia-dormir": {
+    "src": "/ilustraciones/portada-dragon-que-no-podia-dormir-672.webp",
+    "width": 672,
+    "height": 1008,
+    "srcset": "/ilustraciones/portada-dragon-que-no-podia-dormir-336.webp 336w, /ilustraciones/portada-dragon-que-no-podia-dormir-672.webp 672w"
+  },
+  "portada-primer-dia-de-jardin": {
+    "src": "/ilustraciones/portada-primer-dia-de-jardin-672.webp",
+    "width": 672,
+    "height": 1008,
+    "srcset": "/ilustraciones/portada-primer-dia-de-jardin-336.webp 336w, /ilustraciones/portada-primer-dia-de-jardin-672.webp 672w"
+  },
+  "portada-un-hermanito-en-casa": {
+    "src": "/ilustraciones/portada-un-hermanito-en-casa-672.webp",
+    "width": 672,
+    "height": 1008,
+    "srcset": "/ilustraciones/portada-un-hermanito-en-casa-336.webp 336w, /ilustraciones/portada-un-hermanito-en-casa-672.webp 672w"
+  },
+  "portada-adios-chupete": {
+    "src": "/ilustraciones/portada-adios-chupete-672.webp",
+    "width": 672,
+    "height": 1008,
+    "srcset": "/ilustraciones/portada-adios-chupete-336.webp 336w, /ilustraciones/portada-adios-chupete-672.webp 672w"
+  },
+  "colorear-luna": {
+    "src": "/ilustraciones/colorear-luna-1200.webp",
+    "width": 1200,
+    "height": 800,
+    "srcset": "/ilustraciones/colorear-luna-600.webp 600w, /ilustraciones/colorear-luna-1200.webp 1200w"
+  },
+  "acceso-pintar": {
+    "src": "/ilustraciones/acceso-pintar-512.webp",
+    "width": 512,
+    "height": 512,
+    "srcset": "/ilustraciones/acceso-pintar-256.webp 256w, /ilustraciones/acceso-pintar-512.webp 512w"
+  },
+  "acceso-leer": {
+    "src": "/ilustraciones/acceso-leer-512.webp",
+    "width": 512,
+    "height": 512,
+    "srcset": "/ilustraciones/acceso-leer-256.webp 256w, /ilustraciones/acceso-leer-512.webp 512w"
+  },
+  "colorear-dragon": {
+    "src": "/ilustraciones/colorear-dragon-1200.webp",
+    "width": 1200,
+    "height": 800,
+    "srcset": "/ilustraciones/colorear-dragon-600.webp 600w, /ilustraciones/colorear-dragon-1200.webp 1200w"
+  },
+  "colorear-tilo": {
+    "src": "/ilustraciones/colorear-tilo-1200.webp",
+    "width": 1200,
+    "height": 800,
+    "srcset": "/ilustraciones/colorear-tilo-600.webp 600w, /ilustraciones/colorear-tilo-1200.webp 1200w"
+  },
+  "colorear-leon": {
+    "src": "/ilustraciones/colorear-leon-1200.webp",
+    "width": 1200,
+    "height": 800,
+    "srcset": "/ilustraciones/colorear-leon-600.webp 600w, /ilustraciones/colorear-leon-1200.webp 1200w"
+  },
+  "colorear-castillo": {
+    "src": "/ilustraciones/colorear-castillo-1200.webp",
+    "width": 1200,
+    "height": 800,
+    "srcset": "/ilustraciones/colorear-castillo-600.webp 600w, /ilustraciones/colorear-castillo-1200.webp 1200w"
+  },
+  "colorear-zorro": {
+    "src": "/ilustraciones/colorear-zorro-1200.webp",
+    "width": 1200,
+    "height": 800,
+    "srcset": "/ilustraciones/colorear-zorro-600.webp 600w, /ilustraciones/colorear-zorro-1200.webp 1200w"
+  }
+}

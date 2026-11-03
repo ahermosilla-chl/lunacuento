@@ -18,11 +18,9 @@ for (const [label, init] of [["web", () => {}], ["app", () => { window.Capacitor
   await page.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
   if (await page.locator(".shelf-grid .lock-on").count()) problems.push(`[${label}] el estante muestra candado en modo de prueba`);
   if (!(await page.locator(".site-footer").textContent())?.includes("Modo de prueba")) problems.push(`[${label}] el pie no avisa del modo de prueba`);
-  // el aviso del estante no deja un tablón vacío (va fuera de la grilla en pantallas chicas)
-  if (await page.locator(".shelf-aside.in-grid").isVisible()) problems.push(`[${label}] el aviso del estante sigue dentro de la grilla en 375 px`);
 
   // tocar el libro premium abre el lector, no la compra
-  await page.locator(`a.bk[href*="${PREMIUM}"]`).click();
+  await page.locator(`a.bk[href*="${PREMIUM}"]:visible`).first().click();
   await page.waitForURL(`**/cuento/${PREMIUM}/`);
   await page.locator(".book").waitFor({ timeout: 4000 }).catch(() => problems.push(`[${label}] el cuento premium no abre el lector`));
   if (await page.locator(".paywall").count()) problems.push(`[${label}] aparece la pantalla de compra`);
