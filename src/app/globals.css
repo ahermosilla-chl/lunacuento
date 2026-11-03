@@ -232,7 +232,6 @@ a.bk:active { transform: translateY(-6px) rotate(-1deg); }
 .final { background: var(--night); color: var(--moon-text); position: relative; overflow: hidden; }
 .final .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px; padding-top: 72px; padding-bottom: 56px; position: relative; z-index: 1; }
 .final h2 { font-size: clamp(40px, 5.4vw, 64px); line-height: 1.02; }
-.final .moon { position: absolute; right: 30%; top: 96px; width: 120px; height: 120px; border-radius: 50%; background: var(--moon); opacity: .9; }
 .site-footer { background: var(--night-3); color: var(--moon-muted); }
 .site-footer .wrap { display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: center; padding-top: 28px; padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px)); font-size: 15px; }
 .site-footer nav { display: flex; gap: 24px; }
@@ -291,8 +290,7 @@ a.bk:active { transform: translateY(-6px) rotate(-1deg); }
   .plan .price { font-size: 40px; }
   .final .wrap { padding-top: 40px; padding-bottom: 40px; flex-direction: column; align-items: stretch; gap: 20px; }
   .final .btn { width: 100%; min-height: 56px; font-size: 18px; }
-  .final .moon { width: 80px; height: 80px; top: 64px; right: 6%; }
-  .site-footer .wrap { gap: 8px 16px; font-size: 14px; padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+    .site-footer .wrap { gap: 8px 16px; font-size: 14px; padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
   .site-footer nav { gap: 16px; }
 }
 @media (min-width: 641px) { .chip .short { display: none; } }
@@ -562,12 +560,12 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
 
 /* =====================================================================
    Hero de escritorio y tablet: título, filtros y estante sobre la ilustración
-   La ilustración (3:2) cubre todo el ancho (a sangre, sin fundidos ni viñeta) y se encuadra para que se vean el niño, el zorro
+   La ilustración (3:2) cubre todo el ancho (se encuadra sin cortar la luna: o se ve entera o queda fuera del todo) (a sangre, sin fundidos ni viñeta) y se encuadra para que se vean el niño, el zorro
    y el castillo; nunca se estira. El texto y el estante empiezan en --stage-left y el bloque va centrado en vertical.
    ===================================================================== */
-.hstage { --stage-left: 48%; --stage-h: clamp(540px, 44vw, 620px); --pw: max(100cqw, calc(var(--stage-h) * 1.5)); --py: .66; --stage-shadow: 0 2px 14px rgba(45, 40, 119, .6); position: relative; overflow: hidden; container-type: inline-size; background: #5F64B3; color: #FFFFFF; height: var(--stage-h); display: flex; }
+.hstage { --stage-left: 48%; --stage-h: clamp(540px, 44vw, 620px); --pw: max(100cqw, calc(var(--stage-h) * 1.5)); --ph: calc(var(--pw) / 1.5); --stage-shadow: 0 2px 14px rgba(45, 40, 119, .6); position: relative; overflow: hidden; container-type: inline-size; background: #5F64B3; color: #FFFFFF; height: var(--stage-h); display: flex; }
 .stage-art { position: absolute; inset: 0; }
-.stage-pic { position: absolute; left: 50%; top: calc((var(--stage-h) - var(--pw) / 1.5) * var(--py)); width: var(--pw); aspect-ratio: 3 / 2; transform: translateX(-50%); }
+.stage-pic { position: absolute; left: 50%; top: max(calc(var(--stage-h) - var(--ph)), min(calc(var(--ph) * -.27), calc((var(--ph) - var(--stage-h)) * -.8))); width: var(--pw); aspect-ratio: 3 / 2; transform: translateX(-50%); }
 .pic-img { position: absolute; inset: 0; }
 .stage-img, .stage-fallback { width: 100%; height: 100%; object-fit: cover; display: block; transform: translate3d(calc(var(--mx, 0) * -4px), calc(var(--my, 0) * -3px), 0) scale(1.03); }
 /* Capas de parallax: cada una con su profundidad (--d) */
@@ -679,5 +677,3 @@ a.bk:hover::after, a.bk:focus-visible::after, a.bk:active::after { opacity: .95;
 /* Tablet: el encabezado con el botón de sonido no debe desbordar */
 @media (min-width: 761px) and (max-width: 1000px) { .site-header .bar { gap: 14px; } .navlinks { gap: 16px; font-size: 16px; } }
 
-/* Pantallas muy anchas: la ilustración se recorta más; se baja el encuadre para que el niño y el libro no queden cortados */
-@media (min-width: 1700px) { .hstage { --py: .8; } }
