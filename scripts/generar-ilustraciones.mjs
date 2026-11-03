@@ -13,6 +13,7 @@
 //   --dry-run            muestra qué haría y cuánto costaría; NO llama a la API
 //   --simular            prueba todo el proceso (WebP, srcset, manifiesto, contador) con una imagen falsa; NO llama a la API
 //   --salida <carpeta>   carpeta de salida (por defecto public/ilustraciones; con --simular, una carpeta temporal)
+//   --clave-por-proxy    no envía clave: la agrega el proxy de la sesión de Claude Code (network secret de api.openai.com)
 //   --reiniciar-gasto    pone el contador acumulado en cero
 // Variable opcional OPENAI_BASE_URL: solo para pruebas con un servidor falso (por defecto https://api.openai.com/v1).
 import { mkdir, readFile, writeFile, access, mkdtemp, rm } from "node:fs/promises";
@@ -35,6 +36,7 @@ const tope = Number(val("tope", 8));
 const factor = Number(val("factor-costo", 1));
 const calidadForzada = val("calidad", "");
 const simular = flag("simular");
+const porProxy = flag("clave-por-proxy");
 const dry = flag("dry-run");
 let salida = val("salida", "");
 if (!Number.isFinite(tope) || tope <= 0 || !Number.isFinite(factor) || factor <= 0) {
@@ -75,8 +77,8 @@ const manifestPath = join(OUT, "manifest.json");
 const manifest = (await existe(manifestPath)) ? JSON.parse(await readFile(manifestPath, "utf8")) : {};
 
 console.log(`Modelo: ${MODELO} · tope ${fmt(tope)} · gastado antes (estimado) ${fmt(gastado)} · salida ${OUT}`);
-if (!dry && !simular && !process.env.OPENAI_API_KEY) {
-  console.error("Falta OPENAI_API_KEY en el entorno. Ejemplo: node --env-file=.env.local scripts/generar-ilustraciones.mjs --solo hero");
+if (!dry && !simular && !porProxy && !process.env.OPENAI_API_KEY) {
+  console.error("Falta OPENAI_API_KEY en el entorno. Ejemplo: node --env-file=.env.local scripts/generar-ilustraciones.mjs --solo hero\n(En una sesión de Claude Code con la clave como network secret, usa --clave-por-proxy.)");
   process.exit(1);
 }
 
@@ -85,7 +87,7 @@ const promptDe = (img) => `${img.estilo === "linea" ? BASE_LINEA : BASE_ESTILO}\
 async function pedirImagen(img, q) {
   const r = await fetch(`${process.env.OPENAI_BASE_URL || "https://api.openai.com/v1"}/images/generations`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
+    headers: { "Content-Type": "application/json", ...(process.env.OPENAI_API_KEY ? { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` } : {}) },
     body: JSON.stringify({ model: MODELO, prompt: promptDe(img), size: img.size, quality: q, n: 1 }),
   });
   const body = await r.json().catch(() => ({}));
