@@ -76,10 +76,15 @@ export default function Shelf({ lang, t, stories }: { lang: Lang; t: Dict; stori
             </div>
           ))}
           {list.length + soon.length === 0 ? <p className="shelf-empty">{t.shelf.empty}</p> : null}
-          <div className="shelf-aside">
+          <div className="shelf-aside in-grid">
             <p>{t.shelf.weekly}</p>
             <p>{t.shelf.note}</p>
           </div>
+        </div>
+        {/* En pantallas chicas el aviso va debajo del estante: dentro de la grilla ocuparía una fila con un tablón vacío. */}
+        <div className="shelf-aside below">
+          <p>{t.shelf.weekly}</p>
+          <p>{t.shelf.note}</p>
         </div>
       </div>
     </section>
