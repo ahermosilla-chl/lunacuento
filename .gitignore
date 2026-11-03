@@ -8,3 +8,5 @@ next-env.d.ts
 .vercel
 npm-debug.log*
 .DS_Store
+.env.local
+scripts/.gasto-ilustraciones.json
