@@ -8,7 +8,8 @@ export function isLang(v: string): v is Lang {
 /** Pago único dentro de la app (App Store / Google Play). */
 export type PlanKey = "full";
 
-
+/** Sección de una página legal; `link` es un enlace externo (en la app pasa por el portón para adultos). */
+export type LegalSection = { h: string; p: string; link?: { label: string; url: string } };
 
 const es = {
   meta: {
@@ -35,7 +36,6 @@ const es = {
     sleep: "Modo dormir", timer: "Apagar en", close: "Cerrar", prev: "Atrás", next: "Siguiente", end: "Fin",
     listen: "Escuchar", pause: "Pausa", color: "Colorear", hint: "Desliza la página con el dedo",
     goodnight: "Buenas noches", tapBack: "Toca para volver", noVoice: "Este navegador no tiene voz; las palabras se iluminan solas.",
-    lockedTitle: "Este cuento es parte de la Biblioteca completa", lockedCta: "Descarga la app",
     forName: "para {n}", closeBook: "Cerrar el libro", prevPage: "Página anterior", nextPage: "Página siguiente",
     pageOf: "Página {a} de {b}", timerOff: "Sin apagar", timerMin: "Apagar en {m} min", sleepOn: "Salir del modo dormir",
     again: "Leer otra vez", cover: "Tapa del cuento",
@@ -55,6 +55,20 @@ const es = {
     storesNote: "La app es gratis con 2 cuentos. La biblioteca completa se compra dentro de la app.",
     soon: "Muy pronto en App Store y Google Play. Por ahora, los cuentos gratis están abiertos.",
   },
+  gate: {
+    title: "Solo para adultos", ask: "Resuelve para continuar", question: "¿Cuánto es {a} más {b}?",
+    wrong: "Esa no es. Prueba con otra pregunta.", cancel: "Cancelar", answers: "Respuestas",
+    numbers: ["tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"],
+  },
+  buy: {
+    title: "Biblioteca completa", forStory: "Este cuento es de la Biblioteca completa", price: "US$7,99", once: "pago único",
+    feat: ["Todos los cuentos", "Todos los dibujos", "Sin anuncios ni suscripción"],
+    buy: "Comprar", restore: "Restaurar compra", working: "Un momento…", back: "Volver", pick: "Elegir un cuento", unlock: "Desbloquear",
+    owned: "Ya tienes la biblioteca completa.", done: "¡Listo! Ya tienes todos los cuentos.", restored: "¡Compra restaurada!",
+    cancelled: "Compra cancelada.", empty: "No hay ninguna compra en esta cuenta de la tienda.", error: "No se pudo completar. Prueba de nuevo.",
+    web: "Las compras se hacen dentro de la app. Descárgala en tu tienda.", off: "Las compras no están disponibles por ahora.",
+    note: "La compra la hace una persona adulta con su cuenta de App Store o Google Play.", lock: "Cuento bloqueado", tag: "Biblioteca",
+  },
   final: { title: "¿Leemos esta noche?", cta: "Abrir un cuento" },
   footer: { rights: "© 2026 Lunacuento", privacy: "Privacidad", terms: "Términos" },
   legal: {
@@ -63,17 +77,20 @@ const es = {
     privacy: {
       title: "Privacidad",
       sections: [
-        { h: "Lo que guardamos de los niños", p: "Solo el nombre que escribes, y solo en este dispositivo (localStorage). No lo enviamos a nuestros servidores. Nunca pedimos fotos, edad exacta ni otros datos." },
-        { h: "Compras", p: "La compra se hace con tu cuenta de App Store o Google Play. Ellos procesan el pago; nosotros no vemos ni guardamos datos de tarjetas." },
-        { h: "Sin anuncios ni rastreo", p: "No mostramos anuncios ni usamos rastreadores de terceros. Puedes borrar el nombre guardado borrando los datos del sitio en tu navegador." },
+        { h: "Lo que guardamos de los niños", p: "Solo el nombre que escribes, y solo en este dispositivo (localStorage). No lo enviamos a ningún servidor. Nunca pedimos fotos, edad exacta ni otros datos." },
+        { h: "La app", p: "No tiene cuentas, anuncios, analíticas ni publicidad de terceros. No pide permisos del dispositivo (ni cámara, ni micrófono, ni ubicación, ni contactos). Los cuentos gratis funcionan sin conexión." },
+        { h: "Compras", p: "En la app, las compras las hace una persona adulta con su cuenta de App Store o Google Play, detrás de una pregunta para adultos. Ellos procesan el pago; nosotros no vemos datos de tarjetas. Usamos RevenueCat solo para comprobar la compra: recibe un identificador anónimo de la instalación y los datos de la compra, nunca el nombre del niño. No usamos identificadores de publicidad.", link: { label: "Privacidad de RevenueCat", url: "https://www.revenuecat.com/privacy" } },
+        { h: "Enlaces externos", p: "Los enlaces que salen de la app piden primero la pregunta para adultos." },
+        { h: "Borrar los datos", p: "Para borrar el nombre guardado, desinstala la app o borra los datos del sitio en tu navegador." },
         { h: "Contacto", p: "Para pedir acceso o borrado de tus datos, escríbenos al correo de soporte que publicaremos al lanzar." },
-      ],
+      ] as LegalSection[],
     },
     terms: {
       title: "Términos",
       sections: [
         { h: "El servicio", p: "Lunacuento ofrece cuentos digitales para leer y escuchar en familia. Las compras las hace una persona adulta." },
-        { h: "Pago único", p: "La app es gratis con 2 cuentos. La Biblioteca completa (US$7,99) se compra una sola vez dentro de la app, sin suscripción ni renovaciones, y se puede restaurar en otro dispositivo con la misma cuenta de la tienda." },
+        { h: "Pago único", p: "La app es gratis con 2 cuentos. La Biblioteca completa (US$7,99) se compra una sola vez dentro de la app, sin suscripción ni renovaciones, y se puede restaurar en otro dispositivo con la misma cuenta de la tienda (botón «Restaurar compra»)." },
+        { h: "Reembolsos", p: "Los reembolsos los gestiona la tienda (App Store o Google Play) según sus reglas." },
         { h: "Uso", p: "Los cuentos y dibujos son para uso personal y familiar. Puedes imprimir los dibujos para colorear en casa." },
         { h: "Cambios", p: "Si cambiamos estos términos, lo avisaremos en el sitio antes de que apliquen." },
       ],
@@ -107,7 +124,6 @@ const en: typeof es = {
     sleep: "Sleep mode", timer: "Stop in", close: "Close", prev: "Back", next: "Next", end: "The end",
     listen: "Listen", pause: "Pause", color: "Color", hint: "Swipe the page with your finger",
     goodnight: "Good night", tapBack: "Tap to go back", noVoice: "This browser has no voice; words will light up on their own.",
-    lockedTitle: "This story is part of the Full library", lockedCta: "Get the app",
     forName: "for {n}", closeBook: "Close the book", prevPage: "Previous page", nextPage: "Next page",
     pageOf: "Page {a} of {b}", timerOff: "Don't stop", timerMin: "Stop in {m} min", sleepOn: "Leave sleep mode",
     again: "Read again", cover: "Story cover",
@@ -127,6 +143,20 @@ const en: typeof es = {
     storesNote: "The app is free with 2 stories. The full library is an in-app purchase.",
     soon: "Coming soon to the App Store and Google Play. For now, the free stories are ready.",
   },
+  gate: {
+    title: "Grown-ups only", ask: "Solve this to continue", question: "What is {a} plus {b}?",
+    wrong: "Not quite. Try a new question.", cancel: "Cancel", answers: "Answers",
+    numbers: ["three", "four", "five", "six", "seven", "eight", "nine"],
+  },
+  buy: {
+    title: "Full library", forStory: "This story is part of the Full library", price: "US$7.99", once: "one-time purchase",
+    feat: ["Every story", "Every drawing", "No ads, no subscription"],
+    buy: "Buy", restore: "Restore purchase", working: "One moment…", back: "Back", pick: "Pick a story", unlock: "Unlock",
+    owned: "You already have the full library.", done: "Done! Every story is yours.", restored: "Purchase restored!",
+    cancelled: "Purchase cancelled.", empty: "No purchase found on this store account.", error: "That didn't work. Please try again.",
+    web: "Purchases happen inside the app. Get it from your store.", off: "Purchases aren't available right now.",
+    note: "An adult makes the purchase with their App Store or Google Play account.", lock: "Locked story", tag: "Library",
+  },
   final: { title: "Story time tonight?", cta: "Open a story" },
   footer: { rights: "© 2026 Lunacuento", privacy: "Privacy", terms: "Terms" },
   legal: {
@@ -135,17 +165,20 @@ const en: typeof es = {
     privacy: {
       title: "Privacy",
       sections: [
-        { h: "What we keep about children", p: "Only the name you type, and only on this device (localStorage). We don't send it to our servers. We never ask for photos, exact age or any other data." },
-        { h: "Purchases", p: "Purchases are made with your App Store or Google Play account. They process the payment; we never see or store card details." },
-        { h: "No ads, no tracking", p: "We don't show ads or use third-party trackers. You can erase the saved name by clearing this site's data in your browser." },
+        { h: "What we keep about children", p: "Only the name you type, and only on this device (localStorage). We never send it to any server. We never ask for photos, exact age or any other data." },
+        { h: "The app", p: "It has no accounts, ads, analytics or third-party advertising. It asks for no device permissions (no camera, microphone, location or contacts). The free stories work offline." },
+        { h: "Purchases", p: "In the app, purchases are made by an adult with their App Store or Google Play account, behind a grown-ups question. They process the payment; we never see card details. We use RevenueCat only to verify the purchase: it receives an anonymous install identifier and the purchase details, never the child's name. We don't use advertising identifiers.", link: { label: "RevenueCat privacy policy", url: "https://www.revenuecat.com/privacy" } },
+        { h: "External links", p: "Links that leave the app ask the grown-ups question first." },
+        { h: "Deleting data", p: "To erase the saved name, uninstall the app or clear this site's data in your browser." },
         { h: "Contact", p: "To request access to or deletion of your data, write to the support email we will publish at launch." },
-      ],
+      ] as LegalSection[],
     },
     terms: {
       title: "Terms",
       sections: [
         { h: "The service", p: "Lunacuento offers digital stories to read and listen to as a family. Purchases are made by an adult." },
-        { h: "One-time purchase", p: "The app is free with 2 stories. The Full library (US$7.99) is bought once inside the app, with no subscription or renewals, and can be restored on another device with the same store account." },
+        { h: "One-time purchase", p: "The app is free with 2 stories. The Full library (US$7.99) is bought once inside the app, with no subscription or renewals, and can be restored on another device with the same store account (\"Restore purchase\" button)." },
+        { h: "Refunds", p: "Refunds are handled by the store (App Store or Google Play) under its own rules." },
         { h: "Use", p: "Stories and drawings are for personal and family use. You can print the coloring pages at home." },
         { h: "Changes", p: "If we change these terms, we will post a notice on the site before they apply." },
       ],

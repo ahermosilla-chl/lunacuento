@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getDict, type Lang } from "@/lib/i18n";
+import { ExternalLink } from "./ParentalGate";
 import SiteFooter from "./SiteFooter";
 import SiteHeader from "./SiteHeader";
 
@@ -17,6 +18,9 @@ export default function LegalPage({ lang, kind }: { lang: Lang; kind: "privacy" 
             <section key={s.h}>
               <h2>{s.h}</h2>
               <p>{s.p}</p>
+              {"link" in s && s.link ? (
+                <p className="legal-link"><ExternalLink t={t} href={s.link.url}>{s.link.label}</ExternalLink></p>
+              ) : null}
             </section>
           ))}
           <p style={{ marginTop: 32 }}>

@@ -17,7 +17,7 @@ npm run build      # genera el sitio estático en out/
 npm run lint
 ```
 
-No necesita variables de entorno.
+La web y los cuentos gratis funcionan sin variables de entorno. Solo la app nativa necesita las claves públicas de RevenueCat (`NEXT_PUBLIC_RC_IOS_KEY`, `NEXT_PUBLIC_RC_ANDROID_KEY`); ver `.env.example`.
 
 ## Sitio estático (listo para Capacitor)
 
@@ -27,7 +27,24 @@ No necesita variables de entorno.
 - `/[lang]/cuento/[id]` se genera con `generateStaticParams`.
 - Las fuentes (Fredoka y Atkinson Hyperlegible) se descargan en el build con `next/font` y quedan dentro de `out/_next/static/media`. El build necesita acceso a Google Fonts.
 
-La carpeta `out/` es la que se empaquetará con Capacitor en la fase 2.
+La carpeta `out/` es la que empaqueta Capacitor (ver abajo).
+
+## App iOS y Android (Capacitor)
+
+`capacitor.config.ts`: `appId com.lunacuento.app`, `appName Lunacuento`, `webDir out`. Los proyectos nativos están en `ios/` y `android/`.
+
+```bash
+npm run build:app    # next build + cap sync (copia out/ a ios/ y android/)
+npm run cap:ios      # abre Xcode (solo en Mac)
+npm run cap:android  # abre Android Studio
+npm run assets       # regenera ícono y splash desde assets/*.svg
+```
+
+- **Compras**: `src/lib/purchases.ts` (RevenueCat). Producto `lunacuento_biblioteca`, entitlement `biblioteca`. Sin claves, o en la web, responde "no disponible" sin romper nada.
+- **Portón para adultos**: `src/components/ParentalGate.tsx`, antes de comprar, restaurar y abrir enlaces externos.
+- **Cuento con candado**: `premium: true` en `src/lib/stories.ts`; tocarlo abre la pantalla de compra (`Paywall`).
+- En la app se oculta el header de la web y los botones "descarga la app" (`<html data-native>`).
+- Guía completa de publicación: [`docs/PUBLICAR.md`](docs/PUBLICAR.md).
 
 ## Revisión visual
 
@@ -37,7 +54,7 @@ node scripts/servir-estatico.mjs &   # sirve out/ en http://localhost:4173
 npm run capturas                      # Playwright en 375, 768 y 1280 px
 ```
 
-`scripts/capturas.mjs` guarda capturas en `docs/capturas/` y falla si hay scroll horizontal, errores de consola, si el arrastre de página no funciona, si el nombre no llega al estante/lector, si colorear no pinta, o si `prefers-reduced-motion` no se respeta. Usa el Chrome instalado (`CHROME_PATH`, por defecto `/usr/bin/google-chrome`).
+`scripts/capturas.mjs` guarda capturas en `docs/capturas/` (incluye `compra-*`, `porton-*` y `app-*`) y falla si el portón o la compra no funcionan, si en modo app (Capacitor simulado) sigue visible el header web, si hay scroll horizontal, errores de consola, si el arrastre de página no funciona, si el nombre no llega al estante/lector, si colorear no pinta, o si `prefers-reduced-motion` no se respeta. Usa el Chrome instalado (`CHROME_PATH`, por defecto `/usr/bin/google-chrome`).
 
 ## Publicar la web
 
@@ -50,7 +67,10 @@ Antes de publicar, reemplazar en `src/lib/stores.ts` los marcadores `[APP_STORE_
 ```
 src/app/(raiz)/          "/" con redirección de idioma en el cliente
 src/app/[lang]/          home, lector (cuento/[id]), privacidad, términos
-src/components/          Hero, Shelf, Coloring, Plans, Reader (libro), etc.
+src/app/[lang]/comprar/  pantalla de compra (Biblioteca completa)
+src/components/          Hero, Shelf, Coloring, Plans, Reader (libro), Paywall, ParentalGate, etc.
+src/lib/purchases.ts     compras con RevenueCat (iniciar, comprar, restaurar, entitlement)
+ios/ android/            proyectos de Capacitor
 src/lib/stories.ts       cuentos ES/EN y tipos (image / audio listos para fases 3 y 4)
 src/lib/i18n.ts          textos ES/EN
 src/lib/art.ts           ilustraciones vectoriales deterministas y dibujos para colorear
@@ -67,4 +87,4 @@ No se usan créditos de OpenAI ni ElevenLabs sin autorización explícita del du
 
 ## Privacidad
 
-Del niño solo se guarda el nombre, en el dispositivo (`localStorage`). Sin cuentas, sin anuncios, sin rastreadores.
+Del niño solo se guarda el nombre, en el dispositivo (`localStorage`). Sin cuentas, sin anuncios, sin rastreadores. Las compras las valida la tienda con RevenueCat (identificador anónimo).

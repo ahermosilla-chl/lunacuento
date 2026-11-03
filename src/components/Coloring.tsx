@@ -1,16 +1,22 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { DRAWINGS, PALETTE } from "@/lib/art";
 import type { Dict, Lang } from "@/lib/i18n";
+import { useLibrary } from "@/lib/purchases";
 import type { Story } from "@/lib/stories";
+import { IconLock } from "./icons";
 
 /**
  * Colorear: el dibujo SVG se inserta una vez y se pinta tocando cada zona (clase "f").
  * Cada zona también se puede pintar con el teclado (Tab + Enter/Espacio).
  */
 export default function Coloring({ lang, t, stories, initial }: { lang: Lang; t: Dict; stories: Story[]; initial?: string }) {
+  const router = useRouter();
+  const owned = useLibrary();
   const options = stories.filter((s) => DRAWINGS[s.coloring]);
+  const isLocked = (coloring: string) => options.some((s) => s.coloring === coloring && s.premium) && !owned;
   const [drawing, setDrawing] = useState(initial && DRAWINGS[initial] ? initial : options[0]?.coloring ?? "luna");
   const [color, setColor] = useState<string>(PALETTE[0]);
   const [version, setVersion] = useState(0);
@@ -19,7 +25,8 @@ export default function Coloring({ lang, t, stories, initial }: { lang: Lang; t:
   // Desde el lector se llega con ?dibujo=<id>#colorear para abrir el dibujo de ese cuento.
   useEffect(() => {
     const d = new URLSearchParams(window.location.search).get("dibujo");
-    if (d && DRAWINGS[d]) setDrawing(d);
+    if (d && DRAWINGS[d] && !isLocked(d)) setDrawing(d);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Prepara las zonas pintables para teclado y lector de pantalla cada vez que cambia el dibujo.
@@ -80,11 +87,22 @@ export default function Coloring({ lang, t, stories, initial }: { lang: Lang; t:
             </div>
             {options.length > 1 ? (
               <div className="picks" role="group" aria-label={t.coloring.pick}>
-                {options.map((s) => (
-                  <button key={s.id} type="button" className="chip" aria-pressed={drawing === s.coloring} onClick={() => setDrawing(s.coloring)}>
-                    {s.title[lang]}
-                  </button>
-                ))}
+                {options.map((s) => {
+                  const locked = isLocked(s.coloring);
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      className="chip"
+                      aria-pressed={drawing === s.coloring}
+                      aria-label={locked ? `${s.title[lang]} · ${t.buy.lock}` : undefined}
+                      onClick={() => (locked ? router.push(`/${lang}/comprar`) : setDrawing(s.coloring))}
+                    >
+                      {locked ? <IconLock size={16} /> : null}
+                      {locked ? <>&nbsp;</> : null}{s.title[lang]}
+                    </button>
+                  );
+                })}
               </div>
             ) : null}
             <button type="button" className="btn btn-line" onClick={() => setVersion((v) => v + 1)}>{t.coloring.clear}</button>

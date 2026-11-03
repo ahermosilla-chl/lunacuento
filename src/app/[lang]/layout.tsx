@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { atkinson, fredoka } from "@/lib/fonts";
+import PurchasesBoot from "@/components/PurchasesBoot";
 import { getDict, isLang, LANGS } from "@/lib/i18n";
+import { NATIVE_BOOT_SCRIPT } from "@/lib/platform";
 import "../globals.css";
 
 export function generateStaticParams() {
@@ -34,7 +36,13 @@ export default async function RootLayout({ children, params }: { children: React
   if (!isLang(lang)) notFound();
   return (
     <html lang={lang} className={`${fredoka.variable} ${atkinson.variable}`}>
-      <body>{children}</body>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: NATIVE_BOOT_SCRIPT }} />
+      </head>
+      <body>
+        <PurchasesBoot />
+        {children}
+      </body>
     </html>
   );
 }
