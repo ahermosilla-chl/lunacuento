@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Dict, Lang } from "@/lib/i18n";
 import { IconCheck } from "./icons";
+import { MODO_PRUEBA } from "@/lib/modo-prueba";
 import StoreButtons from "./StoreButtons";
 
 /**
@@ -32,7 +33,7 @@ export default function Plans({ lang, t, firstStory }: { lang: Lang; t: Dict; fi
             <Feats list={P.full.feat} />
             <div className="actions">
               <div className="web-only"><StoreButtons t={t} /></div>
-              <Link href={`/${lang}/comprar`} className="btn btn-sun btn-lg app-only">{t.buy.unlock}</Link>
+              {MODO_PRUEBA ? null : <Link href={`/${lang}/comprar`} className="btn btn-sun btn-lg app-only">{t.buy.unlock}</Link>}
             </div>
           </div>
         </div>

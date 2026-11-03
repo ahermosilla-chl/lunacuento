@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { coverInk } from "@/lib/art";
 import type { Dict, Lang } from "@/lib/i18n";
+import { MODO_PRUEBA } from "@/lib/modo-prueba";
 import { useNative } from "@/lib/platform";
 import { loadPrice, purchaseLibrary, restorePurchases, useLibrary, type PurchaseResult, type PurchaseStatus } from "@/lib/purchases";
 import type { Story } from "@/lib/stories";
@@ -26,7 +28,15 @@ export default function Paywall({ lang, t, story }: { lang: Lang; t: Dict; story
   const [msg, setMsg] = useState<Msg | null>(null);
   const [price, setPrice] = useState<string | null>(null);
 
+  const router = useRouter();
+
+  // Modo de prueba: no hay pantalla de compra; /comprar vuelve al estante.
   useEffect(() => {
+    if (MODO_PRUEBA) router.replace(`/${lang}#cuentos`);
+  }, [router, lang]);
+
+  useEffect(() => {
+    if (MODO_PRUEBA) return;
     let alive = true;
     loadPrice().then((p) => alive && setPrice(p));
     return () => {
@@ -52,6 +62,8 @@ export default function Paywall({ lang, t, story }: { lang: Lang; t: Dict; story
       setBusy(false);
       setMsg(text(r.status, kind));
     });
+
+  if (MODO_PRUEBA) return null;
 
   const back = story ? `/${lang}#cuentos` : `/${lang}`;
   const cover = story?.color ?? "#2F3E9E";

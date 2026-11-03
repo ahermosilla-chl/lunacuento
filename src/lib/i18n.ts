@@ -70,7 +70,7 @@ const es = {
     note: "La compra la hace una persona adulta con su cuenta de App Store o Google Play.", lock: "Cuento bloqueado", tag: "Biblioteca",
   },
   final: { title: "¿Leemos esta noche?", cta: "Abrir un cuento" },
-  footer: { rights: "© 2026 Lunacuento", privacy: "Privacidad", terms: "Términos" },
+  footer: { rights: "© 2026 Lunacuento", privacy: "Privacidad", terms: "Términos", test: "Modo de prueba: cuentos desbloqueados" },
   legal: {
     draft: "Borrador · se revisará antes del lanzamiento.",
     back: "Volver al inicio",
@@ -158,7 +158,7 @@ const en: typeof es = {
     note: "An adult makes the purchase with their App Store or Google Play account.", lock: "Locked story", tag: "Library",
   },
   final: { title: "Story time tonight?", cta: "Open a story" },
-  footer: { rights: "© 2026 Lunacuento", privacy: "Privacy", terms: "Terms" },
+  footer: { rights: "© 2026 Lunacuento", privacy: "Privacy", terms: "Terms", test: "Test mode: stories unlocked" },
   legal: {
     draft: "Draft · to be reviewed before launch.",
     back: "Back to home",
