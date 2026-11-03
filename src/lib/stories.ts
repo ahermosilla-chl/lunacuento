@@ -9,6 +9,7 @@ export type Scene = {
   hog?: boolean;
   basket?: boolean;
   friends?: boolean;
+  dragon?: boolean;
 };
 
 /**
@@ -60,7 +61,7 @@ export type Story = {
   color: string;
   coverPage: number;
   coloring: string;
-  /** Requiere suscripción Familia. */
+  /** Con candado: se desbloquea con la compra única "Biblioteca completa". */
   premium: boolean;
   pages: StoryPage[];
 };
@@ -154,6 +155,41 @@ export const STORIES: Story[] = [
         en: "\"Sharing is like multiplying,\" Tilo said with a laugh. \"Thank you, {n}. Tomorrow I'll save you the sweetest blackberries.\"" } },
     ],
   },
+  {
+    id: "el-dragon-que-no-podia-dormir",
+    title: { es: "El dragón que no podía dormir", en: "The Dragon Who Couldn't Sleep" },
+    blurb: {
+      es: "Brasa tiene miedo de que su fuego se apague en la oscuridad. {n} le enseña un secreto.",
+      en: "Brasa is afraid its fire will go out in the dark. {n} shares a little secret.",
+    },
+    values: ["dark", "sleep"],
+    age: "3–7",
+    minutes: 4,
+    color: "#E24F7A",
+    coverPage: 4,
+    coloring: "dragon",
+    premium: true,
+    pages: [
+      { scene: { t: "night", moon: true, dragon: true }, text: {
+        es: "En lo alto de una colina vivía Brasa, un dragón verde del tamaño de un perro. Esa noche Brasa no podía dormir. Daba vueltas y vueltas en su cueva.",
+        en: "On top of a hill lived Brasa, a green dragon the size of a dog. That night, Brasa couldn't sleep. Brasa tossed and turned in the cave." } },
+      { scene: { t: "night", dragon: true }, text: {
+        es: "{n} oyó un suspiro pequeñito y subió la colina con su linterna. —¿Qué pasa? —preguntó. —Si cierro los ojos, mi fuego se apaga —dijo Brasa—. Y me da miedo la oscuridad.",
+        en: "{n} heard a tiny sigh and climbed the hill with a flashlight. \"What's wrong?\" {n} asked. \"If I close my eyes, my fire goes out,\" said Brasa. \"And the dark scares me.\"" } },
+      { scene: { t: "night", dragon: true, moon: true }, text: {
+        es: "—Tu fuego no se va —dijo {n}—. Solo descansa, igual que tú. Vamos a respirar juntos, hondo y despacio. Una vez. Dos veces. Tres veces.",
+        en: "\"Your fire isn't going anywhere,\" said {n}. \"It's just resting, like you. Let's breathe together, deep and slow. Once. Twice. Three times.\"" } },
+      { scene: { t: "night", dragon: true, ff: 3 }, text: {
+        es: "Brasa respiró hondo y soltó una chispita dorada. Después, otra. Las chispas subieron como estrellas chiquitas y se quedaron brillando sobre la cueva.",
+        en: "Brasa took a deep breath and let out a tiny golden spark. Then another. The sparks floated up like little stars and stayed glowing above the cave." } },
+      { scene: { t: "night", dragon: true, ff: 7, moon: true }, text: {
+        es: "—Mira —susurró {n}—. Tu fuego se volvió una luz de noche. Ahora la oscuridad tiene lucecitas. Brasa sonrió, bostezó muy grande y apoyó la cabeza en las patas.",
+        en: "\"Look,\" whispered {n}. \"Your fire turned into a night-light. Now the dark has little lights in it.\" Brasa smiled, gave a big yawn and rested its head on its paws." } },
+      { scene: { t: "night", dragon: true, ff: 4 }, text: {
+        es: "Los ojos de Brasa se cerraron despacito. Las chispas siguieron brillando, suaves, cuidando su sueño. {n} bajó la colina en silencio. Buenas noches, Brasa. Buenas noches, {n}.",
+        en: "Brasa's eyes closed slowly. The sparks kept glowing, soft and gentle, watching over the dream. {n} walked down the hill in silence. Good night, Brasa. Good night, {n}." } },
+    ],
+  },
 ];
 
 /** Títulos que se muestran en el estante como "Pronto". */
@@ -163,7 +199,6 @@ export const COMING_SOON: SoonBook[] = [
   { id: "jardin", title: { es: "El primer día de jardín", en: "First Day of Preschool" }, color: "#2FB58F", age: "3–5", values: ["school"], art: "jardin" },
   { id: "hermanito", title: { es: "Un hermanito en casa", en: "A New Baby at Home" }, color: "#7C6CF0", age: "2–6", values: ["sibling"], art: "hermanito" },
   { id: "chupete", title: { es: "Adiós, chupete", en: "Bye-Bye, Pacifier" }, color: "#4FA9F0", age: "1–3", values: ["sleep"], art: "chupete" },
-  { id: "dragon", title: { es: "El dragón que no podía dormir", en: "The Dragon Who Couldn't Sleep" }, color: "#E24F7A", age: "3–7", values: ["dark", "sleep"], art: "dragon" },
 ];
 
 /** Temas que aparecen como filtros en el estante. */

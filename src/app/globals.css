@@ -445,3 +445,4 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
 .pw-legal { display: flex; gap: 20px; font-size: 15px; }
 .pw-legal a { color: var(--moon-muted); min-height: 44px; display: inline-flex; align-items: center; }
 @media (max-width: 640px) { .pw-body { gap: 28px; padding-top: 8px; } .pw-price { font-size: 38px; } }
+.legal-link a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 700; color: var(--ink); }
