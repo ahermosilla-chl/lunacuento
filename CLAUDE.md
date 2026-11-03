@@ -1,6 +1,6 @@
 # Lunacuento
 
-Web premium y bilingüe (español / inglés) de cuentos digitales para niños de 0 a 7 años. Cada cuento usa el nombre del niño o niña, se puede leer o escuchar con las palabras iluminándose, tiene modo dormir y un dibujo para colorear. Se monetiza con una suscripción mensual o anual y una gift card.
+Web premium y bilingüe (español / inglés) de cuentos digitales para niños de 0 a 7 años. Cada cuento usa el nombre del niño o niña, se puede leer o escuchar con las palabras iluminándose, tiene modo dormir y un dibujo para colorear. Modelo: **app gratis con 2 cuentos** en App Store y Google Play; un **pago único de US$7,99** (compra no consumible) desbloquea la biblioteca completa. La web es una **vitrina**: muestra la app, deja leer un cuento gratis y lleva a las tiendas.
 
 Responde y comenta siempre en español. Los textos visibles van en ES y EN.
 
@@ -11,25 +11,30 @@ Responde y comenta siempre en español. Los textos visibles van en ES y EN.
 
 ## Stack (decidido)
 
-- Next.js 15 (App Router, TypeScript, Server Components). Sin Tailwind: CSS propio con tokens en `:root`.
-- Supabase: login con enlace mágico por correo, Postgres con RLS.
-- Lemon Squeezy: checkout de suscripción (mensual, anual) y producto único (regalo), webhook firmado.
-- Deploy en Vercel. Rutas por idioma: `/es/...` y `/en/...`; `/` redirige según `Accept-Language`.
+- Next.js 15 (App Router, TypeScript). Sin Tailwind: CSS propio con tokens en `:root`.
+- **Sitio 100 % estático** (`output: "export"`, carpeta `out/`) para empaquetarlo como app con **Capacitor** (iOS y Android). Sin middleware, sin rutas de servidor, sin cookies ni SSR. Todas las rutas se generan con `generateStaticParams`.
+- Rutas por idioma: `/es/...` y `/en/...`; `/` redirige **en el cliente** según el idioma guardado o `navigator.languages`.
+- Todo local para poder leer sin conexión: ilustraciones en el repo, fuentes embebidas con `next/font` (nada de CDN obligatorio).
+- Monetización: **compras dentro de la app** (pago único no consumible, US$7,99) con App Store / Google Play. **Sin Supabase ni Lemon Squeezy por ahora.**
+- La web (Vercel u otro hosting estático) es vitrina: botones a App Store y Google Play (`src/lib/stores.ts`, marcadores `[APP_STORE_URL]` y `[PLAY_STORE_URL]` hasta publicar).
 
 ## Referencias en el repo
 
-- `docs/prototipo-v2.html`: prototipo navegable aprobado en estructura (hero, estante, lector, colorear, planes). Abrirlo en el navegador. La paleta y el lector **deben mejorarse** según este documento.
+- `docs/diseno/*.dc.html`: **diseño final** (especificación visual exacta): `Main` (home escritorio), `Home-Movil`, `Libro` (lector escritorio), `Libro-Movil`, `Sistema`. Ignorar las etiquetas `<x-dc>`, `<helmet>` y el script DCLogic (son del editor).
+- `docs/prototipo-v2.html`: prototipo anterior, solo como referencia de estructura; su paleta quedó reemplazada por `docs/diseno/`.
 - `docs/referencia/stories.ts`: los 2 cuentos completos en ES/EN, títulos "Pronto" y tipos de datos. Reutilizar.
 - `docs/referencia/i18n.ts`: diccionario de textos ES/EN ya recortado (poco texto, pensado para niños).
 - `docs/referencia/art.ts`: ilustraciones vectoriales provisorias deterministas y dibujos para colorear.
 
 ## Fases
 
-1. **Web y lector** (prioridad): home, estante, lector-libro, colorear, planes (botones sin cobrar aún), selector ES/EN.
-2. **Cuentas y pagos**: Supabase + Lemon Squeezy, control de acceso a cuentos `premium`, página "Mi cuenta".
-3. **Imágenes**: ilustraciones definitivas con la API de OpenAI, **siempre modelo `gpt-image-2`**, con una guía de estilo única para que todos los cuentos se vean de la misma familia aunque los personajes cambien.
-4. **Voz**: narración con ElevenLabs usando el endpoint con timestamps para iluminar palabra por palabra. Hasta entonces, `speechSynthesis` del navegador como respaldo.
+1. **Web y lector** (prioridad): home vitrina, estante, lector-libro, colorear, planes (gratis vs. Biblioteca completa · US$7,99 · pago único, con botones a las tiendas, sin cobro), selector ES/EN. Compatible con exportación estática.
+2. **App con Capacitor + compras dentro de la app**: empaquetar `out/` para iOS y Android, compra no consumible "Biblioteca completa", restaurar compras, bloqueo de cuentos `premium` sin compra.
+3. **Imágenes**: ilustraciones definitivas con la API de OpenAI, **siempre modelo `gpt-image-2`**, con una guía de estilo única para que todos los cuentos se vean de la misma familia aunque los personajes cambien. Se guardan como archivos locales.
+4. **Voz**: narración con ElevenLabs usando el endpoint con timestamps para iluminar palabra por palabra. Hasta entonces, `speechSynthesis` del navegador como respaldo. Audios locales.
 5. **Contenido**: llegar a 10 cuentos para el lanzamiento.
+
+**No usar créditos de OpenAI ni ElevenLabs sin autorización explícita del dueño.** Hasta entonces solo se preparan los tipos de datos (`image`, `audio`); no se hacen llamadas de prueba ni de generación.
 
 Cada fase en su propio PR, con commits pequeños. `npm run build` y `npm run lint` sin errores antes de abrir el PR.
 
@@ -81,15 +86,14 @@ Tokens (modo claro; definir también modo oscuro con los mismos nombres):
 
 ## Datos y seguridad
 
-- Tablas: `subscriptions` (user_id, lemon_subscription_id, status, variant, renews_at, ends_at, portal_url, updated_at). RLS: cada usuario solo lee lo suyo; solo el webhook (service role) escribe.
-- Webhook de Lemon Squeezy: verificar firma HMAC SHA-256 (`X-Signature`) sobre el cuerpo crudo antes de procesar. Pasar `user_id` en `custom_data` del checkout.
-- `SUPABASE_SERVICE_ROLE_KEY` y claves de Lemon Squeezy solo en el servidor. Documentar todas las variables en `.env.example`.
-- El sitio debe funcionar (cuentos gratis, estante, colorear) aunque Supabase y Lemon Squeezy no estén configurados todavía.
+- Sin backend propio por ahora: no hay cuentas ni base de datos. La compra la valida la tienda (App Store / Google Play) en la fase 2.
+- Nunca guardar claves en el repo. Si una fase futura necesita variables, documentarlas en `.env.example` con valores vacíos.
+- El sitio debe funcionar completo (cuentos gratis, estante, colorear) sin conexión una vez cargado y sin ninguna variable de entorno.
 
 ## Privacidad (contenido infantil)
 
 - De los niños solo se guarda el nombre, y en el dispositivo (`localStorage`). Nada de fotos, edad exacta ni datos sensibles.
-- La cuenta pertenece al adulto. Sin anuncios ni trackers de terceros invasivos.
+- Las compras las hace el adulto con su cuenta de la tienda. Sin anuncios ni trackers de terceros.
 - Páginas de Privacidad y Términos (borrador) enlazadas en el footer.
 
 ## Contenido
