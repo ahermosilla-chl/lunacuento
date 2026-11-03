@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Lunacuento · Home móvil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Atkinson+Hyperlegible:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#2B2D52}a:hover{color:#27317A}
+.disp{font-family:'Fredoka',ui-rounded,'Trebuchet MS',sans-serif}
+.btn-sun{display:flex;align-items:center;justify-content:center;min-height:56px;border:0;border-radius:999px;background:#FFB703;color:#3A2600;font:700 18px 'Atkinson Hyperlegible',system-ui,sans-serif;text-decoration:none;box-shadow:0 5px 0 #D18A00}
+.btn-line{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:999px;border:2px solid #2B2D52;background:#FFFFFF;color:#2B2D52;font:700 17px 'Atkinson Hyperlegible',system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 0 #2B2D52}
+.chip{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #F1DFC0;background:#FFFFFF;color:#2B2D52;font:700 15px 'Atkinson Hyperlegible',sans-serif;white-space:nowrap}
+.chip-on{background:#FF6F61;border-color:#FF6F61;color:#2A0B07}
+.bk{position:relative;width:150px;height:212px;border-radius:5px 12px 12px 5px;overflow:hidden;display:flex;flex-direction:column;box-shadow:inset 8px 0 9px -6px rgba(0,0,0,.45),6px 8px 0 -2px rgba(43,45,82,.18);text-decoration:none}
+.bk::before{content:"";position:absolute;left:7px;top:0;bottom:0;width:3px;background:rgba(255,255,255,.28)}
+.bk-art{margin:10px 10px 0 16px;height:112px;border-radius:8px;overflow:hidden}
+.bk-ttl{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:10px 10px 10px 16px;color:#FFF8E7}
+.plank{height:22px;border-radius:5px;background:#E3A35F;border-top:5px solid #F4C58F;box-shadow:0 12px 16px -10px rgba(120,70,20,.45)}
+.pronto{position:absolute;top:12px;right:-2px;background:#FFB703;color:#3A2600;font:700 11px 'Atkinson Hyperlegible',sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border-radius:5px 0 0 5px}
+</style>
+</helmet>
+<div style="width:390px;height:2760px;box-sizing:border-box;background:#FFF7EA;font-family:'Atkinson Hyperlegible',system-ui,sans-serif;color:#2B2D52;overflow:hidden">
+
+  <header style="background:#27317A;color:#FFF8E7;position:relative;overflow:hidden">
+    <div style="display:flex;align-items:center;gap:10px;padding:16px;position:relative;z-index:2">
+      <svg width="32" height="32" viewBox="0 0 38 38" aria-hidden="true"><path d="M25 5a15 15 0 1 0 9 26A12.5 12.5 0 0 1 25 5z" fill="#FFB703"></path></svg>
+      <span class="disp" style="font-size:24px;font-weight:600">Lunacuento</span>
+      <div style="display:flex;padding:3px;border-radius:999px;background:#333F93;margin-left:auto">
+        <button type="button" style="min-height:40px;min-width:44px;border:0;border-radius:999px;background:#FFF8E7;color:#27317A;font:700 14px 'Atkinson Hyperlegible',sans-serif">ES</button>
+        <button type="button" style="min-height:40px;min-width:44px;border:0;border-radius:999px;background:transparent;color:#CBD0F5;font:700 14px 'Atkinson Hyperlegible',sans-serif">EN</button>
+      </div>
+      <button type="button" aria-label="Menú" style="width:44px;height:44px;border-radius:50%;border:2px solid #4A57A8;background:transparent;color:#FFF8E7;display:flex;align-items:center;justify-content:center">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+      </button>
+    </div>
+    <svg aria-hidden="true" viewBox="0 0 390 700" style="position:absolute;inset:0;width:390px;height:700px;z-index:0"><g fill="#FFF8E7"><circle cx="40" cy="120" r="1.6"></circle><circle cx="300" cy="90" r="2"></circle><circle cx="200" cy="200" r="1.5"></circle><circle cx="350" cy="260" r="1.6"></circle><circle cx="60" cy="330" r="1.8"></circle></g></svg>
+    <div style="position:relative;z-index:2;padding:20px 16px 120px">
+      <span style="display:inline-flex;align-items:center;min-height:32px;padding:0 14px;border-radius:999px;background:#333F93;color:#CBD0F5;font-weight:700;font-size:14px">Para niños de 0 a 7 años</span>
+      <h1 class="disp" style="margin:16px 0 0;font-size:46px;line-height:1.03;font-weight:600">Cuentos que llevan su nombre hasta <span style="color:#FFB703">la luna.</span></h1>
+      <p style="margin:14px 0 0;font-size:19px;color:#CBD0F5">Escúchalos, léelos y coloréalos.</p>
+      <label for="kid-name-m" style="display:block;margin-top:26px;font-size:15px;font-weight:700;color:#CBD0F5">¿Cómo se llama tu peque?</label>
+      <input id="kid-name-m" type="text" value="Emilia" style="margin-top:8px;width:100%;box-sizing:border-box;min-height:58px;padding:0 22px;border:0;border-radius:999px;background:#FFF8E7;font:700 20px 'Fredoka',sans-serif;color:#2B2D52;box-shadow:0 6px 0 #1C2463">
+      <a href="Libro-Movil.dc.html" class="btn-sun" style="margin-top:18px">Leer un cuento</a>
+    </div>
+    <div aria-hidden="true" style="position:absolute;right:-30px;top:250px;width:110px;height:110px;border-radius:50%;background:#FFE08A;opacity:.95;z-index:1"></div>
+    <svg aria-hidden="true" viewBox="0 0 390 110" preserveAspectRatio="none" style="position:absolute;left:0;bottom:0;width:390px;height:110px;z-index:1">
+      <path d="M0 50 Q90 10 200 45 T390 35 V110 H0Z" fill="#333F93"></path>
+      <path d="M0 75 Q110 40 230 70 T390 65 V110 H0Z" fill="#2FB58F"></path>
+      <path d="M0 95 Q130 70 260 92 T390 88 V110 H0Z" fill="#FFF7EA"></path>
+    </svg>
+  </header>
+
+  <section style="padding:24px 16px 56px">
+    <h2 class="disp" style="margin:0;font-size:38px;font-weight:600;line-height:1">Elige un cuento</h2>
+    <div style="margin-top:18px;display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">
+      <span class="chip chip-on">Todos</span><span class="chip">Oscuridad</span><span class="chip">Compartir</span><span class="chip">Dormir</span>
+    </div>
+    <div style="margin-top:28px;display:flex;gap:22px;justify-content:center;align-items:flex-end">
+      <a href="Libro-Movil.dc.html" class="bk" style="background:#2F3E9E">
+        <span class="bk-art"><svg viewBox="0 0 140 132" aria-hidden="true" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block"><rect width="140" height="132" fill="#1E2A6E"></rect><circle cx="98" cy="40" r="22" fill="#FFE08A"></circle><path d="M0 98 Q40 76 80 94 T140 88 V132 H0Z" fill="#24467A"></path><circle cx="58" cy="84" r="10" fill="#FFC93C" opacity=".4"></circle></svg></span>
+        <span class="bk-ttl"><b class="disp" style="font-size:17px;font-weight:600;line-height:1.1">La lámpara de la luna</b><small style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;opacity:.85">3–6 años</small></span>
+      </a>
+      <a href="Libro-Movil.dc.html" class="bk" style="background:#E0703A">
+        <span class="bk-art"><svg viewBox="0 0 140 132" aria-hidden="true" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block"><rect width="140" height="132" fill="#8FD3FF"></rect><circle cx="112" cy="26" r="14" fill="#FFD23F"></circle><path d="M0 92 Q40 74 80 90 T140 84 V132 H0Z" fill="#7CCB7E"></path><ellipse cx="66" cy="96" rx="26" ry="17" fill="#9C6A43"></ellipse><ellipse cx="88" cy="98" rx="11" ry="8" fill="#F2C9A0"></ellipse></svg></span>
+        <span class="bk-ttl"><b class="disp" style="font-size:17px;font-weight:600;line-height:1.1">Tilo y las moras</b><small style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;opacity:.85">2–5 años</small></span>
+      </a>
+    </div>
+    <div class="plank"></div>
+    <div style="margin-top:40px;display:flex;gap:22px;justify-content:center;align-items:flex-end">
+      <div class="bk" style="background:#2FB58F"><span class="pronto">Pronto</span>
+        <span class="bk-art"><svg viewBox="0 0 140 132" aria-hidden="true" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block"><rect width="140" height="132" fill="#E9F8FF"></rect><rect x="38" y="44" width="64" height="56" rx="8" fill="#FF6F61"></rect><path d="M30 48 L70 20 L110 48Z" fill="#7C6CF0"></path></svg></span>
+        <span class="bk-ttl"><b class="disp" style="font-size:17px;font-weight:600;line-height:1.1">El primer día de jardín</b><small style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;opacity:.85">3–5 años</small></span>
+      </div>
+      <div class="bk" style="background:#7C6CF0"><span class="pronto">Pronto</span>
+        <span class="bk-art"><svg viewBox="0 0 140 132" aria-hidden="true" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block"><rect width="140" height="132" fill="#FFE6A3"></rect><circle cx="56" cy="62" r="22" fill="#F2C9A0"></circle><circle cx="92" cy="80" r="14" fill="#F2C9A0"></circle><path d="M30 132 Q56 92 82 132Z" fill="#4FA9F0"></path></svg></span>
+        <span class="bk-ttl"><b class="disp" style="font-size:17px;font-weight:600;line-height:1.1">Un hermanito en casa</b><small style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;opacity:.85">2–6 años</small></span>
+      </div>
+    </div>
+    <div class="plank"></div>
+  </section>
+
+  <section style="padding:0 16px 56px;display:flex;flex-direction:column;gap:14px">
+    <div style="background:#FFFFFF;border-radius:26px;padding:18px;display:flex;gap:16px;align-items:center;box-shadow:0 5px 0 #F1DFC0">
+      <span aria-hidden="true" style="flex:none;width:56px;height:56px;border-radius:18px;background:#FFE6A3;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3A2600" stroke-width="2.2" stroke-linecap="round"><path d="M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5"></path></svg></span>
+      <div><h3 class="disp" style="margin:0;font-size:21px;font-weight:600">Con su nombre</h3><p style="margin:2px 0 0;color:#66658A;font-size:15px">Tu peque vive la aventura.</p></div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:26px;padding:18px;display:flex;gap:16px;align-items:center;box-shadow:0 5px 0 #F1DFC0">
+      <span aria-hidden="true" style="flex:none;width:56px;height:56px;border-radius:18px;background:#DDF5EC;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1F6E57" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4zM16.5 8.5a5 5 0 0 1 0 7"></path></svg></span>
+      <div><h3 class="disp" style="margin:0;font-size:21px;font-weight:600">Escucha y lee</h3><p style="margin:2px 0 0;color:#66658A;font-size:15px">Las palabras se iluminan.</p></div>
+    </div>
+    <div style="background:#FFFFFF;border-radius:26px;padding:18px;display:flex;gap:16px;align-items:center;box-shadow:0 5px 0 #F1DFC0">
+      <span aria-hidden="true" style="flex:none;width:56px;height:56px;border-radius:18px;background:#E4E6FA;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#27317A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z"></path></svg></span>
+      <div><h3 class="disp" style="margin:0;font-size:21px;font-weight:600">Modo dormir</h3><p style="margin:2px 0 0;color:#66658A;font-size:15px">Luz tenue y se apaga sola.</p></div>
+    </div>
+  </section>
+
+  <section style="background:#DDF5EC;padding:44px 16px 52px">
+    <h2 class="disp" style="margin:0;font-size:38px;font-weight:600;line-height:1">¡A colorear!</h2>
+    <div style="margin-top:20px;background:#FFFFFF;border-radius:28px;padding:12px;box-shadow:0 6px 0 #B5E2D1">
+      <svg viewBox="0 0 400 300" role="img" aria-label="Dibujo de Tilo para colorear" style="width:100%;display:block"><g stroke="#2B2D52" stroke-width="3" stroke-linejoin="round"><rect x="2" y="2" width="396" height="296" rx="14" fill="#8FD3FF"></rect><circle cx="330" cy="62" r="28" fill="#FFD23F"></circle><path d="M2 230 Q100 200 200 225 T398 215 V298 H2Z" fill="#7CCB7E"></path><ellipse cx="196" cy="236" rx="56" ry="30" fill="#FFFFFF"></ellipse><ellipse cx="246" cy="238" rx="22" ry="16" fill="#F2C9A0"></ellipse><rect x="54" y="110" width="20" height="120" rx="6" fill="#FFFFFF"></rect><circle cx="64" cy="98" r="48" fill="#2FB58F"></circle></g></svg>
+    </div>
+    <div style="margin-top:18px;display:flex;justify-content:space-between">
+      <button type="button" aria-label="Amarillo" style="width:48px;height:48px;border-radius:50%;border:4px solid #FFFFFF;background:#FFB703;box-shadow:0 0 0 3px #2B2D52"></button>
+      <button type="button" aria-label="Coral" style="width:48px;height:48px;border-radius:50%;border:4px solid #FFFFFF;background:#FF6F61"></button>
+      <button type="button" aria-label="Uva" style="width:48px;height:48px;border-radius:50%;border:4px solid #FFFFFF;background:#7C6CF0"></button>
+      <button type="button" aria-label="Cielo" style="width:48px;height:48px;border-radius:50%;border:4px solid #FFFFFF;background:#4FA9F0"></button>
+      <button type="button" aria-label="Menta" style="width:48px;height:48px;border-radius:50%;border:4px solid #FFFFFF;background:#2FB58F"></button>
+      <button type="button" aria-label="Café" style="width:48px;height:48px;border-radius:50%;border:4px solid #FFFFFF;background:#9C6A43"></button>
+    </div>
+  </section>
+
+  <section style="padding:52px 16px">
+    <h2 class="disp" style="margin:0;font-size:38px;font-weight:600;line-height:1">Planes</h2>
+    <div style="margin-top:22px;background:#27317A;color:#FFF8E7;border-radius:30px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 8px 0 #1C2463">
+      <span style="align-self:flex-start;padding:5px 12px;border-radius:999px;background:#FFB703;color:#3A2600;font-weight:700;font-size:13px">El favorito</span>
+      <h3 class="disp" style="margin:0;font-size:26px;font-weight:600">Familia</h3>
+      <p class="disp" style="margin:0;font-size:40px;font-weight:600;line-height:1">US$4,99 <span style="font:400 16px 'Atkinson Hyperlegible',sans-serif;color:#CBD0F5">/ mes</span></p>
+      <p style="margin:0;color:#CBD0F5">o US$39,99 al año · Todos los cuentos · Modo dormir</p>
+      <a href="#" class="btn-sun" style="margin-top:6px">Probar 7 días gratis</a>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:12px">
+      <div style="flex:1;background:#FFFFFF;border-radius:24px;padding:18px;box-shadow:0 5px 0 #F1DFC0"><h3 class="disp" style="margin:0;font-size:20px;font-weight:600">Gratis</h3><p style="margin:4px 0 0;color:#66658A;font-size:15px">2 cuentos</p></div>
+      <div style="flex:1;background:#FFFFFF;border-radius:24px;padding:18px;box-shadow:0 5px 0 #F1DFC0"><h3 class="disp" style="margin:0;font-size:20px;font-weight:600">Regalo</h3><p style="margin:4px 0 0;color:#66658A;font-size:15px">US$12,99 · 3 meses</p></div>
+    </div>
+  </section>
+
+  <section style="background:#27317A;color:#FFF8E7;padding:48px 16px;display:flex;flex-direction:column;gap:20px">
+    <h2 class="disp" style="margin:0;font-size:40px;font-weight:600;line-height:1.05">¿Leemos esta noche?</h2>
+    <a href="Libro-Movil.dc.html" class="btn-sun">Abrir un cuento</a>
+  </section>
+  <footer style="background:#1C2463;color:#CBD0F5;padding:22px 16px;display:flex;justify-content:space-between;font-size:14px">
+    <span>© 2026 Lunacuento</span><span style="display:flex;gap:16px"><a href="#" style="color:#CBD0F5">Privacidad</a><a href="#" style="color:#CBD0F5">Términos</a></span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2760}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
