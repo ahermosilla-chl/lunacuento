@@ -3,43 +3,43 @@
     "src": "/ilustraciones/portada-lampara-de-la-luna-672.webp",
     "width": 672,
     "height": 1008,
-    "srcset": "/ilustraciones/portada-lampara-de-la-luna-336.webp 336w, /ilustraciones/portada-lampara-de-la-luna-672.webp 672w"
+    "srcset": "/ilustraciones/portada-lampara-de-la-luna-336.webp 336w, /ilustraciones/portada-lampara-de-la-luna-672.webp 672w, /ilustraciones/portada-lampara-de-la-luna-1008.webp 1008w, /ilustraciones/portada-lampara-de-la-luna-1344.webp 1344w"
   },
   "hero-inicio": {
     "src": "/ilustraciones/hero-inicio-1536.webp",
     "width": 1536,
     "height": 1024,
-    "srcset": "/ilustraciones/hero-inicio-768.webp 768w, /ilustraciones/hero-inicio-1152.webp 1152w, /ilustraciones/hero-inicio-1536.webp 1536w"
+    "srcset": "/ilustraciones/hero-inicio-768.webp 768w, /ilustraciones/hero-inicio-1152.webp 1152w, /ilustraciones/hero-inicio-1536.webp 1536w, /ilustraciones/hero-inicio-2304.webp 2304w, /ilustraciones/hero-inicio-3072.webp 3072w"
   },
   "portada-tilo-y-las-moras": {
     "src": "/ilustraciones/portada-tilo-y-las-moras-672.webp",
     "width": 672,
     "height": 1008,
-    "srcset": "/ilustraciones/portada-tilo-y-las-moras-336.webp 336w, /ilustraciones/portada-tilo-y-las-moras-672.webp 672w"
+    "srcset": "/ilustraciones/portada-tilo-y-las-moras-336.webp 336w, /ilustraciones/portada-tilo-y-las-moras-672.webp 672w, /ilustraciones/portada-tilo-y-las-moras-1008.webp 1008w, /ilustraciones/portada-tilo-y-las-moras-1344.webp 1344w"
   },
   "portada-dragon-que-no-podia-dormir": {
     "src": "/ilustraciones/portada-dragon-que-no-podia-dormir-672.webp",
     "width": 672,
     "height": 1008,
-    "srcset": "/ilustraciones/portada-dragon-que-no-podia-dormir-336.webp 336w, /ilustraciones/portada-dragon-que-no-podia-dormir-672.webp 672w"
+    "srcset": "/ilustraciones/portada-dragon-que-no-podia-dormir-336.webp 336w, /ilustraciones/portada-dragon-que-no-podia-dormir-672.webp 672w, /ilustraciones/portada-dragon-que-no-podia-dormir-1008.webp 1008w, /ilustraciones/portada-dragon-que-no-podia-dormir-1344.webp 1344w"
   },
   "portada-primer-dia-de-jardin": {
     "src": "/ilustraciones/portada-primer-dia-de-jardin-672.webp",
     "width": 672,
     "height": 1008,
-    "srcset": "/ilustraciones/portada-primer-dia-de-jardin-336.webp 336w, /ilustraciones/portada-primer-dia-de-jardin-672.webp 672w"
+    "srcset": "/ilustraciones/portada-primer-dia-de-jardin-336.webp 336w, /ilustraciones/portada-primer-dia-de-jardin-672.webp 672w, /ilustraciones/portada-primer-dia-de-jardin-1008.webp 1008w, /ilustraciones/portada-primer-dia-de-jardin-1344.webp 1344w"
   },
   "portada-un-hermanito-en-casa": {
     "src": "/ilustraciones/portada-un-hermanito-en-casa-672.webp",
     "width": 672,
     "height": 1008,
-    "srcset": "/ilustraciones/portada-un-hermanito-en-casa-336.webp 336w, /ilustraciones/portada-un-hermanito-en-casa-672.webp 672w"
+    "srcset": "/ilustraciones/portada-un-hermanito-en-casa-336.webp 336w, /ilustraciones/portada-un-hermanito-en-casa-672.webp 672w, /ilustraciones/portada-un-hermanito-en-casa-1008.webp 1008w, /ilustraciones/portada-un-hermanito-en-casa-1344.webp 1344w"
   },
   "portada-adios-chupete": {
     "src": "/ilustraciones/portada-adios-chupete-672.webp",
     "width": 672,
     "height": 1008,
-    "srcset": "/ilustraciones/portada-adios-chupete-336.webp 336w, /ilustraciones/portada-adios-chupete-672.webp 672w"
+    "srcset": "/ilustraciones/portada-adios-chupete-336.webp 336w, /ilustraciones/portada-adios-chupete-672.webp 672w, /ilustraciones/portada-adios-chupete-1008.webp 1008w, /ilustraciones/portada-adios-chupete-1344.webp 1344w"
   },
   "colorear-luna": {
     "src": "/ilustraciones/colorear-luna-1200.webp",
