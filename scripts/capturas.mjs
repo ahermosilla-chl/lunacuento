@@ -130,6 +130,96 @@ for (const w of WIDTHS) {
   await rp.context().close();
 }
 
+
+// ---------------------------------------------------------------------------
+// Fase 2: pantalla de compra, portón para adultos y modo app (Capacitor simulado)
+// ---------------------------------------------------------------------------
+const NUM = { tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9 };
+/** Resuelve la suma del portón leyendo la pregunta (números en palabras). */
+async function gateSum(page) {
+  const q = (await page.locator(".gate-q").textContent()) || "";
+  const [a, b] = (q.toLowerCase().match(/[a-zé]+/g) || []).filter((w) => w in NUM).map((w) => NUM[w]);
+  return a + b;
+}
+const NATIVE = () => { window.Capacitor = { isNativePlatform: () => true, getPlatform: () => "ios" }; };
+const PREMIUM = "el-dragon-que-no-podia-dormir";
+
+async function gateFlow(page, w, shot, expectMsg) {
+  await page.locator(".pw-actions .btn-sun").click();
+  await page.locator("dialog.gate[open]").waitFor({ timeout: 3000 }).catch(() => problems.push(`[${w}] el portón no se abre al comprar`));
+  const opts = await page.locator(".gate-opt").allTextContents();
+  if (opts.length !== 3 || new Set(opts).size !== 3) problems.push(`[${w}] el portón debe tener 3 opciones distintas (${opts})`);
+  const sum = await gateSum(page);
+  if (shot) await page.screenshot({ path: `${OUT}/${shot}.png` });
+  // Respuesta incorrecta: no ejecuta la compra y muestra aviso con pregunta nueva
+  const wrong = opts.find((o) => Number(o) !== sum);
+  await page.locator(".gate-opt", { hasText: new RegExp(`^${wrong}$`) }).click();
+  if (!(await page.locator(".gate-wrong").textContent())?.trim()) problems.push(`[${w}] el portón no avisa de una respuesta incorrecta`);
+  if (!(await page.locator("dialog.gate[open]").count())) problems.push(`[${w}] el portón se cerró con una respuesta incorrecta`);
+  if ((await page.locator(".pw-msg").first().textContent())?.trim()) problems.push(`[${w}] se ejecutó la compra con una respuesta incorrecta`);
+  // Respuesta correcta: se cierra y responde "no disponible" (sin claves de RevenueCat)
+  const sum2 = await gateSum(page);
+  await page.locator(".gate-opt", { hasText: new RegExp(`^${sum2}$`) }).click();
+  await page.waitForTimeout(400);
+  if (await page.locator("dialog.gate[open]").count()) problems.push(`[${w}] el portón no se cierra con la respuesta correcta`);
+  const msg = (await page.locator(".pw-msg").first().textContent()) || "";
+  if (!expectMsg.test(msg)) problems.push(`[${w}] mensaje de compra inesperado: "${msg}"`);
+}
+
+for (const w of WIDTHS) {
+  // Estante: el cuento premium muestra candado y abre la pantalla de compra
+  const page = await newPage(w);
+  await page.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
+  if ((await page.locator(".shelf-grid .bk .lock-on").count()) !== 1) problems.push(`[${w}] el estante debe mostrar 1 libro con candado`);
+  await page.locator(".shelf-grid a.bk", { has: page.locator(".lock-on") }).click();
+  await page.waitForURL(`**/cuento/${PREMIUM}/`);
+  await page.locator(".paywall").waitFor();
+  if (await page.locator(".book").count()) problems.push(`[${w}] el cuento premium abre el lector sin compra`);
+  for (const label of ["Comprar", "Restaurar compra"]) {
+    if (!(await page.getByRole("button", { name: label }).count())) problems.push(`[${w}] falta el botón "${label}"`);
+  }
+  await noHScroll(page, `[${w}] compra`);
+  await page.screenshot({ path: `${OUT}/compra-${w}.png` });
+  await gateFlow(page, w, `porton-${w}`, /dentro de la app/);
+  // Restaurar también pasa por el portón
+  await page.getByRole("button", { name: "Restaurar compra" }).click();
+  if (!(await page.locator("dialog.gate[open]").count())) problems.push(`[${w}] restaurar no pide el portón`);
+  await page.locator(".gate-opt", { hasText: new RegExp(`^${await gateSum(page)}$`) }).click();
+  await page.waitForTimeout(300);
+  await page.context().close();
+
+  // Con la compra guardada en el dispositivo, el cuento abre el lector
+  const owned = await newPage(w);
+  await owned.addInitScript(() => localStorage.setItem("lc_biblioteca", "1"));
+  await owned.goto(`${BASE}/es/cuento/${PREMIUM}/`, { waitUntil: "networkidle" });
+  await owned.locator(".book").waitFor({ timeout: 4000 }).catch(() => problems.push(`[${w}] con la compra, el cuento premium no abre el lector`));
+  await owned.context().close();
+
+  // App nativa (Capacitor simulado): sin header web ni "descarga la app"
+  const app = await newPage(w);
+  await app.addInitScript(NATIVE);
+  await app.goto(`${BASE}/es/`, { waitUntil: "networkidle" });
+  if (await app.locator(".site-header").isVisible()) problems.push(`[${w}] app: el header de la web sigue visible`);
+  if (!(await app.locator(".native-bar").isVisible())) problems.push(`[${w}] app: falta la barra de la app`);
+  if (await app.locator(".stores").first().isVisible()) problems.push(`[${w}] app: siguen los botones de descarga`);
+  if (!(await app.locator("#planes a.app-only").isVisible())) problems.push(`[${w}] app: falta el botón para desbloquear en Planes`);
+  await noHScroll(app, `[${w}] app home`);
+  if (w === 375) await app.screenshot({ path: `${OUT}/app-home-375.png`, fullPage: true });
+  await app.goto(`${BASE}/es/comprar/`, { waitUntil: "networkidle" });
+  if (await app.locator(".stores").first().isVisible()) problems.push(`[${w}] app: la compra muestra botones de descarga`);
+  await gateFlow(app, w, null, /no están disponibles/);
+  if (w === 375) await app.screenshot({ path: `${OUT}/app-compra-375.png` });
+  await app.context().close();
+}
+
+// Inglés: compra y portón (números en palabras en inglés)
+{
+  const p = await newPage(375);
+  await p.goto(`${BASE}/en/cuento/${PREMIUM}/`, { waitUntil: "networkidle" });
+  await gateFlow(p, 375, "porton-375-en", /inside the app/);
+  await p.context().close();
+}
+
 // Modo oscuro del sistema: capturas del home y contraste del texto principal
 for (const w of [1280, 375]) {
   const p = await newPage(w, { colorScheme: "dark" });
