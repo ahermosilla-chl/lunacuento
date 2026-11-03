@@ -11,7 +11,7 @@ Responde y comenta siempre en español. Los textos visibles van en ES y EN.
 
 ## Stack (decidido)
 
-- Next.js 15 (App Router, TypeScript). Sin Tailwind: CSS propio con tokens en `:root`.
+- Next.js 15 (App Router, TypeScript). Sin Tailwind: CSS propio con tokens en `:root` (`src/app/globals.css`).
 - **Sitio 100 % estático** (`output: "export"`, carpeta `out/`) para empaquetarlo como app con **Capacitor** (iOS y Android). Sin middleware, sin rutas de servidor, sin cookies ni SSR. Todas las rutas se generan con `generateStaticParams`.
 - Rutas por idioma: `/es/...` y `/en/...`; `/` redirige **en el cliente** según el idioma guardado o `navigator.languages`.
 - Todo local para poder leer sin conexión: ilustraciones en el repo, fuentes embebidas con `next/font` (nada de CDN obligatorio).
@@ -20,7 +20,8 @@ Responde y comenta siempre en español. Los textos visibles van en ES y EN.
 
 ## Referencias en el repo
 
-- `docs/diseno/*.dc.html`: **diseño final** (especificación visual exacta): `Main` (home escritorio), `Home-Movil`, `Libro` (lector escritorio), `Libro-Movil`, `Sistema`. Ignorar las etiquetas `<x-dc>`, `<helmet>` y el script DCLogic (son del editor).
+- `docs/diseno/*.dc.html`: diseño **anterior** (Fredoka/Atkinson, noche `#27317A`, amarillo `#FFB703`). **Ya no manda en colores ni tipografía** (ver sección Diseño). Se conserva solo como referencia de la **estructura y la mecánica del libro** (`Libro`, `Libro-Movil`). Ignorar `<x-dc>`, `<helmet>` y DCLogic.
+- `docs/capturas/antes/`: capturas del diseño anterior (para comparar). `docs/capturas/`: estado actual (se regenera con `npm run capturas`).
 - `docs/prototipo-v2.html`: prototipo anterior, solo como referencia de estructura; su paleta quedó reemplazada por `docs/diseno/`.
 - `docs/referencia/stories.ts`: los 2 cuentos completos en ES/EN, títulos "Pronto" y tipos de datos. Reutilizar.
 - `docs/referencia/i18n.ts`: diccionario de textos ES/EN ya recortado (poco texto, pensado para niños).
@@ -67,22 +68,40 @@ Cada fase en su propio PR, con commits pequeños. `npm run build` y `npm run lin
 
 ## Diseño
 
-Dirección: **noche amable y cuento ilustrado**. Hero de cielo nocturno con luna y estrellas; el resto luminoso y alegre. Colores vivos pero no chillones, apropiados para niños, con contraste AA.
+> **Rediseño premium vigente. No volver al diseño anterior** (Fredoka + Atkinson Hyperlegible, noche `#27317A`, amarillo `#FFB703`, fondo crema `#FFF7EA`, coral `#FF6F61`). Esos valores están obsoletos: cualquier sesión nueva debe usar los tokens y tipografías de abajo.
 
-Tokens (modo claro; definir también modo oscuro con los mismos nombres):
+Dirección: **noche amable y cuento ilustrado, con acabado de app premium**. Hero de cielo nocturno violeta con luna y estrellas; el resto luminoso, cálido y ordenado. Cuidado en jerarquía y espacio, no una colección de juguetes: sombras suaves, pocos brillos, **sin degradados decorativos**, sin glassmorphism, sin emojis como íconos. Contraste AA obligatorio.
+
+Tokens (modo claro; el modo oscuro usa los mismos nombres en `globals.css`):
 
 ```css
---bg:#FFF7EA; --surface:#FFFFFF; --ink:#2B2D52; --muted:#66658A; --line:#F1DFC0;
---sun:#FFB703; --sun-ink:#3A2600; --sun-soft:#FFE6A3;   /* acento principal: botones, luna */
---coral:#FF6F61; --mint:#2FB58F; --mint-soft:#DDF5EC; --sky:#4FA9F0; --grape:#7C6CF0;
---night:#27317A; --night-2:#333F93; --moon-text:#FFF8E7; --moon-muted:#CBD0F5;
---wood:#E3A35F; --wood-edge:#F4C58F; --paper:#FFFDF6; --paper-ink:#2B2D52; --edge:#EADFC6;
+--bg:#F6F8FF; --surface:#FFFFFF; --ink:#0F1B3D; --muted:#5A6385; --line:#E1E5F7;
+--violet:#6D5BFF; --violet-ink:#4F3FD6; --violet-soft:#E8E5FF; --violet-shadow:#4B3BD1;   /* primario */
+--sun:#FFC94D; --sun-ink:#3A2A00; --sun-soft:#FFF0C2;                                       /* amarillo mágico: luna, acentos, CTA sobre noche */
+--rose:#FF6B9E; --mint:#00C2AB; --mint-soft:#D9F6F1; --sky:#4FA9F0; --grape:#7C6CF0;
+--night:#2D2877; --night-2:#3D36A0; --moon-text:#FFF8E7; --moon-muted:#D5D2FA;
+--wood:#E3A35F; --wood-edge:#F4C58F; --paper:#FFFDF6; --paper-ink:#0F1B3D; --edge:#EADFC6;
 ```
 
-- Tipografías (next/font/google): **Fredoka** (títulos y texto de los cuentos) + **Atkinson Hyperlegible** (interfaz; diseñada para legibilidad).
-- Radios generosos, botones tipo píldora de al menos 44px de alto.
-- Sin degradados morado/azul genéricos, sin emojis como íconos, sin glassmorphism.
-- Mobile-first: probar en 375, 768, 1280 px. Sin scroll horizontal.
+- Contraste medido: blanco sobre `--violet` 4,57:1 (solo texto en negrita ≥16 px o grande); **texto violeta sobre fondo claro usa `--violet-ink`** (6,56:1), nunca `--violet`. Tinta sobre `--sun` 11:1.
+- Botones primarios: **violeta con texto blanco** sobre fondos claros (`.btn-violet`, chips activos, herramienta activa) y **amarillo con texto oscuro** sobre fondos de noche (`.btn-sun`: hero, compra, lector, CTA final).
+- Foco visible: contorno violeta (`--violet-ink`) en fondos claros, amarillo en fondos de noche.
+- Tipografías (`src/lib/fonts.ts`, next/font/google): **Baloo 2** (títulos 600/700 y texto de los cuentos 500) + **Nunito** (interfaz y lectura de apoyo 400–800). Variables `--font-baloo` y `--font-nunito`.
+- Tarjetas redondeadas de **20–24 px** (`--r-card: 22px`), sombra suave `--shadow-card`. Los botones siguen siendo píldoras de ≥44 px con sombra sólida inferior (baja 3 px al presionar).
+- Animaciones sutiles de 150–300 ms; todo respeta `prefers-reduced-motion`.
+- Mobile-first: probar en 375, 768, 1280 px. Sin scroll horizontal. Móvil: **navegación inferior** (Inicio, Cuentos, Pintar, Biblioteca).
+- El lector sigue siendo un **libro** (tapa 3D, hoja que sigue el dedo, doble página en escritorio, página única en móvil): el rediseño cambia colores y tipografía, **nunca la mecánica**.
+- Ícono y splash de la app: luna `--sun` sobre `--night` (`assets/*.svg`, `npm run assets`).
+
+## Estructura de la experiencia
+
+- Navegación: **Inicio, Cuentos, Pintar, Mi biblioteca** (`/[lang]`, `/cuentos`, `/pintar`, `/biblioteca`). Header en escritorio/tablet, barra inferior en móvil, barra mínima en la app nativa. Páginas con `Shell`; el lector y la compra son pantallas completas sin navegación.
+- Inicio: hero con saludo ("¡Hola, {n}!" si hay nombre), dos accesos protagonistas (Leer cuentos / Pintar dibujos), "Sigue leyendo" (solo con progreso guardado), estante, "Novedades" (**solo si algún cuento tiene `isNew: true`**; hoy ninguno), tarjetas, miniaturas para pintar, planes y CTA final. No inventar novedades ni frases como "cuentos nuevos cada semana".
+- Taller de pintura (`/pintar`): relleno, pincel (3 grosores), goma, deshacer/rehacer, reiniciar con confirmación, exportar PNG (solo web; en la app falta el plugin de compartir/archivos). **No agregar botones que no funcionen.**
+- Mi biblioteca: sigue leyendo, favoritos, leídos y mis dibujos; estado vacío y esqueleto de carga.
+- Persistencia solo en `localStorage` del dispositivo: `lc_name` (nombre), `lc_library` (progreso, favoritos, leídos), `lc_paint` (dibujos pintados), `lc_lang`, `lc_biblioteca` (copia de la compra). Sin avatar, foto, campanita de notificaciones ni perfiles.
+- Ilustraciones definitivas: marcadas en el código con `ILUSTRACION-PENDIENTE` (`grep -rn ILUSTRACION-PENDIENTE src`). Hoy son vectoriales provisorias; **no generar imágenes ni audio sin autorización**.
+- Compras, portón para adultos, modo app nativa y `NEXT_PUBLIC_MODO_PRUEBA` se mantienen: acciones sensibles solo detrás del portón; sin enlaces externos ni publicidad en las vistas infantiles.
 
 ## Datos y seguridad
 
@@ -92,7 +111,7 @@ Tokens (modo claro; definir también modo oscuro con los mismos nombres):
 
 ## Privacidad (contenido infantil)
 
-- De los niños solo se guarda el nombre, y en el dispositivo (`localStorage`). Nada de fotos, edad exacta ni datos sensibles.
+- De los niños solo se guarda el nombre y su actividad en la app (cuento por el que van, favoritos, dibujos pintados), y todo en el dispositivo (`localStorage`). Nada de fotos, avatares, edad exacta ni datos sensibles; nada sale del dispositivo.
 - Las compras las hace el adulto con su cuenta de la tienda. Sin anuncios ni trackers de terceros.
 - Páginas de Privacidad y Términos (borrador) enlazadas en el footer.
 

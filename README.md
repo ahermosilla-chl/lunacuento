@@ -36,7 +36,7 @@ Con `NEXT_PUBLIC_MODO_PRUEBA=1` todos los cuentos premium (y sus dibujos) quedan
 
 - `/` elige el idioma en el cliente (idioma guardado o `navigator.languages`).
 - `/[lang]/cuento/[id]` se genera con `generateStaticParams`.
-- Las fuentes (Fredoka y Atkinson Hyperlegible) se descargan en el build con `next/font` y quedan dentro de `out/_next/static/media`. El build necesita acceso a Google Fonts.
+- Las fuentes (Baloo 2 y Nunito) se descargan en el build con `next/font` y quedan dentro de `out/_next/static/media`. El build necesita acceso a Google Fonts.
 
 La carpeta `out/` es la que empaqueta Capacitor (ver abajo).
 
@@ -78,9 +78,11 @@ Antes de publicar, reemplazar en `src/lib/stores.ts` los marcadores `[APP_STORE_
 
 ```
 src/app/(raiz)/          "/" con redirección de idioma en el cliente
-src/app/[lang]/          home, lector (cuento/[id]), privacidad, términos
+src/app/[lang]/          inicio, cuentos, pintar, biblioteca, lector (cuento/[id]), comprar, privacidad, términos
 src/app/[lang]/comprar/  pantalla de compra (Biblioteca completa)
-src/components/          Hero, Shelf, Coloring, Plans, Reader (libro), Paywall, ParentalGate, etc.
+src/components/          Hero, Shelf, Paint (taller), MyLibrary, Reader (libro), Paywall, ParentalGate, BottomNav, etc.
+src/lib/library.ts       progreso, favoritos y leídos (localStorage)
+src/lib/paint*.ts        estado, guardado y exportación de dibujos
 src/lib/purchases.ts     compras con RevenueCat (iniciar, comprar, restaurar, entitlement)
 ios/ android/            proyectos de Capacitor
 src/lib/stories.ts       cuentos ES/EN y tipos (image / audio listos para fases 3 y 4)
@@ -100,3 +102,7 @@ No se usan créditos de OpenAI ni ElevenLabs sin autorización explícita del du
 ## Privacidad
 
 Del niño solo se guarda el nombre, en el dispositivo (`localStorage`). Sin cuentas, sin anuncios, sin rastreadores. Las compras las valida la tienda con RevenueCat (identificador anónimo).
+
+## Diseño
+
+Paleta violeta/amarillo y tipografías Baloo 2 + Nunito (tokens en `CLAUDE.md` y `src/app/globals.css`). El lector sigue siendo un libro. Las ilustraciones definitivas pendientes están marcadas con `ILUSTRACION-PENDIENTE` (`grep -rn ILUSTRACION-PENDIENTE src`). Capturas del diseño anterior en `docs/capturas/antes/`.
