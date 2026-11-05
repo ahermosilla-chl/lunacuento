@@ -70,3 +70,6 @@ Ampliar de verdad (hero hasta 3072 px + portadas):
 ```bash
 node scripts/ampliar-ilustraciones.mjs --bin /Applications/Upscayl.app/Contents/Resources/bin/upscayl-bin --modelos /Applications/Upscayl.app/Contents/Resources/models --modelo digital-art-4x
 ```
+
+## Nota: la luna del hero es un sprite aparte
+`scripts/quitar-luna-hero.py` (una sola vez, sin IA ni costo) recortó la luna a `public/ilustraciones/luna-hero.webp` y rellenó el cielo en `hero-inicio-*.webp`. La luna se coloca por CSS (`.stage-moon`) para que siempre se vea entera junto al niño. Si regeneras el hero con OpenAI, vuelve a correr ese script sobre la imagen nueva (detecta la luna y repite el proceso); el ampliador toma `hero-inicio-1536.webp` ya sin luna.

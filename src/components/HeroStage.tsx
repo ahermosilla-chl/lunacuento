@@ -5,6 +5,7 @@ import type { Dict, Lang } from "@/lib/i18n";
 import { DEFAULT_NAME } from "@/lib/i18n";
 import { useKidName, setKidName, useRawKidName } from "@/lib/name-store";
 import { COMING_SOON, FILTERS, STORIES, VALUES, VALUES_SHORT, type ValueKey } from "@/lib/stories";
+import { ilu } from "@/lib/ilustraciones";
 import BookCard from "./BookCard";
 import IlluImg from "./IlluImg";
 import { IconNext, IconPrev } from "./icons";
@@ -33,6 +34,9 @@ const SPARKLES: [number, number, number, number][] = [
  * La ilustración vive en una caja centrada de proporción 3:2 y alto fijo (nunca se estira: a la izquierda y a la derecha el cielo
  * continúa con el color de los bordes). Capas de parallax suave (luna, nubes, destellos) con el mouse y el scroll.
  */
+/** La luna es un sprite aparte (luna-hero) para colocarla por CSS, siempre entera y sin tapar al niño ni al texto. */
+const moon = ilu("hero-inicio") ? ilu("luna-hero") : undefined;
+
 export default function HeroStage({ lang, t }: { lang: Lang; t: Dict }) {
   const raw = useRawKidName();
   const name = useKidName(DEFAULT_NAME[lang]);
@@ -96,7 +100,6 @@ export default function HeroStage({ lang, t }: { lang: Lang; t: Dict }) {
           <div className="pic-img">
             <IlluImg name="hero-inicio" sizes="100vw" className="stage-img" fallback={<HeroFallback />} />
           </div>
-          <span className="px px-moon" />
           <span className="px px-cloud c1" />
           <span className="px px-cloud c2" />
           <span className="px px-cloud c3" />
@@ -108,6 +111,12 @@ export default function HeroStage({ lang, t }: { lang: Lang; t: Dict }) {
         </div>
       </div>
       <div className="wrap stage-body">
+        {moon ? (
+          <span className="px stage-moon" aria-hidden="true">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={moon.src} width={moon.width} height={moon.height} alt="" decoding="async" />
+          </span>
+        ) : null}
         <div className="stage-head">
           <h1 id="stage-title">{t.shelf.title}</h1>
           <label className="stage-for" htmlFor="kid-name">

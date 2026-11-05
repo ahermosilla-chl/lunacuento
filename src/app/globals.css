@@ -211,7 +211,7 @@ a.bk:active { transform: translateY(-6px) rotate(-1deg); }
 .palette { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; justify-items: center; }
 .sw { width: 56px; height: 56px; border-radius: 50%; border: 4px solid #FFFFFF; box-shadow: 0 0 0 2px var(--line); padding: 0; transition: transform .15s var(--ease); }
 .sw:active { transform: scale(.94); }
-.sw[aria-pressed="true"] { box-shadow: 0 0 0 4px var(--ink); transform: scale(1.06); }
+.sw[aria-pressed="true"] { box-shadow: 0 0 0 4px var(--ink); transform: scale(1.1); }
 
 /* Planes */
 .plans { margin-top: 24px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
@@ -560,17 +560,18 @@ html[data-native] input { -webkit-user-select: text; user-select: text; }
 
 /* =====================================================================
    Hero de escritorio y tablet: título, filtros y estante sobre la ilustración
-   La ilustración (3:2) cubre todo el ancho (se encuadra sin cortar la luna: o se ve entera o queda fuera del todo) (a sangre, sin fundidos ni viñeta) y se encuadra para que se vean el niño, el zorro
+   La ilustración (3:2) cubre todo el ancho (la luna es un sprite aparte, `.stage-moon`, que siempre se ve entera) (a sangre, sin fundidos ni viñeta) y se encuadra para que se vean el niño, el zorro
    y el castillo; nunca se estira. El texto y el estante empiezan en --stage-left y el bloque va centrado en vertical.
    ===================================================================== */
-.hstage { --stage-left: 48%; --stage-h: clamp(540px, 44vw, 620px); --pw: max(100cqw, calc(var(--stage-h) * 1.5)); --ph: calc(var(--pw) / 1.5); --stage-shadow: 0 2px 14px rgba(45, 40, 119, .6); position: relative; overflow: hidden; container-type: inline-size; background: #5F64B3; color: #FFFFFF; height: var(--stage-h); display: flex; }
+.hstage { --stage-left-n: .48; --stage-left: calc(var(--stage-left-n) * 100%); --stage-h: clamp(540px, 44vw, 620px); --pw: max(100cqw, calc(var(--stage-h) * 1.5)); --ph: calc(var(--pw) / 1.5); --stage-shadow: 0 2px 14px rgba(45, 40, 119, .6); position: relative; overflow: hidden; container-type: inline-size; background: #5F64B3; color: #FFFFFF; height: var(--stage-h); display: flex; }
 .stage-art { position: absolute; inset: 0; }
-.stage-pic { position: absolute; left: 50%; top: max(calc(var(--stage-h) - var(--ph)), min(calc(var(--ph) * -.27), calc((var(--ph) - var(--stage-h)) * -.8))); width: var(--pw); aspect-ratio: 3 / 2; transform: translateX(-50%); }
+.stage-pic { position: absolute; left: 50%; top: calc((var(--stage-h) - var(--ph)) * .8); width: var(--pw); aspect-ratio: 3 / 2; transform: translateX(-50%); }
 .pic-img { position: absolute; inset: 0; }
 .stage-img, .stage-fallback { width: 100%; height: 100%; object-fit: cover; display: block; transform: translate3d(calc(var(--mx, 0) * -4px), calc(var(--my, 0) * -3px), 0) scale(1.03); }
 /* Capas de parallax: cada una con su profundidad (--d) */
 .px { position: absolute; pointer-events: none; will-change: transform; transform: translate3d(calc(var(--mx, 0) * var(--d) * 14px), calc(var(--my, 0) * var(--d) * 8px + var(--sy, 0) * var(--d) * 26px), 0); }
-.px-moon { --d: .5; left: 78%; top: 3%; width: 17%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255, 224, 138, .5) 0, rgba(255, 224, 138, .18) 45%, transparent 70%); animation: moon-glow 5.5s ease-in-out infinite; }
+.stage-moon { --d: .5; left: calc(var(--gutter) + (100% - 2 * var(--gutter)) * var(--stage-left-n) - var(--moon) - 28px); top: 5%; width: var(--moon); height: var(--moon); --moon: clamp(84px, 8.5vw, 132px); border-radius: 50%; box-shadow: 0 0 40px 14px rgba(255, 224, 138, .42), 0 0 90px 30px rgba(255, 224, 138, .18); animation: moon-glow 5.5s ease-in-out infinite; }
+.stage-moon img { width: 100%; height: 100%; display: block; border-radius: 50%; filter: saturate(1.12) brightness(1.08); transform: scale(1.1); }
 .px-cloud { --d: 1.1; height: 9%; background: radial-gradient(ellipse at center, rgba(255, 240, 255, .2) 0, rgba(255, 240, 255, .08) 50%, transparent 72%); animation: cloud-drift 60s linear infinite; }
 .px-cloud.c1 { left: -12%; top: 12%; width: 22%; animation-duration: 90s; }
 .px-cloud.c2 { left: 30%; top: 5%; width: 18%; --d: .8; animation-duration: 120s; animation-delay: -40s; }
@@ -677,3 +678,6 @@ a.bk:hover::after, a.bk:focus-visible::after, a.bk:active::after { opacity: .95;
 /* Tablet: el encabezado con el botón de sonido no debe desbordar */
 @media (min-width: 761px) and (max-width: 1000px) { .site-header .bar { gap: 14px; } .navlinks { gap: 16px; font-size: 16px; } }
 
+
+/* Pantallas muy anchas: el hero recorta más alto de la imagen; se sube el encuadre para que el pelo del niño no quede cortado */
+@media (min-width: 1700px) { .stage-pic { top: calc((var(--stage-h) - var(--ph)) * .72); } }
