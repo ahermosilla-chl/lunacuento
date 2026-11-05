@@ -577,6 +577,14 @@ for (const w of [768, 1280, 1440, 1920]) {
   if (info.masked || info.side) problems.push(`[${w}] hero: hay fundidos/bordes difuminados (${JSON.stringify(info)})`);
   if (info.h < 530 || info.h > 640) problems.push(`[${w}] hero: alto fuera de 540–620 px (${info.h})`);
   if (Math.abs(info.ratio - 1.5) > 0.03) problems.push(`[${w}] hero: la ilustración se deforma (${info.ratio.toFixed(2)})`);
+  const moon = await p.evaluate(() => {
+    const r = (s) => document.querySelector(s).getBoundingClientRect();
+    const m = r(".stage-moon img"), hs = r(".hstage");
+    const hit = (b) => !(m.right <= b.left || m.left >= b.right || m.bottom <= b.top || m.top >= b.bottom);
+    return { inside: m.left >= hs.left && m.right <= hs.right && m.top >= hs.top && m.bottom <= hs.bottom, w: Math.round(m.width), hit: [".stage-head h1", ".stage-for", ".stage-chips", ".stage-books"].filter((s) => hit(r(s))) };
+  });
+  if (!moon.inside) problems.push(`[${w}] hero: la luna sale de cuadro`);
+  if (moon.hit.length) problems.push(`[${w}] hero: la luna choca con ${moon.hit.join(", ")}`);
   const gap = await p.evaluate(() => { const c = document.querySelector(".stage-chips").getBoundingClientRect(); const b = document.querySelector(".stage-books").getBoundingClientRect(); return b.top - c.bottom; });
   if (gap > 60) problems.push(`[${w}] hero: demasiado espacio entre filtros y estante (${Math.round(gap)} px)`);
   if (w >= 1280) await p.screenshot({ path: `${OUT}/hero-${w}.png`, clip: { x: 0, y: 0, width: w, height: 760 } });

@@ -196,5 +196,10 @@
     "width": 1536,
     "height": 1024,
     "srcset": "/ilustraciones/pagina-el-dragon-que-no-podia-dormir-6-768.webp 768w, /ilustraciones/pagina-el-dragon-que-no-podia-dormir-6-1152.webp 1152w, /ilustraciones/pagina-el-dragon-que-no-podia-dormir-6-1536.webp 1536w"
+  },
+  "luna-hero": {
+    "src": "/ilustraciones/luna-hero.webp",
+    "width": 480,
+    "height": 480
   }
 }
